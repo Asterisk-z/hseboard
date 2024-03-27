@@ -14,7 +14,10 @@ class CountryController extends Controller
      */
     public function index()
     {
-        //
+        $countries = Country::where('is_active', 'yes')->get()->toArray();
+        $converted_countries = arrayKeysToCamelCase($countries);
+        return successResponse('Countries Fetched Successfully', $converted_countries);
+
     }
 
     /**

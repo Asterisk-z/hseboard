@@ -1,14 +1,28 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { Form } from "vee-validate";
-import * as Yup from "yup";
-import TextInput from "@/components/shared/TextInput.vue";
+import { ref, onMounted, computed } from 'vue';
 
+import { Form } from 'vee-validate';
 import { useAuthStore } from '@/stores/auth';
+import { useOpenLinksStore } from '@/stores/openLinks';
 /*Social icons*/
 import google from '@/assets/images/svgs/google-icon.svg';
 
 
+const authStore = useAuthStore();
+const openLinks = useOpenLinksStore();
+
+onMounted(() => {
+    openLinks.getAccountTypes();
+    openLinks.getIndustries();
+    openLinks.getCountries();
+});
+
+const getAccountTypes = computed(() => (openLinks.accountTypes));
+const getIndustries = computed(() => (openLinks.industries));
+const getCountries = computed(() => (openLinks.countries));
+
+// const accountTypess = getAccountTypes;
+// const accountTypes = 
 const checkbox = ref(false);
 const valid = ref(true);
 
@@ -51,37 +65,18 @@ function onInvalidSubmit() {
 
 
 
-const showSecondFormValue = ref('cooperate')
+const showSecondFormValue = ref('corporate')
 
-const accountTypes = ref([
-    {   
-        'title' : 'Cooperate',
-        'value' : 'cooperate'
-    },
-    {   
-        'title' : 'Individual',
-        'value' : 'individual'
-    }]);
-    
-const industries = ref([
-    {   
-        'title' : 'Cooperate',
-        'value' : 'cooperate'
-    },
-    {   
-        'title' : 'Individual',
-        'value' : 'individual'
-    }]);
-    
-const countries = ref([
-    {   
-        'title' : 'Cooperate',
-        'value' : 'cooperate'
-    },
-    {   
-        'title' : 'Individual',
-        'value' : 'individual'
-    }]);
+// const accountTypes = ref([
+//     {   
+//         'title' : 'Cooperate',
+//         'value' : 'cooperate'
+//     },
+//     {   
+//         'title' : 'Individual',
+//         'value' : 'individual'
+//     }]);
+
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
 const showPassword = ref(false);
@@ -153,16 +148,24 @@ const orgFieldRules = Object.freeze({
 
 
 
-function save(e) {
+function save(e: any, setErrors ?: any) {
     e.preventDefault();
 
-    console.log(fields.value)
-    console.log(orgFields.value)
-    
-    // const authStore = useAuthStore();
-    // return authStore.login(email.value, password.value).catch((error) => setErrors({ apiError: error }));
+    try {
+        console.log(fields.value)
+        console.log(orgFields.value)
+        const values = { ...fields.value, ...orgFields.value }
+        console.log(values)
+        // const authStore = useAuthStore();
+        // return authStore.login(email.value, password.value).catch((error) => setErrors({ apiError: error }));
+    } catch (error) {
+        setErrors({ apiError: error })
+    }
+
+
 
 }
+
 
 </script>
 <template>
@@ -181,19 +184,19 @@ function save(e) {
     </div>
     
 
-    <VForm  v-model="valid" lazy-validation  @invalid-submit="onInvalidSubmit">
+    <!-- <Form @submit="validate" v-model="valid" v-slot="{ errors, isSubmitting }" class="mt-5"> -->
+    <VForm  v-model="valid" lazy-validation @submit.prevent="save"  @invalid-submit="onInvalidSubmit"  v-slot="{ errors, isSubmitting }">
         <VRow  class="mt-5 mb-3">
             
             <VCol cols="12" md="12">
                 <v-label class="font-weight-medium pb-2">Account Type</v-label>
-                {{ fields.accountType }}
                 <VSelect
                     v-model="fields.accountType"
-                    :items="accountTypes"
+                    :items="getAccountTypes"
                     :rules="fieldRules.accountType"
                     label="Select"
-                    item-title="title"
-                    item-value="value"
+                    item-title="description"
+                    item-value="name"
                     single-line
                     variant="outlined"
                     class="text-capitalize"
@@ -228,9 +231,11 @@ function save(e) {
                 <v-label class="font-weight-medium pd-2">Industry</v-label>
                 <VSelect
                     v-model="orgFields.industry"
-                    :items="industries"
+                    :items="getIndustries"
                     :rules="orgFieldRules.industry"
                     label="Select"
+                    item-title="name"
+                    item-value="id"
                     single-line
                     variant="outlined"
                 ></VSelect>
@@ -239,9 +244,11 @@ function save(e) {
                 <v-label class="font-weight-medium pd-2">Country</v-label>
                 <VSelect
                     v-model="orgFields.country"
-                    :items="countries"
+                    :items="getCountries"
                     :rules="orgFieldRules.country"
                     label="Select"
+                    item-title="name"
+                    item-value="id"
                     single-line
                     variant="outlined"
                 ></VSelect>
@@ -272,8 +279,11 @@ function save(e) {
                     <div class="ml-auto"><a href="javascript:void(0)" class="text-primary text-decoration-none">Forgot
                         password?</a></div>
                 </div>
-                <v-btn  size="large" class="mt-2 submit-btn "  color="primary" :disabled="!valid" @click="save" block submit flat type="submit">Register</v-btn>
+                <v-btn size="large" class="mt-2 submit-btn" color="primary" :disabled="!valid" @click="save" :loading="isSubmitting" block submit flat type="submit">Register</v-btn>
             </VCol>
+            
         </VRow>
     </VForm>
+        
+    <!-- </Form> -->
 </template>

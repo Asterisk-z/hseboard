@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { toastWrapper } from '@/utils/helpers/toast-wrapper';
 import { useAuthStore } from '@/stores/auth';
 import { Form } from 'vee-validate';
 
 /*Social icons*/
 import google from '@/assets/images/svgs/google-icon.svg';
 
+
+// toastWrapper.success('tell me something')
 const checkbox = ref(false);
 const valid = ref(false);
 

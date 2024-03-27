@@ -14,7 +14,9 @@ class AccountTypeController extends Controller
      */
     public function index()
     {
-        //
+        $account_types = AccountType::where('is_active', 'yes')->get(['id', 'name', 'description'])->toArray();
+        $converted_account_types = arrayKeysToCamelCase($account_types);
+        return successResponse('Account Types Fetched Successfully', $converted_account_types);
     }
 
     /**

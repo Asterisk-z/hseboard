@@ -25,6 +25,10 @@ import 'vue3-easy-data-table/dist/style.css';
 import { createI18n } from 'vue-i18n';
 import messages from '@/utils/locales/messages';
 
+import Vue3Toasity, { type ToastContainerOptions } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
+import '@/assets/css/toast-wrapper.css'
+
 const i18n = createI18n({
     locale: 'en',
     messages: messages,
@@ -48,4 +52,7 @@ app.use(VueRecaptcha, {
 app.use(i18n);
 app.use(Maska);
 app.use(VueApexCharts);
-app.use(vuetify).mount('#app');
+app.use(vuetify).use(
+    Vue3Toasity,
+    { autoClose: 3000, multiple: true, limit: 3, newestOnTop : true } as ToastContainerOptions,
+).mount('#app');

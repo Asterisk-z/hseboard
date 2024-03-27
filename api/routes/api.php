@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AccountTypeController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CountryController;
+use App\Http\Controllers\IndustryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,9 +20,12 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->group(function ($router) {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
+    Route::get('registration/validate-email/{token}', [AuthController::class, 'login']);
 });
 
 Route::get('account-types', [AccountTypeController::class, 'index']);
+Route::get('countries', [CountryController::class, 'index']);
+Route::get('industries', [IndustryController::class, 'index']);
 
 Route::middleware('auth:api')->group(function ($router) {
 

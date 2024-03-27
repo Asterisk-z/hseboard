@@ -2,26 +2,75 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\MailContents;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Models\AccountType;
+use App\Models\Organisation;
+use App\Models\OrganisationUser;
+use App\Models\PasswordSet;
 use App\Models\User;
+use App\Notifications\InfoNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    public function register(Request $request): JsonResponse
+    public function register(RegisterRequest $request): JsonResponse
     {
 
-        $hash = Hash::make($request->input('password'));
+        $data = $request->validated();
 
         $createUser = User::create([
-            'email' => $request->input('email'),
-            'password' => $hash,
-            'name' => $request->input('name'),
+            'firstName' => $data['firstName'],
+            'lastName' => $data['lastName'],
+            'email' => $data['emailAddress'],
+            'phone' => $data['phoneNumber'],
+            'account_type_id' => (AccountType::where('name', $data['accountType'])->first())->id,
+            'password' => Hash::make($data['password']),
         ]);
 
-        $converted = $createUser->toArray();
-        return response()->json($converted, 201);
+        if (AccountType::isCorporate($data['accountType'])) {
+
+            $organization = Organisation::create([
+                'name' => $data['orgName'],
+                'bio' => $data['orgBio'],
+                'address' => $data['orgAddress'],
+                'country_id' => $data['country'],
+                'industry_id' => $data['industry'],
+                'user_id' => $createUser->id,
+            ]);
+
+            $relation = OrganisationUser::create([
+                'user_id' => $createUser->id,
+                'organization_id' => $organization->id,
+            ]);
+
+        }
+
+        $signature = Str::random(50);
+
+        PasswordSet::create([
+            "email" => $createUser->email,
+            "signature" => $signature,
+        ]);
+
+        logAction($createUser, 'Successful User Registration', 'Registration Successful', $request->ip());
+
+        $createUser->notify(new InfoNotification(MailContents::signupMail($createUser->email, $createUser->created_at->format('Y-m-d'), Crypt::encrypt($signature)), MailContents::signupMailSubject()));
+
+        $admins = getAdminUsers();
+
+        if (count($admins)) {
+            Notification::send($admins, new InfoNotification(MailContents::newMembershipSignupMail($createUser->lastName . " " . $createUser->firstName, $request->accountType), MailContents::newMembershipSignupSubject()));
+        }
+
+        //Send Email to verify user
+
+        return successResponse('Account Created Successfully', $createUser);
 
     }
 

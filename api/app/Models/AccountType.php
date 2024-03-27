@@ -9,4 +9,9 @@ class AccountType extends Model
 {
     use HasFactory;
     protected $guarded = [];
+
+    public static function isCorporate($value)
+    {
+        return $value == 'corporate' ? true : false;
+    }
 }

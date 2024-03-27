@@ -16,7 +16,12 @@ return new class extends Migration
         Schema::create('countries', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('description');
+            $table->string('slug');
+            $table->string('code');
+            $table->string('capital');
+            $table->string('region');
+            $table->string('flag');
+            $table->enum('is_active', ['yes', 'no'])->default('yes');
             $table->timestamps();
         });
     }
