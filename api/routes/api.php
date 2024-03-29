@@ -20,7 +20,14 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->group(function ($router) {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
-    Route::get('registration/validate-email/{token}', [AuthController::class, 'login']);
+    Route::get('validate/account', [AuthController::class, 'validateAccount']);
+
+    Route::prefix('reset')->group(function () {
+        Route::post('/initiate', [AuthController::class, 'forgotPassword']);
+        Route::post('/otp', [AuthController::class, 'validateForgotPasswordOtp'])->middleware('throttle:10,5');
+        Route::post('/complete', [AuthController::class, 'resetPassword'])->middleware('passwordReset');
+    });
+
 });
 
 Route::get('account-types', [AccountTypeController::class, 'index']);

@@ -32,7 +32,7 @@ if (!function_exists('loginAuth')) {
     {
         /**@var JWTGuard */
 
-        $auth = auth('jwt');
+        $auth = auth('api');
 
         $auth->Manager()->getJWTProvider()->setSecret(config('jwt.secret'));
 
@@ -47,7 +47,7 @@ if (!function_exists('passwordReset')) {
     function passwordReset(): JWTGuard
     {
         /**@var JWTGuard */
-        $auth = auth('jwt');
+        $auth = auth('api');
 
         $auth->Manager()->getJWTProvider()->setSecret(config('jwt.reset_secret'));
 
@@ -83,7 +83,7 @@ if (!function_exists('logAction')) {
     function logAction($user, $action, $description, $ipAddress = null)
     {
         Audit::create([
-            'user_id' => $user->id,
+            'user' => $user,
             'action_performed' => $action,
             'description' => $description,
             'ip_address' => $ipAddress,
@@ -99,6 +99,12 @@ if (!function_exists('generateReference')) {
         $paymentReference = $dateTime->format('YmdHis') . $uniqueId;
 
         return $paymentReference;
+    }
+}
+if (!function_exists('generateToken')) {
+    function generateToken()
+    {
+        return random_int(100000, 999999);
     }
 }
 

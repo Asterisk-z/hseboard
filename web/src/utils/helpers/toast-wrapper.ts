@@ -9,13 +9,28 @@ export const toastWrapper = {
 
 
 function action(status: string ) {
-    return (message: string, option?: ToastOptions) => {
+    return (message: string, data?: any, option?: ToastOptions) => {
         
         const toastComponent = toast 
-        
+
+        if (status == 'error') {
+
+            toastComponent.error(message);
+            return {
+                message: "error",
+                error: data,
+            };
+        }
+
+        if (status == 'success') {
+            toastComponent.success(message);
+            return {
+                message: "success",
+                data,
+            };
+        }
 
         
-        return toastComponent.success(message);
     };
 }
 

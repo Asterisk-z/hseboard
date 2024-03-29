@@ -23,8 +23,8 @@ router.beforeEach(async (to, from, next) => {
 
     // console.log(to, publicPages, authRequired, auth.user)
     if (to.matched.some((record) => record.meta.requiresAuth)) {
-        if (authRequired && !auth.user) {
-            auth.returnUrl = to.fullPath;
+        if (authRequired && !auth.user && !auth.accessToken) {
+            auth.returnUrl = to.fullPath; 
             return next('/auth/login');
         } else next();
     } else {

@@ -1,3 +1,7 @@
+import ResetInitiate from '@/views/authentication/ResetInitiate.vue';
+import ResetOTP from '@/views/authentication/ResetOTP.vue';
+import ResetSetPassword from '@/views/authentication/ResetSetPassword.vue';
+
 const AuthRoutes = {
     path: '/auth',
     component: () => import('@/layouts/blank/BlankLayout.vue'),
@@ -14,6 +18,21 @@ const AuthRoutes = {
             name: 'Authentication Register',
             path: '/auth/register',
             component: () => import('@/views/authentication/Register.vue')
+        },
+        {
+            name: 'Forgot Password',
+            path: '/auth/initiate-reset-password',
+            component: ResetInitiate
+        },
+        {
+            name: 'Forgot Password OTP Login',
+            path: '/auth/otp-reset-password',
+            component: ResetOTP
+        },
+        {
+            name: 'Forgot Password Set',
+            path: '/auth/set-reset-password',
+            component: ResetSetPassword
         },
         // {
         //     name: 'Side Login',

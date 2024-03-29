@@ -11,7 +11,7 @@ class MailContents
 
     public static function signupMail($email, $date, $signature): string
     {
-        $url = config("app.url") . "/api/validate/account?signature=" . $signature . "&email=" . $email;
+        $url = config("app.url") . "/api/auth/validate/account?signature=" . $signature . "&email=" . $email . "&type=EV";
         $date = formatDate($date);
         return "<p>Your account has been successfully created.</p>
         <p>Your login details are as follows:</p>
@@ -20,6 +20,21 @@ class MailContents
             <li><strong>Account Creation Date:</strong> {$date}</li>
         </ul>
         <p>Kindly click on this <a href=$url>link</a> to validate account.</p>";
+    }
+
+    public static function forgotPasswordSubject(): string
+    {
+        return "Password Reset OTP";
+    }
+
+    public static function forgotPasswordMail($email, $signature, $token): string
+    {
+        $url = config("app.web_url") . "/auth/otp-reset-password?signature=" . $signature . "&email=" . $email . "&type=PR";
+        return "<p>Below is your OTP and link to reset password.</p>
+        <ul>
+            <li><strong>{$token}</strong> </li>
+        </ul>
+        <p>Kindly click on this <a href=$url>link</a> to reset password.</p>";
     }
 
     public static function newMembershipSignupSubject(): string

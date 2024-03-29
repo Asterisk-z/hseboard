@@ -13,10 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('password_sets', function (Blueprint $table) {
+        Schema::create('action_tokens', function (Blueprint $table) {
             $table->id();
             $table->string('email');
             $table->text('signature');
+            $table->string('token')->nullable();
+            $table->string('type');
             $table->string('status')->default('pending');
             $table->softDeletes();
             $table->timestamps();
@@ -30,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('password_sets');
+        Schema::dropIfExists('action_tokens');
     }
 };

@@ -25,6 +25,8 @@ import 'vue3-easy-data-table/dist/style.css';
 import { createI18n } from 'vue-i18n';
 import messages from '@/utils/locales/messages';
 
+import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
+import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 import Vue3Toasity, { type ToastContainerOptions } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import '@/assets/css/toast-wrapper.css'
@@ -37,7 +39,7 @@ const i18n = createI18n({
 });
 
 const app = createApp(App);
-fakeBackend();
+// fakeBackend();
 app.use(router);
 app.component('EasyDataTable', Vue3EasyDataTable);
 app.use(PerfectScrollbar);
@@ -55,4 +57,6 @@ app.use(VueApexCharts);
 app.use(vuetify).use(
     Vue3Toasity,
     { autoClose: 3000, multiple: true, limit: 3, newestOnTop : true } as ToastContainerOptions,
-).mount('#app');
+)
+app.component('pulse-loader', PulseLoader)
+app.component('clip-loader', ClipLoader).mount('#app');

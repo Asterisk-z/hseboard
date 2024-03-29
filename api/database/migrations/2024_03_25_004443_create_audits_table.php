@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('audits', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
+            $table->string('user');
             $table->string('description')->nullable();
             $table->text('action_performed');
             $table->string('ip_address');

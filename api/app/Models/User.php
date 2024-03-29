@@ -39,6 +39,8 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
+    protected $appends = ['organizations', 'privilege'];
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -46,5 +48,25 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function getOrganizationsAttribute()
+    {
+        $org_ids = OrganisationUser::where('user_id', $this->id)->pluck('organization_id');
+        return Organisation::whereIn('id', $org_ids)->get();
+    }
+
+    public function getPrivilegeAttribute()
+    {
+
+        return [];
+    }
+    public function checkAccountStatus()
+    {
+
+        if (!ActionToken::where('email', $this->email)->where('status', ActionToken::status['COM'])->where('type', ActionToken::types['EV'])->first()) {
+            return false;
+        }
+        return true;
     }
 }

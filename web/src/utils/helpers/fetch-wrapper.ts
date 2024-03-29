@@ -1,4 +1,5 @@
 import { useAuthStore } from '@/stores/auth';
+import { router } from '@/router';
 
 export const fetchWrapper = {
     get: request('GET'),
@@ -28,15 +29,28 @@ function request(method: string) {
 
 function authHeader(url: any) {
     // return auth header with jwt if user is logged in and request is to the api url
-    const { user } = useAuthStore();
-    const isLoggedIn = !!user?.token;
+    const user = useAuthStore();
+    const isLoggedIn = !!user?.accessToken;
+    let token = user?.accessToken;
     // const isApiUrl = url.startsWith(import.meta.env.VITE_API_URL);
-   
+    console.log(url, 'from wraper');
+    console.log(isLoggedIn, 'from wraper');
     // const isApiUrl = url.startsWith(baseUrl);
+    if (url == 'auth/reset/complete') {
+        token = localStorage.getItem('hse_reset_tok_passer')
+    }
     if (isLoggedIn) {
-        return { Authorization: `Bearer ${user.token}` };
+        return {
+            "Authorization": `Bearer ${user.accessToken}`,
+            "Accept": "Application/json",
+            "Content-Type": "Application/json"
+        };
     } else {
-        return {};
+        return {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "Application/json",
+            "Content-Type": "Application/json"
+        };
     }
 }
 
@@ -45,10 +59,11 @@ function handleResponse(response: any) {
         const data = text && JSON.parse(text);
 
         if (!response.ok) {
-            const { user, logout } = useAuthStore();
+            const { user, logout, clearSession } = useAuthStore();
             if ([401, 403].includes(response.status) && user) {
                 // auto logout if 401 Unauthorized or 403 Forbidden response returned from api
-                logout();
+                // logout();
+                clearSession()
             }
 
             const error = (data && data.message) || response.statusText;

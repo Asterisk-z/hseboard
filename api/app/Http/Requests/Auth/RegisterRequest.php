@@ -29,7 +29,7 @@ class RegisterRequest extends FormRequest
             "accountType" => ["required", Rule::in(['individual', 'corporate'])],
             "firstName" => "required|string",
             "lastName" => "required|string",
-            "emailAddress" => "required|string",
+            "emailAddress" => "required|string|unique:users,email",
             "phoneNumber" => "required|string",
             'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->symbols()],
             "password_confirmation" => "required",
