@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useTheme } from 'vuetify';
+// import { useTheme } from 'vuetify';
 import { useCustomizerStore } from '@/stores/customizer';
 import {
     CheckIcon,
@@ -11,7 +11,7 @@ import {
     LayoutSidebarLeftCollapseIcon
 } from 'vue-tabler-icons';
 
-const theme = useTheme();
+// const theme = useTheme();
 const customizer = useCustomizerStore();
 
 // themes color options
@@ -107,39 +107,6 @@ const DarkthemeColors = ref([
                         </v-item>
                     </v-col>
                 </v-item-group>
-                <h6 class="text-h6 mt-11 mb-2">Container Option</h6>
-                <v-btn-toggle v-model="customizer.boxed" color="primary" class="my-2 btn-group-custom" rounded="0" group>
-                    <v-btn :value="true" variant="text" elevation="9" class="rounded-md">
-                        <LayoutDistributeVerticalIcon stroke-width="1.5" size="21" class="mr-2" />
-                        Boxed
-                    </v-btn>
-                    <v-btn :value="false" variant="text" elevation="9" class="rounded-md ml-4">
-                        <LayoutDistributeHorizontalIcon stroke-width="1.5" size="21" class="mr-2" />
-                        Full
-                    </v-btn>
-                </v-btn-toggle>
-                <h6 class="text-h6 mt-11 mb-2">Sidebar Type</h6>
-                <v-btn-toggle v-model="customizer.mini_sidebar" color="primary" class="my-2 btn-group-custom" rounded="0" group>
-                    <v-btn :value="false" variant="text" elevation="9" class="rounded-md">
-                        <LayoutSidebarIcon stroke-width="1.5" size="21" class="mr-2" />
-                        Full
-                    </v-btn>
-                    <v-btn :value="true" variant="text" elevation="9" class="rounded-md ml-4">
-                        <LayoutSidebarLeftCollapseIcon stroke-width="1.5" size="21" class="mr-2" />
-                        Collapse
-                    </v-btn>
-                </v-btn-toggle>
-                <h6 class="text-h6 mt-11 mb-2">Card with</h6>
-                <v-btn-toggle v-model="customizer.setBorderCard" color="primary" class="my-2 btn-group-custom" rounded="0" group>
-                    <v-btn :value="false" variant="text" elevation="9" class="rounded-md">
-                        <LayoutSidebarLeftCollapseIcon stroke-width="1.5" size="21" class="mr-2" />
-                        Shadow
-                    </v-btn>
-                    <v-btn :value="true" variant="text" elevation="9" class="rounded-md ml-4">
-                        <LayoutSidebarIcon stroke-width="1.5" size="21" class="mr-2" />
-                        Border
-                    </v-btn>
-                </v-btn-toggle>
             </div>
         </perfect-scrollbar>
     </v-navigation-drawer>

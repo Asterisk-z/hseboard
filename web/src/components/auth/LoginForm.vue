@@ -26,7 +26,8 @@ const emailRules = ref([(v: string) => !!v || 'E-mail is required', (v: string) 
 
 const validate = async (values: any, { setErrors }: any) =>  {
     const request = await authStore.login(username.value, password.value).catch((error) => setErrors({ apiError: error }));
-    if (request?.messsage == 'success') {
+    if (request?.message == 'success') {
+        console.log('redirect to dash')
         router.push('/dashboard');
     }
 }

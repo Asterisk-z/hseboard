@@ -16,6 +16,15 @@ export const useCustomizerStore = defineStore({
 
   getters: {},
   actions: {
+    CHANGE_THEME() {
+      if (this.actTheme == "DARK_AQUA_THEME") {
+        localStorage.setItem('actTheme', 'AQUA_THEME')
+        this.actTheme = "AQUA_THEME"
+      } else {
+        localStorage.setItem('actTheme', 'DARK_AQUA_THEME')
+        this.actTheme = "DARK_AQUA_THEME"
+      }
+    },
     SET_SIDEBAR_DRAWER() {
       this.Sidebar_drawer = !this.Sidebar_drawer;
     },

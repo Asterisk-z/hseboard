@@ -14,17 +14,8 @@ const sidebarMenu = shallowRef(sidebarItems);
 </script>
 
 <template>
-    <v-navigation-drawer
-        left
-        v-model="customizer.Sidebar_drawer"
-        elevation="0"
-        rail-width="75"
-        mobile-breakpoint="960"
-        app
-        class="leftSidebar"
-        :rail="customizer.mini_sidebar"
-        expand-on-hover width="270"
-    >
+    <v-navigation-drawer left v-model="customizer.Sidebar_drawer" elevation="0" rail-width="75" mobile-breakpoint="960"
+        app class="leftSidebar v-theme--DARK_AQUA_THEME" :rail="customizer.mini_sidebar" expand-on-hover width="270">
         <!---Logo part -->
 
         <div class="pa-5">
@@ -34,13 +25,13 @@ const sidebarMenu = shallowRef(sidebarItems);
         <!---Navigation -->
         <!-- ---------------------------------------------- -->
         <perfect-scrollbar class="scrollnavbar">
-            <v-list class="pa-6">
+            <v-list class="pa-6 v-theme--DARK_AQUA_THEME">
                 <!---Menu Loop -->
                 <template v-for="(item, i) in sidebarMenu" :key="i">
                     <!---Item Sub Header -->
-                    <NavGroup :item="item" v-if="item.header"  />
+                    <NavGroup :item="item" v-if="item.header" />
                     <!---If Has Child -->
-                    <NavCollapse class="leftPadding" :item="item" :level="0" v-else-if="item.children"  />
+                    <NavCollapse class="leftPadding" :item="item" :level="0" v-else-if="item.children" />
                     <!---Single Item-->
                     <NavItem :item="item" v-else class="leftPadding" />
                     <!---End Single Item-->

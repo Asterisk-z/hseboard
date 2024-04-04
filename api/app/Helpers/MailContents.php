@@ -47,6 +47,21 @@ class MailContents
         return "<p>A new applicant, $name, has successfully signed up as $category account  on the HSEBoard Application</p>";
     }
 
+    public static function invitationSubject(): string
+    {
+        return "Invitation Offer";
+    }
+
+    public static function invitationMail($org_name, $recipient, $action = null): string
+    {
+
+        $url = $action ? config("app.web_url") . "/auth/invite-register?signature=" . $action->signature . "&email=" . $recipient . "&type=IR" : config("app.web_url") . "/auth/login";
+        $word = $action ? "register" : "login";
+        logger($url);
+        return "<p>$org_name is inviting you to join their team</p>
+            <p>Kindly click on this <a href=$url>link</a> to $word.</p>";
+    }
+
     //NOT USED
 
     public static function complaintSubmitSubject(): string

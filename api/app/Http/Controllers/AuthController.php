@@ -81,10 +81,10 @@ class AuthController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        if (!auth()->user()->checkAccountStatus()) {
-            auth()->logout();
-            return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Account Not Verified, Contact Admin info@hseboard.com.");
-        }
+        // if (!auth()->user()->checkAccountStatus()) {
+        //     auth()->logout();
+        //     return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Account Not Verified, Contact Admin info@hseboard.com.");
+        // }
 
         return $this->respondWithToken($token);
 
@@ -131,6 +131,10 @@ class AuthController extends Controller
 
         $actionToken->status = "completed";
         $actionToken->save();
+
+        $user = User::where('email', $request->email)->first();
+        $user->email_verified_at = now();
+        $user->save();
 
         // return successResponse("You have successfully validated your account. Kindly login with your new credentials.");
         return redirect(config('app.web_url') . '/auth/login');

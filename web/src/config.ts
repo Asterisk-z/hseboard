@@ -13,7 +13,7 @@ const config: ConfigProps = {
     Customizer_drawer: false,
     mini_sidebar: false,
     setHorizontalLayout: false, // Horizontal layout
-    actTheme: 'DARK_AQUA_THEME',//AQUA_THEME
+    actTheme: localStorage.getItem('actTheme') ?? 'DARK_AQUA_THEME',//AQUA_THEME
     boxed: false,
     setBorderCard: false
 };

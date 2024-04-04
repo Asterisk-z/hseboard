@@ -1,7 +1,9 @@
 <?php
 
 use App\Helpers\ResponseStatusCodes;
+use App\Models\ActionToken;
 use App\Models\Audit;
+use App\Models\Organisation;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
@@ -128,5 +130,84 @@ if (!function_exists('formatDate')) {
         } catch (\Throwable $th) {
             return $inputDate;
         }
+    }
+}
+
+if (!function_exists('createUuid')) {
+    function createUuid($model)
+    {
+        $uuid = Str::uuid()->toString();
+        return checkUuid($model, $uuid);
+
+    }
+}
+
+if (!function_exists('checkUuid')) {
+    function checkUuid($model, $uuid)
+    {
+        if (!$model::where('uuid', $uuid)->exists()) {
+            return $uuid;
+        }
+
+        createUuid($model);
+
+    }
+}
+
+if (!function_exists('createActionToken')) {
+    function createActionToken($email, $type, $token = false)
+    {
+        $signature = Str::random(50);
+        $token = $token ? generateToken() : null;
+
+        return ActionToken::create([
+            "email" => $email,
+            "signature" => $signature,
+            "token" => $token,
+            'type' => ActionToken::types[$type],
+        ]);
+
+    }
+}
+
+if (!function_exists('updateActionToken')) {
+    function updateActionToken($model, $status)
+    {
+
+        $model->status = $status;
+        $model->save();
+
+        return true;
+
+    }
+}
+
+if (!function_exists('checkOrganizationOwner')) {
+    function checkOrganizationOwner($organization_uuid)
+    {
+
+        if (!$organization = Organisation::where('uuid', $organization_uuid)->first()) {
+            return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Organization");
+        }
+
+        if ($organization->user_id != auth()->user()->id) {
+            return errorResponse(ResponseStatusCodes::BAD_REQUEST, "User not authorized to perform action for organization");
+        }
+
+        return $organization;
+
+    }
+}
+
+if (!function_exists('findUser')) {
+    function findUser($user_uuid)
+    {
+
+        if (!$user = User::where('uuid', $user_uuid)->first()) {
+            return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find User");
+        }
+
+        return $user;
+
     }
 }

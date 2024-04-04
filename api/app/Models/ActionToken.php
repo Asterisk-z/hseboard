@@ -15,6 +15,7 @@ class ActionToken extends Model
     const types = [
         'EV' => 'Email Verification',
         'PR' => 'Password Reset',
+        'IR' => 'Invite Registration',
     ];
 
     const status = [

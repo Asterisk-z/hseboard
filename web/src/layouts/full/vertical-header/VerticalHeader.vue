@@ -4,6 +4,7 @@ import { useCustomizerStore } from '../../../stores/customizer';
 import { GridDotsIcon, LanguageIcon, SearchIcon, Menu2Icon, BellRingingIcon, ShoppingCartIcon } from 'vue-tabler-icons';
 import LanguageDD from './LanguageDD.vue';
 import NotificationDD from './NotificationDD.vue';
+import themeDD from './themeDD.vue';
 import ProfileDD from './ProfileDD.vue';
 import Searchbar from './Searchbar.vue';
 import RightMobileSidebar from './RightMobileSidebar.vue';
@@ -37,23 +38,7 @@ watch(priority, (newPriority) => {
             <Menu2Icon size="20" stroke-width="1.5" />
         </v-btn>
 
-        <!-- search mobile -->
-        <!-- <v-btn class="hidden-lg-and-up ml-3" icon variant="text" color="primary" @click="searchbox">
-            <SearchIcon size="17" stroke-width="1.5" />
-        </v-btn> -->
 
-        <!-- <v-sheet v-if="showSearch" class="search-sheet v-col-12">
-            <Searchbar :closesearch="searchbox" />
-        </v-sheet> -->
-
-        <!-- ---------------------------------------------- -->
-        <!-- Search part -->
-        <!-- ---------------------------------------------- -->
-        <v-sheet>
-            <Searchbar />
-        </v-sheet>
-
-        <!---/Search part -->
 
         <!-- ---------------------------------------------- -->
         <!-- Mega menu -->
@@ -68,22 +53,24 @@ watch(priority, (newPriority) => {
         <!-- ---------------------------------------------- -->
         <!-- translate -->
         <!-- ---------------------------------------------- -->
-        <LanguageDD />
+        <!-- <LanguageDD /> -->
 
         
 
         <!-- ---------------------------------------------- -->
         <!-- ShoppingCart -->
         <!-- ---------------------------------------------- -->
-        <v-btn icon variant="text" color="primary" to="/ecommerce/checkout">
+        <!-- <v-btn icon variant="text" color="primary" to="/ecommerce/checkout">
             <v-badge  color="error" :content="0">
                 <ShoppingCartIcon stroke-width="1.5" size="22" />
             </v-badge>
-        </v-btn>
+        </v-btn> -->
 
         <!-- ---------------------------------------------- -->
         <!-- Notification -->
         <!-- ---------------------------------------------- -->
+        <themeDD />
+
         <NotificationDD />
 
         <!-- right sidebar -->
