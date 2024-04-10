@@ -40,6 +40,7 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     protected $appends = ['organizations', 'privilege'];
+    protected $with = ['accountRole'];
 
     public function getJWTIdentifier()
     {
@@ -68,5 +69,9 @@ class User extends Authenticatable implements JWTSubject
             return false;
         }
         return true;
+    }
+    public function accountRole()
+    {
+        return $this->hasOne(AccountRole::class, 'id', 'account_role_id');
     }
 }

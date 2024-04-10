@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('country_id');
             $table->integer('industry_id');
             $table->integer('user_id');
+            $table->enum('is_del', ['yes', 'no'])->default('no');
             $table->timestamps();
         });
     }

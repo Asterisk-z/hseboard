@@ -222,7 +222,11 @@ class OfferController extends Controller
             $user = User::where('email', $offer->action_user_email)->first();
             $organization = Organisation::where('uuid', $offer->organization_uuid)->first();
 
-            $relation = OrganisationUser::create([
+            if (OrganisationUser::where('user_id', $user->id)->where('organization_id', $organization->id)->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "User is already in organization");
+            }
+
+            OrganisationUser::create([
                 'user_id' => $user->id,
                 'organization_id' => $organization->id,
             ]);
@@ -261,12 +265,16 @@ class OfferController extends Controller
             $user = User::where('email', $offer->recipient_email)->first();
             $organization = Organisation::where('uuid', $offer->organization_uuid)->first();
 
-            $relation = OrganisationUser::create([
+            if (OrganisationUser::where('user_id', $user->id)->where('organization_id', $organization->id)->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "User is already in organization");
+            }
+
+            OrganisationUser::create([
                 'user_id' => $user->id,
                 'organization_id' => $organization->id,
             ]);
 
-            logAction($offer->recipient_email, 'User Accepted invite to join organisztion', 'Action Invite Accepted', request()->ip());
+            logAction($offer->recipient_email, 'User Accepted invite to join organization', 'Action Invite Accepted', request()->ip());
             // Notification::route('mail', $offer->action_user_email)->notify(new InfoNotification(MailContents::invitationRejectMail($organization->name, $recipientUserEmail), MailContents::invitationRejectSubject()));
 
             return successResponse('Invite Offer Accepted Successfully', $offer);

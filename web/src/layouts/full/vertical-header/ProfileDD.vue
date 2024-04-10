@@ -39,7 +39,8 @@ const authStore = useAuthStore();
             </div>
             <perfect-scrollbar style="height: calc(100vh - 240px); max-height: 240px">
                 <v-list class="py-0 theme-list" lines="two">
-                    <v-list-item v-for="item in profileDD" :key="item.title" class="py-4 px-8 custom-text-primary" :to="item.href">
+                    <v-list-item v-for="item in profileDD" :key="item.title" class="py-4 px-8 custom-text-primary"
+                        :to="item.href">
                         <template v-slot:prepend>
                             <v-avatar size="48" color="lightprimary" class="mr-3" rounded="md">
                                 <v-img :src="item.avatar" width="24" height="24" :alt="item.avatar" />

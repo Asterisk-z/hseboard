@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseStatusCodes;
 use App\Models\Organisation;
+use App\Models\OrganisationUser;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -48,27 +50,35 @@ class OrganisationController extends Controller
      */
     public function removeUser(Request $request)
     {
-        $data = $request->validate([
+        $request->validate([
             'organization_id' => ['required'],
             'user_id' => ['required'],
         ]);
 
         try {
 
-            $organization = checkOrganizationOwner($request->organization_id);
+            if (!$user = User::where('uuid', $request->user_id)->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find User");
+            }
 
-            $user = findUser($request->user_id);
+            if (!$organization = Organisation::where('uuid', $request->organization_id)->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Organization");
+            }
 
-            // if ($recipient = Organisation::find_user($organization, $recipientUserEmail)) {
-            //     return errorResponse(ResponseStatusCodes::BAD_REQUEST, "User is already part of organization");
-            // }
+            if ($organization->user_id != auth()->user()->id || $organization->user_id == $user->id) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "User not authorized to perform action for organization");
+            }
 
-            logger('$organization');
-            logger($organization);
-            logger('$user');
-            logger($user);
+            if (!$relation = OrganisationUser::where('user_id', $user->id)->where('organization_id', $organization->id)->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "User is not in organization");
+            }
 
-            return successResponse('Organizations Fetched Successfully', []);
+            $relation->delete();
+
+            logAction($user->email, 'Your Account was removed from an organization ', 'Remove user', $request->ip());
+            logAction(auth()->user()->email, 'You removed a user from your organization ', 'Remove user', $request->ip());
+
+            return successResponse('User Removed Successfully', []);
 
         } catch (Exception $e) {
 

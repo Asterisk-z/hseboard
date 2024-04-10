@@ -31,3 +31,18 @@ router.beforeEach(async (to, from, next) => {
         next();
     }
 });
+
+router.afterEach((to, from, failure) => {
+    if (failure) console.log(`Failed to enter ${to.fullPath}`, failure)
+
+    const auth: any = useAuthStore();
+
+    if (auth.user || auth.hse_tok_passer) {
+        const twentyMin = 1200000;
+        setInterval(() => {
+            auth.refresh();
+        }, twentyMin)
+    }
+
+
+})

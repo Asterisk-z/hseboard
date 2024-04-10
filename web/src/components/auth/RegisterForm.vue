@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 
-import { Form } from 'vee-validate';
 import { useAuthStore } from '@/stores/auth';
 import { useOpenLinksStore } from '@/stores/openLinks';
 /*Social icons*/
@@ -30,9 +29,6 @@ const setLoading = (value : boolean) => {
     loading.value = value;
 }
 
-function onInvalidSubmit() {
-    console.log('invalied')
-}
 
 
 

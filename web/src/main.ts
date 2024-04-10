@@ -9,6 +9,7 @@ import VueApexCharts from 'vue3-apexcharts';
 import VueTablerIcons from 'vue-tabler-icons';
 import { fakeBackend } from '@/utils/helpers/fake-backend';
 import 'vue3-carousel/dist/carousel.css';
+// import DatetimePicker from 'vuetify-datetime-picker'
 //Mock Api data
 import './_mockApis';
 import "./registerServiceWorker";
@@ -16,6 +17,8 @@ import "./registerServiceWorker";
 import VCalendar from 'v-calendar';
 import VueRecaptcha from 'vue3-recaptcha-v2';
 import Maska from 'maska';
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 // print
 // import print from 'vue3-print-nb';
 // Table
@@ -58,5 +61,7 @@ app.use(vuetify).use(
     Vue3Toasity,
     { autoClose: 3000, multiple: true, limit: 3, newestOnTop : true } as ToastContainerOptions,
 )
+// app.use(DatetimePicker);
 app.component('pulse-loader', PulseLoader)
 app.component('clip-loader', ClipLoader).mount('#app');
+app.component('VueDatePicker', VueDatePicker);

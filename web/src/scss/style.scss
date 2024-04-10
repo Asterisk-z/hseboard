@@ -44,3 +44,13 @@
     width: 174px;
     height: 52px;
 }
+
+.dp-custom-input {
+    box-shadow: 0 0 6px #1976d2;
+    color: #ffffff !important;
+    background-color: #b4b4b400 !important;
+
+  &:hover {
+    border-color: #1976d2;
+  }
+}

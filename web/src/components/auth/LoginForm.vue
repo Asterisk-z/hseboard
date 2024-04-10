@@ -28,7 +28,12 @@ const validate = async (values: any, { setErrors }: any) =>  {
     const request = await authStore.login(username.value, password.value).catch((error) => setErrors({ apiError: error }));
     if (request?.message == 'success') {
         console.log('redirect to dash')
-        router.push('/dashboard');
+        // router.push('/dashboard');
+
+        setInterval(() => {
+            window.location.href = `${import.meta.env.VITE_API_WEB}dashboard`
+        }, 2000)
+        
     }
 }
 

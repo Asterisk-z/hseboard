@@ -2,9 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\Action;
+use App\Models\Observation;
 use App\Models\Offer;
 use App\Models\Organisation;
 use App\Models\User;
+use App\Observers\ActionObserver;
+use App\Observers\ObservationObserver;
 use App\Observers\OfferObserver;
 use App\Observers\OrganisationObserver;
 use App\Observers\UserObserver;
@@ -33,5 +37,7 @@ class AppServiceProvider extends ServiceProvider
         Organisation::observe(OrganisationObserver::class);
         User::observe(UserObserver::class);
         Offer::observe(OfferObserver::class);
+        Observation::observe(ObservationObserver::class);
+        Action::observe(ActionObserver::class);
     }
 }

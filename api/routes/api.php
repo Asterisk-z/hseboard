@@ -1,11 +1,16 @@
 <?php
 
+use App\Http\Controllers\AccountRoleController;
 use App\Http\Controllers\AccountTypeController;
+use App\Http\Controllers\ActionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\IndustryController;
+use App\Http\Controllers\ObservationController;
+use App\Http\Controllers\ObservationTypeController;
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\OrganisationController;
+use App\Http\Controllers\PriorityController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +41,7 @@ Route::prefix('auth')->group(function ($router) {
 Route::get('account-types', [AccountTypeController::class, 'index']);
 Route::get('countries', [CountryController::class, 'index']);
 Route::get('industries', [IndustryController::class, 'index']);
+Route::get('account-roles', [AccountRoleController::class, 'index']);
 
 Route::middleware('auth:api')->group(function ($router) {
 
@@ -44,6 +50,9 @@ Route::middleware('auth:api')->group(function ($router) {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('refresh', [AuthController::class, 'refresh']);
     });
+
+    Route::get('observation-types', [ObservationTypeController::class, 'index']);
+    Route::get('priorities', [PriorityController::class, 'index']);
 
     Route::prefix('offers')->group(function ($router) {
         Route::get('/', [OfferController::class, 'index']);
@@ -58,8 +67,26 @@ Route::middleware('auth:api')->group(function ($router) {
     });
 
     Route::prefix('users')->group(function ($router) {
-        Route::get('/{organization_id}', [UsersController::class, 'index']);
+        Route::get('/all/{organization_id}', [UsersController::class, 'index']);
+        Route::get('/except/{organization_id}', [UsersController::class, 'indexExcept']);
         Route::get('/{organization_id}/{user_id}', [UsersController::class, 'show']);
+        Route::post('/create', [UsersController::class, 'store']);
+        Route::post('/update', [UsersController::class, 'update']);
+    });
+
+    Route::prefix('observations')->group(function ($router) {
+        Route::get('/all/{organization_id?}', [ObservationController::class, 'index']);
+        Route::post('/create', [ObservationController::class, 'store']);
+        Route::post('/update', [ObservationController::class, 'update']);
+        Route::post('/delete', [ObservationController::class, 'delete']);
+    });
+
+    Route::prefix('actions')->group(function ($router) {
+        Route::get('/all/{organization_id?}', [ActionController::class, 'index']);
+        Route::post('/create', [ActionController::class, 'store']);
+        Route::post('/update', [ActionController::class, 'update']);
+        Route::post('/delete', [ActionController::class, 'delete']);
+        Route::post('/status-update', [ActionController::class, 'changeStatus']);
     });
 
 });

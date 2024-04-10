@@ -21,6 +21,11 @@ const MainRoutes = {
             component: () => import('@/views/Team/Index.vue')
         },
         {
+            name: 'Requests Team Member',
+            path: '/organization-requests',
+            component: () => import('@/views/Team/Request.vue')
+        },
+        {
             name: 'Inbox',
             path: '/inbox',
             component: () => import('@/views/Chat/Index.vue')
@@ -34,7 +39,6 @@ const MainRoutes = {
             name: 'Observations',
             path: '/observations',
             component: () => import('@/views/Observation/Index.vue'),
-
         },
         {
             name: 'Create Observation',

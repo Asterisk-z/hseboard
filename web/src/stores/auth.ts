@@ -60,12 +60,12 @@ export const useAuthStore = defineStore({
                     }).then((response: any) => {
                         return response
                     })
-                
 
                 if (data) {
 
                     localStorage.setItem("hse_tok_passer", data.access_token);
                     localStorage.setItem("logger", btoa(JSON.stringify(data.user)));
+                    localStorage.setItem("loggerOrg", btoa(JSON.stringify(data.user.organizations)));
                     // localStorage.setItem("role", data.data.user?.role?.name?.split(' ').join(''));
                     localStorage.setItem("user_mail", data.user.email);
                     localStorage.setItem("firstName", data.user.firstName);
@@ -78,7 +78,35 @@ export const useAuthStore = defineStore({
                 return toastWrapper.success(data?.message, data)
             } catch (error: any) {
                 return toastWrapper.error(error, error)
-            } 
+            }
+        },
+        async refresh() {
+            try {
+                const data = await fetchWrapper.post(`auth/refresh`, { })
+                    .catch((error: any) => {
+                        throw error;
+                    }).then((response: any) => {
+                        return response
+                    })
+
+                if (data) {
+
+                    localStorage.setItem("hse_tok_passer", data.access_token);
+                    localStorage.setItem("logger", btoa(JSON.stringify(data.user)));
+                    localStorage.setItem("loggerOrg", btoa(JSON.stringify(data.user.organizations)));
+                    localStorage.setItem("user_mail", data.user.email);
+                    localStorage.setItem("firstName", data.user.firstName);
+                    localStorage.setItem("id", data.user.id);
+                    this.user = btoa(JSON.stringify(data.user))
+                    this.hse_tok_passer = data.access_token
+                }
+
+                // return toastWrapper.success(data?.message, data)
+            } catch (error: any) {
+                toastWrapper.error(error, error)
+                router.push(this.returnUrl || '/auth/login');
+                // return toastWrapper.error(error, error)
+            }
         },
         async register(values: registerType) {
             try {
@@ -187,6 +215,8 @@ export const useAuthStore = defineStore({
                 localStorage.removeItem("firstName");
                 localStorage.removeItem('hse_reset_email')
                 localStorage.removeItem('hse_reset_tok_passer')
+                localStorage.removeItem('loggerOrg')
+                localStorage.removeItem('loggerActiveOrg')
                 localStorage.removeItem("id");
                 router.push('/auth/login');
                 

@@ -6,8 +6,11 @@ export const useOpenLinksStore = defineStore({
     id: 'openLinks',
     state: () => ({
         industries: null as null || [],
-        accountTypes:  null as null || [],
-        countries:  null as null || [],
+        accountTypes: null as null || [],
+        accountRoles: null as null || [],
+        countries: null as null || [],
+        priorities: null as null || [],
+        observationTypes: null as null || [],
     }),
     actions: {
         async getIndustries() {
@@ -23,7 +26,7 @@ export const useOpenLinksStore = defineStore({
         },
         async getAccountTypes() {
             try {
-                
+
                 const data = await fetchWrapper
                     .get(`account-types`)
                     .then((response: any) => {
@@ -35,7 +38,55 @@ export const useOpenLinksStore = defineStore({
             } catch (error) {
 
             }
-            
+
+        },
+        async getAccountRoles() {
+            try {
+
+                const data = await fetchWrapper
+                    .get(`account-roles`)
+                    .then((response: any) => {
+                        return response.data
+                    }).catch((error: any) => {
+                        console.log(error)
+                    });
+                this.accountRoles = data;
+            } catch (error) {
+
+            }
+
+        },
+        async getObservationTypes() {
+            try {
+
+                const data = await fetchWrapper
+                    .get(`observation-types`)
+                    .then((response: any) => {
+                        return response.data
+                    }).catch((error: any) => {
+                        console.log(error)
+                    });
+                this.observationTypes = data;
+            } catch (error) {
+
+            }
+
+        },
+        async getPriorities() {
+            try {
+
+                const data = await fetchWrapper
+                    .get(`priorities`)
+                    .then((response: any) => {
+                        return response.data
+                    }).catch((error: any) => {
+                        console.log(error)
+                    });
+                this.priorities = data;
+            } catch (error) {
+
+            }
+
         },
         async getCountries() {
             // this.countries = { loading: true };

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\MailContents;
 use App\Helpers\ResponseStatusCodes;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Models\AccountRole;
 use App\Models\AccountType;
 use App\Models\ActionToken;
 use App\Models\Organisation;
@@ -31,6 +32,7 @@ class AuthController extends Controller
             'email' => $data['emailAddress'],
             'phone' => $data['phoneNumber'],
             'account_type_id' => (AccountType::where('name', $data['accountType'])->first())->id,
+            'account_role_id' => (AccountRole::where('name', AccountRole::role['MEM'])->first())->id,
             'password' => Hash::make($data['password']),
         ]);
 
@@ -45,7 +47,10 @@ class AuthController extends Controller
                 'user_id' => $createUser->id,
             ]);
 
-            $relation = OrganisationUser::create([
+            $createUser->account_role_id = (AccountRole::where('name', AccountRole::role['MAN'])->first())->id;
+            $createUser->save();
+
+            OrganisationUser::create([
                 'user_id' => $createUser->id,
                 'organization_id' => $organization->id,
             ]);

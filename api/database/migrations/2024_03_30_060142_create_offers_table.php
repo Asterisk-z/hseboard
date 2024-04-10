@@ -24,6 +24,7 @@ return new class extends Migration
             $table->text('message')->nullable();
             $table->enum('status', ['pending', 'accepted', 'rejected'])->default('pending');
             $table->timestamp('actioned_at')->nullable();
+            $table->enum('is_del', ['yes', 'no'])->default('no');
             $table->timestamps();
         });
     }
