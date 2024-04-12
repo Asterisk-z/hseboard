@@ -11,6 +11,7 @@ use App\Http\Controllers\ObservationTypeController;
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\PriorityController;
+use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
@@ -87,6 +88,12 @@ Route::middleware('auth:api')->group(function ($router) {
         Route::post('/update', [ActionController::class, 'update']);
         Route::post('/delete', [ActionController::class, 'delete']);
         Route::post('/status-update', [ActionController::class, 'changeStatus']);
+    });
+
+    Route::prefix('statistic')->group(function ($router) {
+        Route::get('/all/{organization_id?}', [StatisticsController::class, 'index']);
+        Route::post('/create', [StatisticsController::class, 'store']);
+        Route::post('/delete', [StatisticsController::class, 'delete']);
     });
 
 });

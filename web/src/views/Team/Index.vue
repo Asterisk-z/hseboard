@@ -147,7 +147,7 @@ const fields = ref({
     password: "",
     confirmPassword: "",
     accountRole: "",
-    organization_id: getActiveOrg.value.uuid
+    organization_id: getActiveOrg.value?.uuid
 });
 const editFields = ref({
     firstName: "",
@@ -155,7 +155,7 @@ const editFields = ref({
     phoneNumber: "",
     emailAddress: "",
     accountRole: "",
-    organization_id: getActiveOrg.value.uuid,
+    organization_id: getActiveOrg.value?.uuid,
     user_id: ""
 });
 
@@ -291,7 +291,7 @@ const removeUser = async (team: any) => {
         setLoading(true)
 
         let objectValues = {
-            "organization_id": getActiveOrg.value.uuid,
+            "organization_id": getActiveOrg.value?.uuid,
             "user_id": team?.uuid,
         }
 

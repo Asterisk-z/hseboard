@@ -20,7 +20,7 @@ class Action extends Model
         'CAN' => 'canceled',
         'COM' => 'completed',
     ];
-    protected $appends = ['can_accept', 'can_start', 'is_pending', 'is_accepted', 'is_ongoing'];
+    protected $appends = ['can_accept', 'can_start', 'is_pending', 'is_accepted', 'is_ongoing', 'is_ended'];
 
     protected $with = ['assignee', 'creator', 'priority'];
 
@@ -41,24 +41,32 @@ class Action extends Model
 
     public function getCanAcceptAttribute()
     {
-        return now();
-        return Carbon::create($this->start_datetime) < now() ? true : false;
+        // return [now(), Carbon::create($this->start_datetime), now() < Carbon::create($this->start_datetime) ? true : false];
+        return now() < Carbon::create($this->start_datetime) ? true : false;
     }
 
     public function getCanStartAttribute()
     {
-        return Carbon::create($this->start_datetime);
-        return Carbon::create($this->start_datetime) >= now() ? true : false;
+        // return Carbon::create($this->start_datetime);
+        return now() > Carbon::create($this->start_datetime) ? true : false;
+    }
+
+    public function getIsEndedAttribute()
+    {
+        // return Carbon::create($this->start_datetime);
+        return now() > Carbon::create($this->end_datetime) ? true : false;
     }
 
     public function getIsPendingAttribute()
     {
         return $this->status == 'pending' ? true : false;
     }
+
     public function getIsAcceptedAttribute()
     {
         return $this->status == 'accepted' ? true : false;
     }
+
     public function getIsOngoingAttribute()
     {
         return $this->status == 'ongoing' ? true : false;

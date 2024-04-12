@@ -11,9 +11,8 @@ import moment from 'moment'
 import { router } from '@/router';
 
 
-const files = ref([])
 const page = ref({ title: 'Observations' });
-const breadcrumbs = ref([ph
+const breadcrumbs = ref([
     {
         text: 'Dashboard',
         disabled: false,
@@ -29,19 +28,16 @@ const breadcrumbs = ref([ph
 
 const authStore = useAuthStore();
 const organizationStore = useOrganizationStore();
-const teamMemberStore = useTeamMemberStore();
 const openLinks = useOpenLinksStore();
 const observationStore = useObservationStore();
 
 onMounted(() => {
     observationStore.getObservations();
-    teamMemberStore.getTeamMembers();
     openLinks.getPriorities();
     openLinks.getObservationTypes();
 });
 
 const getObservations = computed(() => (observationStore.observations));
-const getTeamMembers = computed(() => (teamMemberStore.members));
 const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
 const getAuthUser = computed(() => (authStore.loggedUser));
 const getObservationTypes = computed(() => (openLinks.observationTypes));
@@ -104,8 +100,6 @@ const selectItem = (item: any, action: string = '') => {
 }
 
 
-
-
 const search = ref('');
 
 const headers = ref([
@@ -163,7 +157,7 @@ const fields = ref({
     address: "",
     location_detail: "",
     sendToOrg: "No",
-    organization_id: getActiveOrg.value.uuid,
+    organization_id: getActiveOrg.value?.uuid,
     
 });
 
@@ -176,7 +170,7 @@ const editFields = ref({
     description: "",
     address: "",
     location_detail: "",
-    organization_id: getActiveOrg.value.uuid,
+    organization_id: getActiveOrg.value?.uuid,
     
 });
 
@@ -227,8 +221,11 @@ const save = async (e: any) => {
             "affected_workers": values?.affectedWorkers,
             "organization_id": values.sendToOrg == 'No' ? null :values?.organization_id,
             "date_time": moment(fields.value.date_time).format('YYYY-MM-DD hh:mm:ss'),
-            "severity": values?.priorityId
+            "severity": values?.priorityId,
+            "images": images.value
         }
+        
+
 
         
         const resp = await observationStore.addObservation(objectValues)
@@ -351,6 +348,23 @@ const removeObservation = async (observation: any) => {
 
 const datetime = ref('')
 
+
+const files = ref([])
+const images = ref([])
+const previewImage = ref([])
+
+const selectImage = (image: any) => {
+    
+    images.value = image.target.files;
+    previewImage.value = [];
+
+    for (let index = 0; index < images.value.length; index++) {
+        const element = images.value[index];
+        previewImage.value.push(URL.createObjectURL(element))
+    }
+
+}
+
 </script>
 
 <template>
@@ -379,14 +393,15 @@ const datetime = ref('')
                                     <v-divider></v-divider>
 
                                     <v-card-text>
-                                        
+
                                         <VForm v-model="valid" ref="formContainer" fast-fail lazy-validation
                                             @submit.prevent="save" class="py-1">
                                             <VRow class="mt-5 mb-3">
 
                                                 <VCol cols="12" md="6">
                                                     <v-label class="font-weight-medium pb-1">Observation Type</v-label>
-                                                    <VSelect v-model="fields.observationTypeId" :items="getObservationTypes"
+                                                    <VSelect v-model="fields.observationTypeId"
+                                                        :items="getObservationTypes"
                                                         :rules="fieldRules.observationTypeId" label="Select"
                                                         :selected="''" item-title="description" item-value="id"
                                                         single-line variant="outlined" class="text-capitalize">
@@ -395,78 +410,98 @@ const datetime = ref('')
                                                 <VCol cols="12" md="6">
                                                     <v-label class="font-weight-medium pb-1">Severity</v-label>
                                                     <VSelect v-model="fields.priorityId" :items="getPriorities"
-                                                        :rules="fieldRules.priorityId" label="Select"
-                                                        :selected="''" item-title="description" item-value="id"
-                                                        single-line variant="outlined" class="text-capitalize">
+                                                        :rules="fieldRules.priorityId" label="Select" :selected="''"
+                                                        item-title="description" item-value="id" single-line
+                                                        variant="outlined" class="text-capitalize">
                                                     </VSelect>
                                                 </VCol>
 
                                                 <VCol cols="12" md="6">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Number of affected worker(s)</v-label>
-                                                    <VTextField type="number" v-model="fields.affectedWorkers" :rules="fieldRules.affectedWorkers"
-                                                        required variant="outlined" label="Affected Workers"
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Number of
+                                                        affected worker(s)</v-label>
+                                                    <VTextField type="number" v-model="fields.affectedWorkers"
+                                                        :rules="fieldRules.affectedWorkers" required variant="outlined"
+                                                        label="Affected Workers"
                                                         :color="fields.affectedWorkers.length > 2 ? 'success' : 'primary'">
                                                     </VTextField>
                                                 </VCol>
                                                 <VCol cols="12" md="6">
-                                                    <v-label class="font-weight-medium pb-1">Send to Organization?</v-label>
+                                                    <v-label class="font-weight-medium pb-1">Send to
+                                                        Organization?</v-label>
                                                     <VSelect v-model="fields.sendToOrg" :items="['Yes', 'No']"
-                                                        :rules="fieldRules.sendToOrg" label="Select"
-                                                        :selected="''"
+                                                        :rules="fieldRules.sendToOrg" label="Select" :selected="''"
                                                         single-line variant="outlined" class="text-capitalize">
                                                     </VSelect>
                                                 </VCol>
                                                 <VCol cols="12" md="12">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">When did it happen?</v-label>
-                                                    <VueDatePicker input-class-name="dp-custom-input"  v-model="fields.date_time"  :max-date="new Date()" required></VueDatePicker>
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">When did it
+                                                        happen?</v-label>
+                                                    <VueDatePicker input-class-name="dp-custom-input"
+                                                        v-model="fields.date_time" :max-date="new Date()" required>
+                                                    </VueDatePicker>
                                                     <!-- <v-datetime-picker label="Select Datetime" v-model="datetime"> </v-datetime-picker> -->
                                                 </VCol>
                                                 <VCol cols="12" md="12">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Description</v-label>
-                                                    <VTextarea variant="outlined"  outlined name="Description" label="Description" v-model="fields.description" :rules="fieldRules.description" required :color="fields.description.length > 10 ? 'success' : 'primary'"></VTextarea>
+                                                    <v-label
+                                                        class="text-subtitle-1 font-weight-medium pb-1">Description</v-label>
+                                                    <VTextarea variant="outlined" outlined name="Description"
+                                                        label="Description" v-model="fields.description"
+                                                        :rules="fieldRules.description" required
+                                                        :color="fields.description.length > 10 ? 'success' : 'primary'">
+                                                    </VTextarea>
                                                 </VCol>
                                                 <VCol cols="12" md="12">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Address</v-label>
-                                                    <VTextarea variant="outlined"  outlined name="Address" label="Address" v-model="fields.address" :rules="fieldRules.address" required :color="fields.address.length > 10 ? 'success' : 'primary'"></VTextarea>
+                                                    <v-label
+                                                        class="text-subtitle-1 font-weight-medium pb-1">Address</v-label>
+                                                    <VTextarea variant="outlined" outlined name="Address"
+                                                        label="Address" v-model="fields.address"
+                                                        :rules="fieldRules.address" required
+                                                        :color="fields.address.length > 10 ? 'success' : 'primary'">
+                                                    </VTextarea>
                                                 </VCol>
                                                 <VCol cols="12" md="12">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Location Details</v-label>
-                                                    <VTextarea variant="outlined"  outlined name="Details" label="Location Details" v-model="fields.location_detail" :rules="fieldRules.location_detail" required :color="fields.location_detail.length > 10 ? 'success' : 'primary'"></VTextarea>
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Location
+                                                        Details</v-label>
+                                                    <VTextarea variant="outlined" outlined name="Details"
+                                                        label="Location Details" v-model="fields.location_detail"
+                                                        :rules="fieldRules.location_detail" required
+                                                        :color="fields.location_detail.length > 10 ? 'success' : 'primary'">
+                                                    </VTextarea>
                                                 </VCol>
                                                 <VCol cols="12" md="12">
-                                                    
-  <v-file-input
-    v-model="files"
-    :show-size="1000"
-    color="deep-purple-accent-4"
-    label="File input"
-    placeholder="Select your files"
-    prepend-icon="mdi-paperclip"
-    variant="outlined"
-    counter
-    multiple
-  >
-    <template v-slot:selection="{ fileNames }">
-      <template v-for="(fileName, index) in fileNames" :key="fileName">
-        <v-chip
-          v-if="index < 2"
-          class="me-2"
-          color="deep-purple-accent-4"
-          size="small"
-          label
-        >
-          {{ fileName }}
-        </v-chip>
 
-        <span
-          v-else-if="index === 2"
-          class="text-overline text-grey-darken-3 mx-2"
-        >
-          +{{ files.length - 2 }} File(s)
-        </span>
-      </template>
-    </template>
-  </v-file-input>
+                                                    <v-file-input v-model="files" :show-size="1000"
+                                                        color="deep-purple-accent-4" label="File input"
+                                                        placeholder="Select your files" prepend-icon="mdi-paperclip"
+                                                        variant="outlined" counter multiple accept="image/*"
+                                                        @change="selectImage">
+                                                        <template v-slot:selection="{ fileNames }">
+                                                            <template v-for="(fileName, index) in fileNames"
+                                                                :key="fileName">
+                                                                <v-chip v-if="index < 2" class="me-2"
+                                                                    color="deep-purple-accent-4" size="small" label>
+                                                                    {{ fileName }}
+                                                                </v-chip>
+
+                                                                <span v-else-if="index === 2"
+                                                                    class="text-overline text-grey-darken-3 mx-2">
+                                                                    +{{ files.length - 2 }} File(s)
+                                                                </span>
+                                                            </template>
+                                                        </template>
+                                                    </v-file-input>
+
+                                                    <div v-if="previewImage">
+                                                        <VRow>
+                                                            <VCol cols="4" v-for="image in previewImage" :key="image">
+
+                                                                <div>
+                                                                    <img class="preview my-3" :src="image" alt=""
+                                                                        style="max-width: 200px;" />
+                                                                </div>
+                                                            </VCol>
+                                                        </VRow>
+                                                    </div>
                                                 </VCol>
                                                 <VCol cols="12" lg="12" class="text-right">
                                                     <v-btn color="error" @click="dialog = false"
@@ -512,7 +547,8 @@ const datetime = ref('')
 
                                                 <VCol cols="12" md="6">
                                                     <v-label class="font-weight-medium pb-1">Observation Type</v-label>
-                                                    <VSelect v-model="editFields.observationTypeId" :items="getObservationTypes"
+                                                    <VSelect v-model="editFields.observationTypeId"
+                                                        :items="getObservationTypes"
                                                         :rules="fieldRules.observationTypeId" label="Select"
                                                         :selected="''" item-title="description" item-value="id"
                                                         single-line variant="outlined" class="text-capitalize">
@@ -521,34 +557,54 @@ const datetime = ref('')
                                                 <VCol cols="12" md="6">
                                                     <v-label class="font-weight-medium pb-1">Severity</v-label>
                                                     <VSelect v-model="editFields.priorityId" :items="getPriorities"
-                                                        :rules="fieldRules.priorityId" label="Select"
-                                                        :selected="''" item-title="description" item-value="id"
-                                                        single-line variant="outlined" class="text-capitalize">
+                                                        :rules="fieldRules.priorityId" label="Select" :selected="''"
+                                                        item-title="description" item-value="id" single-line
+                                                        variant="outlined" class="text-capitalize">
                                                     </VSelect>
                                                 </VCol>
 
                                                 <VCol cols="12" md="6">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Number of affected worker(s)</v-label>
-                                                    <VTextField type="number" v-model="editFields.affectedWorkers" :rules="fieldRules.affectedWorkers"
-                                                        required variant="outlined" label="Affected Workers"
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Number of
+                                                        affected worker(s)</v-label>
+                                                    <VTextField type="number" v-model="editFields.affectedWorkers"
+                                                        :rules="fieldRules.affectedWorkers" required variant="outlined"
+                                                        label="Affected Workers"
                                                         :color="editFields.affectedWorkers.length > 2 ? 'success' : 'primary'">
                                                     </VTextField>
                                                 </VCol>
                                                 <VCol cols="12" md="6">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1"> When did it happen?</v-label>
-                                                    <VueDatePicker input-class-name="dp-custom-input"  v-model="editFields.date_time"  :max-date="new Date()" required></VueDatePicker>
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1"> When did
+                                                        it happen?</v-label>
+                                                    <VueDatePicker input-class-name="dp-custom-input"
+                                                        v-model="editFields.date_time" :max-date="new Date()" required>
+                                                    </VueDatePicker>
                                                 </VCol>
                                                 <VCol cols="12" md="12">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Description</v-label>
-                                                    <VTextarea variant="outlined"  outlined name="Description" label="Description" v-model="editFields.description" :rules="fieldRules.description" required :color="editFields.description.length > 10 ? 'success' : 'primary'"></VTextarea>
+                                                    <v-label
+                                                        class="text-subtitle-1 font-weight-medium pb-1">Description</v-label>
+                                                    <VTextarea variant="outlined" outlined name="Description"
+                                                        label="Description" v-model="editFields.description"
+                                                        :rules="fieldRules.description" required
+                                                        :color="editFields.description.length > 10 ? 'success' : 'primary'">
+                                                    </VTextarea>
                                                 </VCol>
                                                 <VCol cols="12" md="12">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Address</v-label>
-                                                    <VTextarea variant="outlined"  outlined name="Address" label="Address" v-model="editFields.address" :rules="fieldRules.address" required :color="editFields.address.length > 10 ? 'success' : 'primary'"></VTextarea>
+                                                    <v-label
+                                                        class="text-subtitle-1 font-weight-medium pb-1">Address</v-label>
+                                                    <VTextarea variant="outlined" outlined name="Address"
+                                                        label="Address" v-model="editFields.address"
+                                                        :rules="fieldRules.address" required
+                                                        :color="editFields.address.length > 10 ? 'success' : 'primary'">
+                                                    </VTextarea>
                                                 </VCol>
                                                 <VCol cols="12" md="12">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Location Details</v-label>
-                                                    <VTextarea variant="outlined"  outlined name="Details" label="Location Details" v-model="editFields.location_detail" :rules="fieldRules.location_detail" required :color="editFields.location_detail.length > 10 ? 'success' : 'primary'"></VTextarea>
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Location
+                                                        Details</v-label>
+                                                    <VTextarea variant="outlined" outlined name="Details"
+                                                        label="Location Details" v-model="editFields.location_detail"
+                                                        :rules="fieldRules.location_detail" required
+                                                        :color="editFields.location_detail.length > 10 ? 'success' : 'primary'">
+                                                    </VTextarea>
                                                 </VCol>
                                                 <VCol cols="12" lg="12" class="text-right">
                                                     <v-btn color="error" @click="dialog = false"
@@ -610,12 +666,13 @@ const datetime = ref('')
                                                         :title="`Incident Date : ${selectedItem?.incident_datetime}`"></v-list-item>
                                                     <v-list-item
                                                         :title="`Status : ${selectedItem?.status}`"></v-list-item>
-                                                        
+
                                                 </v-list>
                                             </VCol>
 
                                             <VCol cols="12" lg="12" class="text-right">
-                                                <v-btn color="primary" class="mr-3" @click="setViewDialog(false)">Start Investigation</v-btn>
+                                                <v-btn color="primary" class="mr-3" @click="setViewDialog(false)">Start
+                                                    Investigation</v-btn>
                                                 <!-- <v-btn color="primary" class="mr-3" @click="setViewDialog(false)">Verify</v-btn> -->
 
                                             </VCol>
@@ -711,16 +768,11 @@ const datetime = ref('')
                             {{ ++index }}
                         </template>
 
-                        
+
                         <template v-slot:item.status="{ item }">
-                            <div class="text-end">
-                                <v-chip
-                                    :color="item.selectable.status=='invite' ? 'green' : 'orange'"
-                                    :text="item.selectable.status"
-                                    class="text-uppercase"
-                                    size="small"
-                                    label
-                                ></v-chip>
+                            <div class="">
+                                <v-chip :color="item.selectable.status=='invite' ? 'green' : 'orange'"
+                                    :text="item.selectable.status" class="text-uppercase" size="small" label></v-chip>
                             </div>
                         </template>
 

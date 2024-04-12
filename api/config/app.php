@@ -70,7 +70,9 @@ return [
     |
      */
 
-    'timezone' => 'UTC',
+    // 'timezone' => "Europe/London",
+    'timezone' => "Africa/Lagos",
+    // 'timezone' => 'UTC',
 
     /*
     |--------------------------------------------------------------------------

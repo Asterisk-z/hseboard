@@ -246,6 +246,7 @@ class ActionController extends Controller
 
                     if ($action->status == Action::status['PEN'] && ($action->assignee_id == auth()->user()->id) && !$action->can_start) {
                         $actionCanContinue = true;
+
                     }
 
                     break;
@@ -275,7 +276,7 @@ class ActionController extends Controller
 
                 case Action::status['COM']:
 
-                    if ($action->status == Action::status['ONG'] && ($action->assignee_id != auth()->user()->id)) {
+                    if ($action->status == Action::status['ONG'] && ($action->assignee_id == auth()->user()->id)) {
                         $actionCanContinue = true;
                     }
 
@@ -302,9 +303,9 @@ class ActionController extends Controller
 
                 }
 
-            }
+                return successResponse('Action Status Updated Successfully', []);
 
-            return successResponse('Action Status Updated Successfully', []);
+            }
 
         } catch (Exception $e) {
             logger($e);

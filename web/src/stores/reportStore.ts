@@ -5,9 +5,9 @@ import { toastWrapper } from '@/utils/helpers/toast-wrapper';
 import { useOrganizationStore } from './organizationStore';
 
 
-type observationType  = {
+type ReportType  = {
     organization_id?: string,
-    observation_type: string,
+    Report_type: string,
     description: string,
     location_details: string,
     address: string,
@@ -16,48 +16,48 @@ type observationType  = {
     severity: string,
     images?: any
 };
-type editObservationType = {
+type editReportType = {
     organization_id?: string,
-    observation_type: string,
+    Report_type: string,
     description: string,
     location_details: string,
     address: string,
     affected_workers?: string,
     date_time: string,
     severity: string,
-    observation_id: string,
+    Report_id: string,
 };
 
-type removeObservationType = {
-    observation_id: string,
+type removeReportType = {
+    Report_id: string,
 };
 
-export const useObservationStore = defineStore({
-    id: 'observation',
+export const useReportStore = defineStore({
+    id: 'report',
     state: () => ({
         // initialize state from local storage to enable user to stay logged in
         // @ts-ignore
-        observations: null as null || [],
+        reports: null as null || [],
     }),
     getters: {
         
     },
     actions: {
-        async getObservations() {
+        async getReports() {
             
             const organizationStore = useOrganizationStore();
             const data = await fetchWrapper
-                .get(`observations/all/${organizationStore.active}`)
+                .get(`statistic/all/${organizationStore.active}`)
                 .then((response: any) => {
                     return response.data
                 }).catch((error: any) => {
                     console.log(error)
                 });
-            this.observations = data;
+            this.reports = data;
         },
-        async addObservation(values: any) {
+        async addReport(values: any) {
             try {
-                const data = await fetchWrapper.post(`observations/create`, values)
+                const data = await fetchWrapper.post(`statistic/create`, values)
                     .catch((error: any) => {
                         throw error;
                     }).then((response: any) => {
@@ -70,24 +70,9 @@ export const useObservationStore = defineStore({
             }
 
         },
-        async editObservation(values: editObservationType) {
+        async removeReport(values: removeReportType) {
             try {
-                const data = await fetchWrapper.post(`observations/update`, values)
-                    .catch((error: any) => {
-                        throw error;
-                    }).then((response: any) => {
-                        return response
-                    })
-
-                return toastWrapper.success(data?.message, data)
-            } catch (error: any) {
-                return toastWrapper.error(error, error)
-            }
-
-        },
-        async removeObservation(values: removeObservationType) {
-            try {
-                const data = await fetchWrapper.post(`observations/delete`, values)
+                const data = await fetchWrapper.post(`statistic/delete`, values)
                     .catch((error: any) => {
                         throw error;
                     }).then((response: any) => {

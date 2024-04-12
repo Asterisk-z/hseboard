@@ -177,7 +177,7 @@ const fields = ref({
     priorityId: "",
     end_date: "",
     start_date: "",
-    organization_id: getActiveOrg.value.uuid,
+    organization_id: getActiveOrg.value?.uuid,
     
 });
 
@@ -188,7 +188,7 @@ const editFields = ref({
     priorityId: "",
     end_date: "",
     start_date: "",
-    organization_id: getActiveOrg.value.uuid,
+    organization_id: getActiveOrg.value?.uuid,
     
 });
 
@@ -279,8 +279,8 @@ const update = async (e: any) => {
             "title": values?.title,
             "description": values?.description,
             "action_id": values?.actionId,
-            "start_date": moment(values?.start_date).format('YYYY-MM-DD hh:mm:ss'),
-            "end_date":  moment(values?.end_date).format('YYYY-MM-DD hh:mm:ss'),  
+            "start_date": moment(values?.start_date).format('YYYY-MM-DD HH:mm:ss'),
+            "end_date":  moment(values?.end_date).format('YYYY-MM-DD HH:mm:ss'),  
             "priority_id": values?.priorityId
         }
 
@@ -350,6 +350,7 @@ const removeAction = async (action: any) => {
     }
 
 }
+
 const statusUpdate = async (action: any) => {
 
     try {
@@ -373,26 +374,43 @@ const statusUpdate = async (action: any) => {
 
         if (resp?.message == 'success') {
             setLoading(false)
-            setDeleteDialog(false)
+            setSubViewDialog(false)
+            setViewDialog(false)
 
             actionStore.getActions();
         }
 
         setLoading(false)
-        setDeleteDialog(false)
+        setSubViewDialog(false)
+        setViewDialog(false)
 
 
 
     } catch (error) {
         console.log(error)
         setLoading(false)
-        setDeleteDialog(false)
+        setSubViewDialog(false)
+        setViewDialog(false)
     }
 
 }
 
 
-const datetime = ref('')
+const files = ref([])
+const images = ref([])
+const previewImage = ref([])
+
+const selectImage = (image: any) => {
+
+    images.value = image.target.files;
+    previewImage.value = [];
+
+    for (let index = 0; index < images.value.length; index++) {
+        const element = images.value[index];
+        previewImage.value.push(URL.createObjectURL(element))
+    }
+
+}
 
 </script>
 
@@ -408,7 +426,7 @@ const datetime = ref('')
                     <template v-slot:append>
                         <v-sheet v-if="isLoggedInUserOwnsActionOrg">
                             <v-btn color="primary" class="mr-2" @click="setDialog(true)">Add Action</v-btn>
-                            
+
                             <v-dialog v-model="dialog" max-width="600">
                                 <v-card>
                                     <v-card-text>
@@ -422,29 +440,36 @@ const datetime = ref('')
                                     <v-divider></v-divider>
 
                                     <v-card-text>
-                                        
+
                                         <VForm v-model="valid" ref="formContainer" fast-fail lazy-validation
                                             @submit.prevent="save" class="py-1">
                                             <VRow class="mt-5 mb-3">
 
                                                 <VCol cols="12" md="12">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Title</v-label>
-                                                    <VTextField type="text" v-model="fields.title" :rules="fieldRules.title"
-                                                        required variant="outlined" label="Title"
+                                                    <v-label
+                                                        class="text-subtitle-1 font-weight-medium pb-1">Title</v-label>
+                                                    <VTextField type="text" v-model="fields.title"
+                                                        :rules="fieldRules.title" required variant="outlined"
+                                                        label="Title"
                                                         :color="fields.title.length > 2 ? 'success' : 'primary'">
                                                     </VTextField>
                                                 </VCol>
                                                 <VCol cols="12" md="12">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Description</v-label>
-                                                    <VTextarea variant="outlined"  outlined name="Description" label="Description" v-model="fields.description" :rules="fieldRules.description" required :color="fields.description.length > 10 ? 'success' : 'primary'"></VTextarea>
+                                                    <v-label
+                                                        class="text-subtitle-1 font-weight-medium pb-1">Description</v-label>
+                                                    <VTextarea variant="outlined" outlined name="Description"
+                                                        label="Description" v-model="fields.description"
+                                                        :rules="fieldRules.description" required
+                                                        :color="fields.description.length > 10 ? 'success' : 'primary'">
+                                                    </VTextarea>
                                                 </VCol>
                                                 <VCol cols="12" md="12">
                                                     <v-label class="font-weight-medium pb-1">User</v-label>
                                                     <VSelect v-model="fields.assigneeId" :items="getTeamMembersExceptMe"
-                                                        :rules="fieldRules.assigneeId" label="Select"
-                                                        :selected="''" item-title='lastName' item-value="uuid"
-                                                        single-line variant="outlined" class="text-capitalize">
-                                                        
+                                                        :rules="fieldRules.assigneeId" label="Select" :selected="''"
+                                                        item-title='lastName' item-value="uuid" single-line
+                                                        variant="outlined" class="text-capitalize">
+
                                                         <!-- <template v-slot:selection="{ item }">
 
                                                         <span>
@@ -456,19 +481,26 @@ const datetime = ref('')
                                                 <VCol cols="12" md="12">
                                                     <v-label class="font-weight-medium pb-1">Severity</v-label>
                                                     <VSelect v-model="fields.priorityId" :items="getPriorities"
-                                                        :rules="fieldRules.priorityId" label="Select"
-                                                        :selected="''" item-title="description" item-value="id"
-                                                        single-line variant="outlined" class="text-capitalize">
+                                                        :rules="fieldRules.priorityId" label="Select" :selected="''"
+                                                        item-title="description" item-value="id" single-line
+                                                        variant="outlined" class="text-capitalize">
                                                     </VSelect>
                                                 </VCol>
 
                                                 <VCol cols="12" md="6">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Start Date</v-label>
-                                                    <VueDatePicker input-class-name="dp-custom-input"  v-model="fields.start_date"  :min-date="new Date()" required></VueDatePicker>
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Start
+                                                        Date</v-label>
+                                                    <VueDatePicker input-class-name="dp-custom-input"
+                                                        v-model="fields.start_date" :min-date="new Date()" required>
+                                                    </VueDatePicker>
                                                 </VCol>
                                                 <VCol cols="12" md="6">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">End Date</v-label>
-                                                    <VueDatePicker input-class-name="dp-custom-input" :disabled='!fields.start_date'  v-model="fields.end_date"  :min-date="fields.start_date ? new Date(fields.start_date) : new Date()" required></VueDatePicker>
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">End
+                                                        Date</v-label>
+                                                    <VueDatePicker input-class-name="dp-custom-input"
+                                                        :disabled='!fields.start_date' v-model="fields.end_date"
+                                                        :min-date="fields.start_date ? new Date(fields.start_date) : new Date()"
+                                                        required></VueDatePicker>
                                                 </VCol>
 
 
@@ -516,32 +548,46 @@ const datetime = ref('')
                                             <VRow class="mt-5 mb-3">
 
                                                 <VCol cols="12" md="12">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Title</v-label>
-                                                    <VTextField type="text" v-model="editFields.title" :rules="fieldRules.title"
-                                                        required variant="outlined" label="Title"
+                                                    <v-label
+                                                        class="text-subtitle-1 font-weight-medium pb-1">Title</v-label>
+                                                    <VTextField type="text" v-model="editFields.title"
+                                                        :rules="fieldRules.title" required variant="outlined"
+                                                        label="Title"
                                                         :color="editFields.title.length > 2 ? 'success' : 'primary'">
                                                     </VTextField>
                                                 </VCol>
                                                 <VCol cols="12" md="12">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Description</v-label>
-                                                    <VTextarea variant="outlined"  outlined name="Description" label="Description" v-model="editFields.description" :rules="fieldRules.description" required :color="editFields.description.length > 10 ? 'success' : 'primary'"></VTextarea>
+                                                    <v-label
+                                                        class="text-subtitle-1 font-weight-medium pb-1">Description</v-label>
+                                                    <VTextarea variant="outlined" outlined name="Description"
+                                                        label="Description" v-model="editFields.description"
+                                                        :rules="fieldRules.description" required
+                                                        :color="editFields.description.length > 10 ? 'success' : 'primary'">
+                                                    </VTextarea>
                                                 </VCol>
                                                 <VCol cols="12" md="12">
                                                     <v-label class="font-weight-medium pb-1">Severity</v-label>
                                                     <VSelect v-model="editFields.priorityId" :items="getPriorities"
-                                                        :rules="fieldRules.priorityId" label="Select" 
-                                                        :selected="''" item-title="description" item-value="id"
-                                                        single-line variant="outlined" class="text-capitalize">
+                                                        :rules="fieldRules.priorityId" label="Select" :selected="''"
+                                                        item-title="description" item-value="id" single-line
+                                                        variant="outlined" class="text-capitalize">
                                                     </VSelect>
                                                 </VCol>
 
                                                 <VCol cols="12" md="6">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Start Date</v-label>
-                                                    <VueDatePicker input-class-name="dp-custom-input"  v-model="editFields.start_date"  :min-date="new Date()" required></VueDatePicker>
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Start
+                                                        Date</v-label>
+                                                    <VueDatePicker input-class-name="dp-custom-input"
+                                                        v-model="editFields.start_date" :min-date="new Date()" required>
+                                                    </VueDatePicker>
                                                 </VCol>
                                                 <VCol cols="12" md="6">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">End Date</v-label>
-                                                    <VueDatePicker input-class-name="dp-custom-input" :disabled='!editFields.start_date'  v-model="editFields.end_date"  :min-date="editFields.start_date ? new Date(editFields.start_date) : new Date()" required></VueDatePicker>
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">End
+                                                        Date</v-label>
+                                                    <VueDatePicker input-class-name="dp-custom-input"
+                                                        :disabled='!editFields.start_date' v-model="editFields.end_date"
+                                                        :min-date="editFields.start_date ? new Date(editFields.start_date) : new Date()"
+                                                        required></VueDatePicker>
                                                 </VCol>
 
 
@@ -586,7 +632,7 @@ const datetime = ref('')
 
                                             <!-- {{ selectedItem }} -->
 
-                                            <VCol cols="12" lg="12"  v-if="!subViewDialog">
+                                            <VCol cols="12" lg="12" v-if="!subViewDialog">
                                                 <v-list lines="one" v-if="selectedItem">
 
                                                     <v-list-item
@@ -607,26 +653,88 @@ const datetime = ref('')
                                                         :title="`Priority : ${selectedItem?.priority?.description}`"></v-list-item>
                                                     <v-list-item v-if="selectedItem?.statusMessage"
                                                         :title="`Status Reason : ${selectedItem?.statusMessage}`"></v-list-item>
-                                                    
-                                                        
+
                                                 </v-list>
                                             </VCol>
-                                            <VCol cols="12" lg="12"  v-else>
-                                                
+                                            <VCol cols="12" lg="12" v-else>
+
                                                 <VForm v-model="valid" fast-fail lazy-validation
                                                     @submit.prevent="statusUpdate(selectedItem)" class="py-1">
                                                     <VRow class="mt-5 mb-3">
 
-                                                        <VCol cols="12" md="12" v-if="['pending'].includes(selectedItem?.status)">
-                                                            <v-label class="font-weight-medium pb-1">What do you what?</v-label>
-                                                            <VSelect v-model="sFields.status" :items="[{'name' : 'ongoing', 'description' : 'Start Action'}, {'name' : 'rejected', 'description' : 'Reject Action'}]" label="Select"
-                                                                single-line variant="outlined" class="text-capitalize"  :rules="[(v:any) => !!v || 'You must select to continue!']"
+                                                        <VCol cols="12" md="12"
+                                                            v-if="selectedItem?.is_pending && selectedItem?.can_accept">
+                                                            <v-label class="font-weight-medium pb-1">What do you
+                                                                what?</v-label>
+                                                            <VSelect v-model="sFields.status"
+                                                                :items="[{ 'name': 'accepted', 'description': 'Accept Action' }, { 'name': 'rejected', 'description': 'Reject Action' }]"
+                                                                label="Select" single-line variant="outlined"
+                                                                class="text-capitalize"
+                                                                :rules="[(v: any) => !!v || 'You must select to continue!']"
+                                                                item-title='description' item-value="name" required>
+                                                            </VSelect>
+                                                        </VCol>
+                                                        <VCol cols="12" md="12"
+                                                            v-if="selectedItem?.is_accepted && selectedItem?.can_start">
+                                                            <v-label class="font-weight-medium pb-1">What do you
+                                                                what?</v-label>
+                                                            <VSelect v-model="sFields.status"
+                                                                :items="[{ 'name': 'ongoing', 'description': 'Start Action' }, { 'name': 'canceled', 'description': 'Cancel Action' }]"
+                                                                label="Select" single-line variant="outlined"
+                                                                class="text-capitalize"
+                                                                :rules="[(v: any) => !!v || 'You must select to continue!']"
                                                                 item-title='description' item-value="name" required>
                                                             </VSelect>
                                                         </VCol>
                                                         <VCol cols="12" md="12">
-                                                            <v-label class="text-subtitle-1 font-weight-medium pb-1">Additional Information</v-label>
-                                                            <VTextarea variant="outlined"  outlined name="Reason" label="Reason" v-model="sFields.message"  required :color="sFields.message.length > 10 ? 'success' : 'primary'"></VTextarea>
+                                                            <v-label
+                                                                class="text-subtitle-1 font-weight-medium pb-1">Status
+                                                                Information</v-label>
+                                                            <VTextarea variant="outlined" outlined name="Reason"
+                                                                label="Reason" v-model="sFields.message" required
+                                                                :color="sFields.message.length > 10 ? 'success' : 'primary'">
+                                                            </VTextarea>
+                                                        </VCol>
+
+
+                                                        <VCol cols="12" md="12" v-if="selectedItem?.is_ongoing">
+                                                            <v-label class="font-weight-medium pb-1">Do you have
+                                                                picture?</v-label>
+
+                                                            <v-file-input v-model="files" :show-size="1000"
+                                                                color="deep-purple-accent-4" label="File input"
+                                                                placeholder="Select your files"
+                                                                prepend-icon="mdi-paperclip" variant="outlined" counter
+                                                                multiple accept="image/*" @change="selectImage">
+                                                                <template v-slot:selection="{ fileNames }">
+                                                                    <template v-for="(fileName, index) in fileNames"
+                                                                        :key="fileName">
+                                                                        <v-chip v-if="index < 2" class="me-2"
+                                                                            color="deep-purple-accent-4" size="small"
+                                                                            label>
+                                                                            {{ fileName }}
+                                                                        </v-chip>
+
+                                                                        <span v-else-if="index === 2"
+                                                                            class="text-overline text-grey-darken-3 mx-2">
+                                                                            +{{ files.length - 2 }} File(s)
+                                                                        </span>
+                                                                    </template>
+                                                                </template>
+                                                            </v-file-input>
+
+                                                            <div v-if="previewImage">
+                                                                <VRow>
+                                                                    <VCol cols="4" v-for="image in previewImage"
+                                                                        :key="image">
+
+                                                                        <div>
+                                                                            <img class="preview my-3" :src="image"
+                                                                                alt="" style="max-width: 200px;" />
+                                                                        </div>
+                                                                    </VCol>
+                                                                </VRow>
+                                                            </div>
                                                         </VCol>
 
 
@@ -635,7 +743,7 @@ const datetime = ref('')
                                                                 variant="text">Cancel</v-btn>
 
                                                             <v-btn color="primary" type="submit" :loading="loading"
-                                                                :disabled="!valid" >
+                                                                :disabled="!valid">
                                                                 <span v-if="!loading">
                                                                     Submit
                                                                 </span>
@@ -649,28 +757,39 @@ const datetime = ref('')
 
                                             </VCol>
 
-                                            <VCol cols="12" lg="12" class="text-right" v-if="!subViewDialog && isAssignee">
+                                            <VCol cols="12" lg="12" class="text-right"
+                                                v-if="!subViewDialog && isAssignee">
                                                 <span v-if="selectedItem?.is_pending && selectedItem?.can_accept">
-                                                    <v-btn color="primary" class="mr-3" @click="setSubViewDialog(true, 'accepted')">Accept Action</v-btn>
-                                                    <v-btn color="error" class="mr-3" @click="setSubViewDialog(true, 'rejected')">Reject Action</v-btn>
+                                                    <v-btn color="primary" class="mr-3"
+                                                        @click="setSubViewDialog(true, 'accepted')">Accept
+                                                        Action</v-btn>
+                                                    <v-btn color="error" class="mr-3"
+                                                        @click="setSubViewDialog(true, 'rejected')">Reject
+                                                        Action</v-btn>
                                                 </span>
-                                                <span v-if="selectedItem?.is_accepted && selectedItem?.can_start">
-                                                    <v-btn color="primary" class="mr-3" @click="setSubViewDialog(true, 'ongoing')">Start Action</v-btn>
-                                                    <v-btn color="error" class="mr-3" @click="setSubViewDialog(true, 'rejected')">Cancel Action</v-btn>
+                                                <span
+                                                    v-if="selectedItem?.is_accepted && selectedItem?.can_start && !selectedItem?.is_ended">
+                                                    <v-btn color="primary" class="mr-3"
+                                                        @click="setSubViewDialog(true, 'ongoing')">Start Action</v-btn>
+                                                    <v-btn color="error" class="mr-3"
+                                                        @click="setSubViewDialog(true, 'canceled')">Cancel
+                                                        Action</v-btn>
                                                 </span>
                                                 <span v-if="selectedItem?.is_ongoing">
-                                                    <v-btn color="success" class="mr-3" @click="setSubViewDialog(true, 'completed')">Action Completed</v-btn>
+                                                    <v-btn color="success" class="mr-3"
+                                                        @click="setSubViewDialog(true, 'completed')">Action
+                                                        Completed</v-btn>
                                                 </span>
-                                                
+
 
                                                 <!-- <v-btn color="primary" class="mr-3" @click="setViewDialog(false)">Verify</v-btn> -->
 
                                             </VCol>
-                                            <VCol cols="12" lg="12" class="text-right">
-                                            
+                                            <VCol cols="12" lg="12" class="text-right" v-if="!subViewDialog">
+
                                                 <v-btn color="primary" @click="setViewDialog(false)"
                                                     variant="text">Close</v-btn>
-                                                
+
                                             </VCol>
                                         </VRow>
 
@@ -737,69 +856,60 @@ const datetime = ref('')
                     <VDataTable :headers="headers" :items="getActions" :search="search" item-key="name"
                         items-per-page="5" item-value="fat" show-select>
                         <template v-slot:item.action="{ item }">
-                            
-                                <v-menu>
-                                    <template v-slot:activator="{ props }">
-                                        <v-btn color="primary" dark v-bind="props" flat> Action </v-btn>
-                                    </template>
 
-                                    <v-list>
-                                        <v-list-item  @click="selectItem(item, 'view')">
+                            <v-menu>
+                                <template v-slot:activator="{ props }">
+                                    <v-btn color="primary" dark v-bind="props" flat> Action </v-btn>
+                                </template>
+
+                                <v-list>
+                                    <v-list-item @click="selectItem(item, 'view')">
+                                        <v-list-item-title>
+                                            <v-icon class="mr-2" size="small">
+                                                mdi-eye
+                                            </v-icon>
+                                            View Action
+                                        </v-list-item-title>
+                                    </v-list-item>
+                                    <template v-if="isLoggedInUserOwnsActionOrg && item.selectable.is_pending">
+                                        <v-list-item @click="selectItem(item, 'edit')">
                                             <v-list-item-title>
                                                 <v-icon class="mr-2" size="small">
-                                                    mdi-eye
+                                                    mdi-pencil
                                                 </v-icon>
-                                                View Action
+                                                Edit Action
                                             </v-list-item-title>
                                         </v-list-item>
-                                        <template v-if="isLoggedInUserOwnsActionOrg && item.selectable.is_pending">
-                                            <v-list-item  @click="selectItem(item, 'edit')">
-                                                <v-list-item-title>
-                                                    <v-icon class="mr-2" size="small">
-                                                        mdi-pencil
-                                                    </v-icon>
-                                                    Edit Action
-                                                </v-list-item-title>
-                                            </v-list-item>
-                                            <v-list-item  @click="selectItem(item, 'delete')">
-                                                <v-list-item-title>
-                                                    <v-icon class="mr-2" size="small">
-                                                        mdi-delete
-                                                    </v-icon>
-                                                    Delete Action
-                                                </v-list-item-title>
-                                            </v-list-item>
-                                        </template>
-                                    </v-list>
-                                </v-menu>
+                                        <v-list-item @click="selectItem(item, 'delete')">
+                                            <v-list-item-title>
+                                                <v-icon class="mr-2" size="small">
+                                                    mdi-delete
+                                                </v-icon>
+                                                Delete Action
+                                            </v-list-item-title>
+                                        </v-list-item>
+                                    </template>
+                                </v-list>
+                            </v-menu>
                         </template>
 
                         <template v-slot:item.sn="{ index }">
                             {{ ++index }}
                         </template>
 
-                        
+
                         <template v-slot:item.status="{ item }">
                             <div class="">
-                                <v-chip
-                                    :color="item.selectable.status=='invite' ? 'green' : 'orange'"
-                                    :text="item.selectable.status"
-                                    class="text-uppercase"
-                                    size="small"
-                                    label
-                                ></v-chip>
+                                <v-chip :color="item.selectable.status=='invite' ? 'green' : 'orange'"
+                                    :text="item.selectable.status" class="text-uppercase" size="small" label></v-chip>
                             </div>
                         </template>
-                        
+
                         <template v-slot:item.priority_id="{ item }">
                             <div class="">
-                                <v-chip
-                                    :color="item.selectable.priority.description=='invite' ? 'green' : 'orange'"
-                                    :text="item.selectable.priority.description"
-                                    class="text-uppercase"
-                                    size="small"
-                                    label
-                                ></v-chip>
+                                <v-chip :color="item.selectable.priority.description=='invite' ? 'green' : 'orange'"
+                                    :text="item.selectable.priority.description" class="text-uppercase" size="small"
+                                    label></v-chip>
                             </div>
                         </template>
 

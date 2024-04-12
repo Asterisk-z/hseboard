@@ -41,11 +41,6 @@ const MainRoutes = {
             component: () => import('@/views/Observation/Index.vue'),
         },
         {
-            name: 'Create Observation',
-            path: '/create-observation',
-            component: () => import('@/views/Observation/Create.vue')
-        },
-        {
             name: 'Actions',
             path: '/actions',
             component: () => import('@/views/Action/Index.vue')
@@ -54,6 +49,11 @@ const MainRoutes = {
             name: 'HSE Statistics',
             path: '/hse-statistics',
             component: () => import('@/views/HSEStatistics/Index.vue')
+        },
+        {
+            name: 'Create HSE Statistics',
+            path: '/create-statistics',
+            component: () => import('@/views/HSEStatistics/Create.vue')
         },
         {
             name: 'HSE Investigation',

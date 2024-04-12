@@ -78,6 +78,7 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
+        logger(request()->all());
         $data = $request->validate([
             'firstName' => ['required', 'string'],
             'lastName' => ['required', 'string'],
