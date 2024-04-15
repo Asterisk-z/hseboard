@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('user_id');
             $table->integer('organization_id');
             $table->integer('assignee_id');
+            $table->integer('investigation_id')->nullable();
             $table->string('title');
             $table->text('description');
             $table->integer('priority_id');

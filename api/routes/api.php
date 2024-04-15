@@ -6,6 +6,7 @@ use App\Http\Controllers\ActionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\IndustryController;
+use App\Http\Controllers\InvestigationController;
 use App\Http\Controllers\ObservationController;
 use App\Http\Controllers\ObservationTypeController;
 use App\Http\Controllers\OfferController;
@@ -94,6 +95,25 @@ Route::middleware('auth:api')->group(function ($router) {
         Route::get('/all/{organization_id?}', [StatisticsController::class, 'index']);
         Route::post('/create', [StatisticsController::class, 'store']);
         Route::post('/delete', [StatisticsController::class, 'delete']);
+    });
+
+    Route::prefix('investigations')->group(function ($router) {
+        Route::get('/all/{organization_id?}', [InvestigationController::class, 'index']);
+        Route::post('/start', [InvestigationController::class, 'start']);
+        Route::post('/member/{organization_id?}', [InvestigationController::class, 'setTeamMembers']);
+        Route::post('/remove-member/{organization_id?}', [InvestigationController::class, 'removeMember']);
+        Route::post('/send-questions/{organization_id?}', [InvestigationController::class, 'sendQuestions']);
+        Route::post('/send-invites/{organization_id?}', [InvestigationController::class, 'sendInvites']);
+        Route::post('/recommendation/{organization_id?}', [InvestigationController::class, 'recommendation']);
+        Route::post('/report/{organization_id?}', [InvestigationController::class, 'sendReport']);
+        Route::post('/complete/{organization_id?}', [InvestigationController::class, 'complete']);
+        Route::post('/send-findings/{organization_id?}', [InvestigationController::class, 'sendFindings']);
+        Route::get('/questions/{observation_id?}', [InvestigationController::class, 'getQuestions']);
+        Route::post('/question/{investigation_id?}', [InvestigationController::class, 'setQuestions']);
+        Route::get('/show/{observation_id}', [InvestigationController::class, 'show']);
+
+        Route::post('/create', [InvestigationController::class, 'store']);
+        Route::post('/delete', [InvestigationController::class, 'delete']);
     });
 
 });

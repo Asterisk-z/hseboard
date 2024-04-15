@@ -18,6 +18,7 @@ class Observation extends Model
     ];
 
     protected $with = ['observer', 'observation_type'];
+    protected $appends = ['is_pending_investigation', 'is_being_investigated', 'is_done_investigation'];
 
     public function observer()
     {
@@ -27,5 +28,20 @@ class Observation extends Model
     public function observation_type()
     {
         return $this->hasOne(ObservationType::class, 'id', 'observation_type_id');
+    }
+
+    public function getIsPendingInvestigationAttribute()
+    {
+        return $this->status == self::status['PEI'] ? true : false;
+    }
+
+    public function getIsBeingInvestigatedAttribute()
+    {
+        return $this->status == self::status['BEI'] ? true : false;
+    }
+
+    public function getIsDoneInvestigationAttribute()
+    {
+        return $this->status == self::status['DOI'] ? true : false;
     }
 }

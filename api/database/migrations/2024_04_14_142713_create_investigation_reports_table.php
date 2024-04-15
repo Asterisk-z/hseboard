@@ -13,17 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('investigations', function (Blueprint $table) {
+        Schema::create('investigation_reports', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid')->unique();
             $table->integer('user_id');
-            $table->integer('organization_id');
-            $table->integer('observation_id');
-            $table->timestamp('start_date');
-            $table->timestamp('end_date')->nullable();
-            $table->string('method')->nullable();
-
-            $table->enum('is_del', ['yes', 'no'])->default('no');
+            $table->integer('investigation_id');
+            $table->string('title');
+            $table->text('description');
+            $table->text('location');
+            $table->timestamp('incident_date_time');
+            $table->text('damages');
             $table->timestamps();
         });
     }
@@ -35,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('investigations');
+        Schema::dropIfExists('investigation_reports');
     }
 };
