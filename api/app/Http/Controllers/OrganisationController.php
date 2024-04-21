@@ -43,6 +43,18 @@ class OrganisationController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Organisation  $organisation
+     * @return \Illuminate\Http\Response
+     */
+    public function show_token($org_token)
+    {
+        $organizations = Organisation::where('token', $org_token)->where('uuid', '!=', request('uuid'))->first();
+        return successResponse('Organizations Fetched Successfully', $organizations);
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request

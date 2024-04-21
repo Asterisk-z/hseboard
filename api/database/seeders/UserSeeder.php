@@ -49,7 +49,7 @@ class UserSeeder extends Seeder
                 ]);
 
                 $organization = Organisation::create([
-                    'name' => "BigDream$item",
+                    'name' => "Big Dream$item",
                     'bio' => "Dreams starts when you belief",
                     'address' => 'No road house un the street',
                     'country_id' => 1,

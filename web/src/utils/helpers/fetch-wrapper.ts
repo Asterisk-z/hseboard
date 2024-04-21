@@ -13,7 +13,7 @@ const baseUrl = `${import.meta.env.VITE_API_LINK}`;
 
 function request(method: string) {
     return (url: any, body?: any) => {
-        console.log(body)
+        // console.log(body)
         const apiUrl = `${baseUrl}${url}`
         const requestOptions: any = {
             method,

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Action;
 use App\Models\Investigation;
+use App\Models\MainAudit;
 use App\Models\Observation;
 use App\Models\Offer;
 use App\Models\Organisation;
@@ -11,6 +12,7 @@ use App\Models\Statistics;
 use App\Models\User;
 use App\Observers\ActionObserver;
 use App\Observers\InvestigationObserver;
+use App\Observers\MainAuditObserver;
 use App\Observers\ObservationObserver;
 use App\Observers\OfferObserver;
 use App\Observers\OrganisationObserver;
@@ -45,5 +47,6 @@ class AppServiceProvider extends ServiceProvider
         Action::observe(ActionObserver::class);
         Statistics::observe(StatisticObserver::class);
         Investigation::observe(InvestigationObserver::class);
+        MainAudit::observe(MainAuditObserver::class);
     }
 }

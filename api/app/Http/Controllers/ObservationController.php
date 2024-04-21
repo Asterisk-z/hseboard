@@ -44,9 +44,9 @@ class ObservationController extends Controller
      */
     public function store(Request $request)
     {
-        logger("request");
-        logger($request);
-        logger(request()->all());
+        // logger("request");
+        // logger($request);
+        // logger(request()->all());
         $data = $request->validate([
             'organization_id' => ['nullable', 'string'],
             'observation_type' => ['required'],

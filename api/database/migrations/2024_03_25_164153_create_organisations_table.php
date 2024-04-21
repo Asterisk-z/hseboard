@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid')->unique();
             $table->string('name')->unique();
+            $table->string('token')->unique();
             $table->string('bio');
             $table->string('address');
             $table->integer('country_id');

@@ -130,12 +130,12 @@ const headers = ref([
     {
         key: 'start_date',
         title: 'Start Date',
-        value: (item: any) => `${item.start_date} `,
+        value: (item: any) => `${moment(item.start_date).format('MMMM Do YYYY')} `,
     },
     {
         key: 'end_date',
         title: 'End Date',
-        value: (item: any) => `${item.end_date}`
+        value: (item: any) => `${moment(item.end_date).format('MMMM Do YYYY')}`
     },
     {
         key: 'actual_man_hour',

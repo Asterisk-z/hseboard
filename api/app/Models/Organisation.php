@@ -54,6 +54,27 @@ class Organisation extends Model
 
     public static function owner($model)
     {
-        return User::where('id', $model->id)->first();
+        return User::where('id', $model->user_id)->first();
+    }
+
+    public function getToken()
+    {
+        return $this->token ? $this->token : $this->createToken();
+    }
+
+    private function createToken(): string
+    {
+        preg_match_all('/(?<=\s|^)\w/iu', $this->name, $matches);
+        $words = implode('', $matches[0]);
+        $result = mb_strtoupper($words);
+        $number = strtoupper(generateRandomString(10));
+
+        $this->token = 'HSE' . $result . '' . $number;
+        if (Organisation::where('token', $this->token)->exists()) {
+            $this->createToken();
+        }
+
+        return $this->token;
+
     }
 }

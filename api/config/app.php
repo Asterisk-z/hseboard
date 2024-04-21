@@ -56,6 +56,7 @@ return [
 
     'web_url' => env('WEB_URL', 'http://localhost'),
     'url' => env('APP_URL', 'http://localhost'),
+    'storage_link' => '/storage/app/public',
 
     'asset_url' => env('ASSET_URL'),
 

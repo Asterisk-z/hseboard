@@ -61,9 +61,34 @@ const MainRoutes = {
             component: () => import('@/views/HSEInvestigation/Index.vue')
         },
         {
+            name: 'HSE investigating',
+            path: '/hse-investigating/:observation_id',
+            component: () => import('@/views/HSEInvestigation/Ongoing.vue')
+        },
+        {
             name: 'HSE Audit',
             path: '/hse-audit',
             component: () => import('@/views/HSEAudit/Index.vue')
+        },
+        {
+            name: 'HSE Audit Document',
+            path: '/hse-audit-documents',
+            component: () => import('@/views/HSEAudit/Document.vue')
+        },
+        {
+            name: 'HSE Audit Template',
+            path: '/hse-audit-templates',
+            component: () => import('@/views/HSEAudit/Template.vue')
+        },
+        {
+            name: ' Create HSE Audit ',
+            path: '/create-hse-audit-report',
+            component: () => import('@/views/HSEAudit/Create.vue')
+        },
+        {
+            name: ' Ongoing HSE Audit ',
+            path: '/ongoing-hse-audit-report/:main_audit_id',
+            component: () => import('@/views/HSEAudit/Ongoing.vue')
         },
         {
             name: 'OSHA Compliance',

@@ -15,6 +15,7 @@ class OrganisationObserver
     public function creating(Organisation $organisation)
     {
         $organisation->uuid = createUuid($organisation);
+        $organisation->token = $organisation->getToken();
     }
 
     /**

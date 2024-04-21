@@ -11,6 +11,7 @@ export const useOrganizationStore = defineStore({
         list: localStorage.getItem('loggerOrg'),
         active: localStorage.getItem('loggerActiveOrg'),
         organizations: null as null || [],
+        organization: null as null || [],
     }),
     getters: {
         loggedUserOrgs: (state) => {
@@ -28,6 +29,17 @@ export const useOrganizationStore = defineStore({
                     console.log(error)
                 });
             this.organizations = data;
+        },
+        async getTokenOrganizations(org_token: string) {
+
+            const data = await fetchWrapper
+                .get(`organizations/org_token/${org_token}/${this.active}`)
+                .then((response: any) => {
+                    return response.data
+                }).catch((error: any) => {
+                    console.log(error)
+                });
+           return data;
         },
         getActiveOrg() {
             try {

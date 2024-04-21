@@ -3,12 +3,13 @@ import { ref, onMounted, computed, nextTick } from 'vue';
 import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
 import { VDataTable } from 'vuetify/labs/VDataTable'
 import { useOrganizationStore } from '@/stores/organizationStore';
-import { useTeamMemberStore } from '@/stores/teamMemberStore';
+import { useInvestigationStore } from '@/stores/investigationStore';
 import { useAuthStore } from '@/stores/auth';
 import { useOpenLinksStore } from '@/stores/openLinks';
 import { useObservationStore } from '@/stores/observationStore';
 import moment from 'moment'
 import { router } from '@/router';
+import Swal from 'sweetalert2'
 
 
 const page = ref({ title: 'Observations' });
@@ -30,6 +31,7 @@ const authStore = useAuthStore();
 const organizationStore = useOrganizationStore();
 const openLinks = useOpenLinksStore();
 const observationStore = useObservationStore();
+const investigationStore = useInvestigationStore()
 
 onMounted(() => {
     observationStore.getObservations();
@@ -364,6 +366,70 @@ const selectImage = (image: any) => {
     }
 
 }
+const startInvestigation = async (item: any) => {
+    // e.preventDefault();
+
+    try {
+        setLoading(true)
+        setViewDialog(false)
+
+        let objectValues = {
+            "organization_id": getActiveOrg.value?.uuid,
+            "observation_id": item?.uuid,
+        }
+        Swal.fire({
+            title: 'Info!',
+            text: 'Do you want to start investigation?',
+            icon: 'info',
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+            showCancelButton: true,
+            allowOutsideClick: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                
+                startInvestigationAction(objectValues)
+            }
+        });
+
+        setLoading(false)
+        setEditDialog(false)
+
+
+
+    } catch (error) {
+        console.log(error)
+        setLoading(false)
+        setEditDialog(false)
+    }
+
+}
+const startInvestigationAction = async (item: any) => {
+    // e.preventDefault();
+
+    try {
+
+        const resp = await investigationStore.startInvestigation(item)
+            .catch((error: any) => {
+                throw error
+            })
+            .then((resp: any) => {
+                return resp
+            });
+
+        if (resp?.message == 'success') {
+            
+            router.push(`/hse-investigating/${item.observation_id}`)
+        }
+
+
+
+
+    } catch (error) {
+        
+    }
+
+}
 
 </script>
 
@@ -651,9 +717,9 @@ const selectImage = (image: any) => {
                                                 <v-list lines="one" v-if="selectedItem">
 
                                                     <v-list-item
-                                                        :title="`Observation Type : ${selectedItem?.observation_type.description}`"></v-list-item>
+                                                        :title="`Observation Type : ${selectedItem?.observation_type?.description}`"></v-list-item>
                                                     <v-list-item
-                                                        :title="`Observer : ${selectedItem?.observer.firstName} ${selectedItem?.observer?.lastName}`"></v-list-item>
+                                                        :title="`Observer : ${selectedItem?.observer?.firstName} ${selectedItem?.observer?.lastName}`"></v-list-item>
                                                     <v-list-item
                                                         :title="`Description : ${selectedItem?.description}`"></v-list-item>
                                                     <v-list-item
@@ -670,8 +736,10 @@ const selectImage = (image: any) => {
                                                 </v-list>
                                             </VCol>
 
-                                            <VCol cols="12" lg="12" class="text-right">
-                                                <v-btn color="primary" class="mr-3" @click="setViewDialog(false)">Start
+                                            <VCol cols="12" lg="12" class="text-right"
+                                                v-if="selectedItem?.is_pending_investigation">
+                                                <v-btn color="primary" class="mr-3"
+                                                    @click="startInvestigation(selectedItem)">Start
                                                     Investigation</v-btn>
                                                 <!-- <v-btn color="primary" class="mr-3" @click="setViewDialog(false)">Verify</v-btn> -->
 

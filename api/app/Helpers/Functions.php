@@ -3,6 +3,7 @@
 use App\Helpers\ResponseStatusCodes;
 use App\Models\ActionToken;
 use App\Models\Audit;
+use App\Models\Media;
 use App\Models\Organisation;
 use App\Models\User;
 use Illuminate\Support\Str;
@@ -198,7 +199,6 @@ if (!function_exists('checkOrganizationOwner')) {
 
     }
 }
-
 if (!function_exists('findUser')) {
     function findUser($user_uuid)
     {
@@ -210,4 +210,61 @@ if (!function_exists('findUser')) {
         return $user;
 
     }
+}
+if (!function_exists('generateRandomString')) {
+    function generateRandomString($length = 25)
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
+
+}
+
+if (!function_exists('storeMedia')) {
+    function storeMedia($file, $model, $id, $path)
+    {
+
+        // $file = $file;
+
+        // $file->store('media/' . auth()->user()->id . '/' . now()->format('Y') . '/' . now()->format('m'), 'public');
+
+        $file_name = $file->storePublicly($path, 'public');
+
+        $media = Media::create([
+            'file_name' => $file_name,
+            'mime_type' => $file->getMimeType(),
+            'file_size' => $file->getSize(),
+            'user_id' => auth()->user()->id,
+            'model_id' => $id,
+            'model_type' => $model,
+        ]);
+
+        return true;
+
+    }
+
+}
+
+if (!function_exists('deleteMedia')) {
+    function deleteMedia($length = 25)
+    {
+//Delete the file from storage
+        Storage::disk('public')
+            ->delete('media/' . $media->user_id . '/' . now()->format('Y') . '/' . now()->format('m') . '/' . $media->filename);
+
+//Delete record from DB
+        $media->delete();
+
+//Return Json Response
+        return response()->json([
+            'message' => 'media deleted',
+        ]);
+
+    }
+
 }

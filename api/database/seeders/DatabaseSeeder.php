@@ -30,5 +30,9 @@ class DatabaseSeeder extends Seeder
         $this->call(CountrySeeder::class);
         $this->call(IndustrySeeder::class);
         $this->call(InvestigationQuestion::class);
+        $this->call(AuditTypeSeeder::class);
+        $this->call(AuditDocumentSeeder::class);
+        $this->call(AuditTemplateQuestionSeed::class);
+        $this->call(AuditOptionSeed::class);
     }
 }

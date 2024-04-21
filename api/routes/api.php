@@ -3,10 +3,15 @@
 use App\Http\Controllers\AccountRoleController;
 use App\Http\Controllers\AccountTypeController;
 use App\Http\Controllers\ActionController;
+use App\Http\Controllers\AuditDocumentController;
+use App\Http\Controllers\AuditOptionController;
+use App\Http\Controllers\AuditTemplateController;
+use App\Http\Controllers\AuditTypeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\IndustryController;
 use App\Http\Controllers\InvestigationController;
+use App\Http\Controllers\MainAuditController;
 use App\Http\Controllers\ObservationController;
 use App\Http\Controllers\ObservationTypeController;
 use App\Http\Controllers\OfferController;
@@ -65,6 +70,7 @@ Route::middleware('auth:api')->group(function ($router) {
     Route::prefix('organizations')->group(function ($router) {
         Route::get('/', [OrganisationController::class, 'index']);
         Route::get('/{organization_id}', [OrganisationController::class, 'show']);
+        Route::get('/org_token/{org_token}/{uuid}', [OrganisationController::class, 'show_token']);
         Route::post('/remove-user', [OrganisationController::class, 'removeUser']);
     });
 
@@ -102,6 +108,65 @@ Route::middleware('auth:api')->group(function ($router) {
         Route::post('/start', [InvestigationController::class, 'start']);
         Route::post('/member/{organization_id?}', [InvestigationController::class, 'setTeamMembers']);
         Route::post('/remove-member/{organization_id?}', [InvestigationController::class, 'removeMember']);
+        Route::post('/send-questions/{organization_id?}', [InvestigationController::class, 'sendQuestions']);
+        Route::post('/send-invites/{organization_id?}', [InvestigationController::class, 'sendInvites']);
+        Route::post('/recommendation/{organization_id?}', [InvestigationController::class, 'recommendation']);
+        Route::post('/report/{organization_id?}', [InvestigationController::class, 'sendReport']);
+        Route::post('/complete/{organization_id?}', [InvestigationController::class, 'complete']);
+        Route::post('/send-findings/{organization_id?}', [InvestigationController::class, 'sendFindings']);
+        Route::get('/questions/{observation_id?}', [InvestigationController::class, 'getQuestions']);
+        Route::post('/question/{investigation_id?}', [InvestigationController::class, 'setQuestions']);
+        Route::get('/show/{observation_id}', [InvestigationController::class, 'show']);
+
+        Route::post('/create', [InvestigationController::class, 'store']);
+        Route::post('/delete', [InvestigationController::class, 'delete']);
+    });
+
+    Route::prefix('audit-documents')->group(function ($router) {
+        Route::get('/all/{organization_id?}', [AuditDocumentController::class, 'index']);
+        Route::post('/upload', [AuditDocumentController::class, 'store']);
+        Route::post('/delete', [AuditDocumentController::class, 'delete']);
+    });
+    Route::prefix('audit-templates')->group(function ($router) {
+        Route::get('/all/{organization_id?}/{type_id?}', [AuditTemplateController::class, 'index']);
+        Route::get('/single/{organization_id?}/{type_id?}', [AuditTemplateController::class, 'single']);
+        Route::post('/upload', [AuditTemplateController::class, 'store']);
+        Route::post('/delete', [AuditTemplateController::class, 'delete']);
+    });
+
+    Route::prefix('audit-types')->group(function ($router) {
+        Route::get('/all', [AuditTypeController::class, 'index']);
+    });
+
+    Route::prefix('audit-options')->group(function ($router) {
+        Route::get('/all', [AuditOptionController::class, 'index']);
+    });
+
+    Route::prefix('main-audit')->group(function ($router) {
+        Route::get('/all/{organization_id?}', [MainAuditController::class, 'index']);
+        Route::get('/ongoing/{main_audit_id}', [MainAuditController::class, 'ongoing']);
+        Route::post('/start', [MainAuditController::class, 'store']);
+        Route::get('/auditors/{main_audit_id}', [MainAuditController::class, 'auditors']);
+        Route::get('/auditees/{main_audit_id}', [MainAuditController::class, 'auditees']);
+        Route::post('/action/{organization_id?}', [MainAuditController::class, 'actionAudit']);
+        Route::post('/set-auditors/{organization_id?}', [MainAuditController::class, 'setAuditors']);
+        Route::post('/set-auditees/{organization_id?}', [MainAuditController::class, 'setAuditees']);
+        Route::post('/remove-member/{organization_id?}', [MainAuditController::class, 'removeMember']);
+        Route::post('/request-document/{organization_id?}', [MainAuditController::class, 'requestDocument']);
+        Route::post('/send-document/{organization_id?}', [MainAuditController::class, 'sendDocument']);
+        Route::post('/revert-document/{organization_id?}', [MainAuditController::class, 'actionRevertDocument']);
+        Route::post('/remove-document/{organization_id?}', [MainAuditController::class, 'actionRemoveDocument']);
+        Route::post('/action-document/{organization_id?}', [MainAuditController::class, 'actionAuditDocument']);
+        Route::post('/auditor-time/{organization_id?}', [MainAuditController::class, 'actionAuditorTime']);
+        Route::post('/auditee-time/{organization_id?}', [MainAuditController::class, 'actionAuditeeTime']);
+        Route::post('/accept-time/{organization_id?}', [MainAuditController::class, 'actionAcceptedTime']);
+        Route::post('/send-response/{organization_id?}', [MainAuditController::class, 'actionSendResponse']);
+        Route::post('/send-comment/{organization_id?}', [MainAuditController::class, 'actionSendComment']);
+        Route::post('/send-finding/{organization_id?}', [MainAuditController::class, 'sendAuditFinding']);
+        Route::post('/send-recommendation/{organization_id?}', [MainAuditController::class, 'sendAuditRecommendation']);
+
+        // Route::post('/accept-time/{organization_id?}', [MainAuditController::class, 'actionAuditDocument']);
+
         Route::post('/send-questions/{organization_id?}', [InvestigationController::class, 'sendQuestions']);
         Route::post('/send-invites/{organization_id?}', [InvestigationController::class, 'sendInvites']);
         Route::post('/recommendation/{organization_id?}', [InvestigationController::class, 'recommendation']);
