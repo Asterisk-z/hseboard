@@ -261,37 +261,21 @@ const goToRoute = (url: string) => {
                                                 </v-list>
                                             </VCol>
 
-                                            <VCol cols="12" lg="12" class="text-right"
-                                                v-if="!subViewDialog && isAssignee">
-                                                <span v-if="selectedItem?.is_pending && selectedItem?.can_accept">
-                                                    <v-btn color="primary" class="mr-3"
-                                                        @click="setSubViewDialog(true, 'accepted')">Accept
-                                                        Action</v-btn>
-                                                    <v-btn color="error" class="mr-3"
-                                                        @click="setSubViewDialog(true, 'rejected')">Reject
-                                                        Action</v-btn>
-                                                </span>
-                                                <span
-                                                    v-if="selectedItem?.is_accepted && selectedItem?.can_start && !selectedItem?.is_ended">
-                                                    <v-btn color="primary" class="mr-3"
-                                                        @click="setSubViewDialog(true, 'ongoing')">Start Action</v-btn>
-                                                    <v-btn color="error" class="mr-3"
-                                                        @click="setSubViewDialog(true, 'canceled')">Cancel
-                                                        Action</v-btn>
-                                                </span>
-                                                <span v-if="selectedItem?.is_ongoing">
-                                                    <v-btn color="success" class="mr-3"
-                                                        @click="setSubViewDialog(true, 'completed')">Action
-                                                        Completed</v-btn>
-                                                </span>
-
-
-                                            </VCol>
                                             <VCol cols="12" lg="12"  class="text-right">
                                                 
-                                                <v-btn color="primary" class="mr-3"
+                                                <v-btn color="primary" class="mr-3" v-if="selectedItem?.is_ongoing || selectedItem?.is_pending || selectedItem?.is_accepted"
                                                     @click="goToRoute(`/ongoing-hse-audit-report/${selectedItem?.uuid}`)">Continue
                                                     Audit</v-btn>
+                                                <template  v-if="selectedItem?.is_completed">
+                                                    <v-btn color="primary" class="mr-3" 
+                                                        @click="goToRoute(`/view-hse-audit-report/${selectedItem?.uuid}`)">View
+                                                        Audit</v-btn>
+                                                    <v-btn color="primary" class="mr-3" 
+                                                        @click="goToRoute(`/full-report-hse-audit-report/${selectedItem?.uuid}`)">Full HSE Audit Report</v-btn>
+                                                    <v-btn color="primary" class="mr-3" 
+                                                        @click="goToRoute(`/report-hse-audit-report/${selectedItem?.uuid}`)">HSE Audit Report</v-btn>
+                                                </template>
+                                                
                                             </VCol>
                                             <VCol cols="12" lg="12" class="text-right" v-if="!subViewDialog">
 

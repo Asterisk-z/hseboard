@@ -142,7 +142,7 @@ class MainAuditController extends Controller
                 'audit_scope' => $data['audit_scope'],
                 'audit_title' => $data['audit_title'],
                 'start_date' => now(),
-                'status' => $organization->id == $recipient_organization->id ? 'accepted' : 'ongoing',
+                'status' => $organization->id == $recipient_organization->id ? 'accepted' : 'pending',
             ]);
 
             logAction(auth()->user()->email, 'You started an Audit ', 'Start Audit', $request->ip());
@@ -174,6 +174,34 @@ class MainAuditController extends Controller
             }
 
             return successResponse('Audit Fetched Successfully', $main_audit);
+
+        } catch (Exception $error) {
+
+            return successResponse('Audit Fetched Successfully', []);
+
+        }
+
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function completed()
+    {
+        try {
+
+            $stats = [];
+
+            if (!$main_audit = MainAudit::where('uuid', request('main_audit_id'))->where('end_date', '!=', null)->where('status', 'completed')->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Audit");
+            }
+
+            $stats['main_audit'] = $main_audit;
+
+            return successResponse('Audit Fetched Successfully', $stats);
 
         } catch (Exception $error) {
 
@@ -1081,6 +1109,52 @@ class MainAuditController extends Controller
             // SENDMAIl
 
             return successResponse('Recommendations Created Successfully', []);
+
+        } catch (Exception $e) {
+            logger($e);
+            return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Something Went Wrong");
+
+        }
+
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function complete(Request $request)
+    {
+        $data = $request->validate([
+            'organization_id' => ['required', 'string'],
+            'main_audit_id' => ['required', 'string'],
+        ]);
+
+        try {
+
+            if (!$main_audit = MainAudit::where('uuid', $data['main_audit_id'])->where('end_date', null)->where('status', 'ongoing')->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Audit");
+            }
+
+            if (!$organization = Organisation::where('uuid', $data['organization_id'])->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Organization");
+            }
+
+            if ($organization->id != $main_audit->organization_id || $main_audit->lead_auditor->user_id != auth()->user()->id) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unauthorized Action");
+            }
+
+            if (!$main_audit->is_completed()) {
+
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "You can't close audit until all steps are completed");
+            }
+
+            $main_audit->end_date = now();
+            $main_audit->status = 'completed';
+            $main_audit->save();
+
+            // logAction(auth()->user()->email, 'You started an investigation ', 'Start Investigation', $request->ip());
+
+            return successResponse('Audit Closed Successfully', []);
 
         } catch (Exception $e) {
             logger($e);

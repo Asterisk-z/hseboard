@@ -91,6 +91,21 @@ const MainRoutes = {
             component: () => import('@/views/HSEAudit/Ongoing.vue')
         },
         {
+            name: ' View HSE Audit ',
+            path: '/view-hse-audit-report/:main_audit_id',
+            component: () => import('@/views/HSEAudit/View.vue')
+        },
+        {
+            name: ' Report HSE Audit ',
+            path: '/report-hse-audit-report/:main_audit_id',
+            component: () => import('@/views/HSEAudit/Report.vue')
+        },
+        {
+            name: 'Full Report HSE Audit ',
+            path: '/full-report-hse-audit-report/:main_audit_id',
+            component: () => import('@/views/HSEAudit/FullReport.vue')
+        },
+        {
             name: 'OSHA Compliance',
             path: '/osha-compliance',
             component: () => import('@/views/OSHACompliance/Index.vue')

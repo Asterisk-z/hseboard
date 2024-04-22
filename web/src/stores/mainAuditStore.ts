@@ -46,6 +46,7 @@ export const useMainAuditStore = defineStore({
         // initialize state from local storage to enable user to stay logged in
         // @ts-ignore
         mainAudits: null as null || [],
+        completedMainAudit: null as null || [],
         mainAudit: null as null || [],
         auditMembers: null as null || [],
         auditeeMembers: null as null || [],
@@ -82,6 +83,17 @@ export const useMainAuditStore = defineStore({
                     console.log(error)
                 });
             this.mainAudit = data;
+        },
+        async getCompletedMainAudit(item: string) {
+            // this.mainAudit = [];
+            const data = await fetchWrapper
+                .get(`main-audit/completed/${item}`)
+                .then((response: any) => {
+                    return response.data
+                }).catch((error: any) => {
+                    console.log(error)
+                });
+            this.completedMainAudit = data;
         },
         async getMainAudits() {
 
@@ -394,7 +406,7 @@ export const useMainAuditStore = defineStore({
         async completeAudit(values: any) {
             try {
                 const organizationStore = useOrganizationStore();
-                const data = await fetchWrapper.post(`main-audit/close-audit/${organizationStore.active}`, values)
+                const data = await fetchWrapper.post(`main-audit/complete/${organizationStore.active}`, values)
                     .catch((error: any) => {
                         throw error;
                     }).then((response: any) => {

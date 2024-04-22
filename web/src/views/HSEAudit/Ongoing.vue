@@ -18,12 +18,12 @@ const breadcrumbs = ref([
     {
         text: 'Dashboard',
         disabled: false,
-        href: 'dashboard'
+        href: '/dashboard'
     },
     {
         text: 'HSE Audit',
         disabled: false,
-        href: 'hse-audit'
+        href: '/hse-audit'
     },
     {
         text: 'Ongoing',
@@ -64,6 +64,19 @@ watch(
     if(value) {  
         mainAuditStore.getAuditMembers(route.params.main_audit_id)
     }
+    
+      if (getOngoingMainAudit.value.is_pending) {
+        Swal.fire({
+            title: 'Info!',
+            text: 'Auditing Organization is yet to accept Audit?',
+            icon: 'info',
+            confirmButtonText: 'Ok',
+            showCancelButton: false,
+            allowOutsideClick: false,
+        }).then((result) => {
+            
+        });
+    }
   }
 )
 watch(
@@ -71,6 +84,39 @@ watch(
   (value) => {
       if (value) {
         mainAuditStore.getAuditeeMembers(route.params.main_audit_id)
+    }
+      if (getOngoingMainAudit.value.is_pending) {
+        Swal.fire({
+            title: 'Info!',
+            text: `${getOngoingMainAudit.value?.organization?.name} sent a request to audit your organization, do you accept or reject`,
+            icon: 'info',
+            confirmButtonText: 'Accept',
+            cancelButtonText: 'Reject',
+            showCancelButton: true,
+            allowOutsideClick: false,
+        }).then((result) => {
+            
+                
+        
+                let objectValues = {
+                    "organization_id": getActiveOrg.value?.uuid,
+                    "main_audit_id": getOngoingMainAudit.value?.uuid,
+                    "action": result.isConfirmed ? 'accepted' : 'rejected',
+                    "reason":  'reason',
+                }
+                        
+                mainAuditStore.actionAudit(objectValues)
+                    .catch((error: any) => {
+                        throw error
+                    })
+                    .then((resp: any) => {
+                         mainAuditStore.getOngoingMainAudit(route.params.main_audit_id);
+                        return resp
+                    });
+
+
+
+        });
     }
   }
 )
@@ -1339,7 +1385,7 @@ const sendRecommendation = async (e: any) => {
 }
 
 
-const completeInvestigation = async (member: any) => {
+const completeAudit = async (member: any) => {
 
     try {
         setLoading(true)
@@ -1367,8 +1413,11 @@ const completeInvestigation = async (member: any) => {
                     })
                     .then((resp: any) => {
                         //  investigationStore.getInvestigation(route.params.observation_id);
-                        // router.push(`/hse-investigation`)
-                        return resp
+                        // 
+                        if(resp.message == 'success') {
+                            router.push(`/hse-audit`)
+                        }
+                        // return resp
                     });
 
 
@@ -1463,7 +1512,7 @@ const blankFn = () => {
         <BaseBreadcrumb :title="page.title" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
 
 
-        <v-row v-if="getOngoingMainAudit">
+        <v-row v-if="getOngoingMainAudit?.is_accepted || getOngoingMainAudit?.is_ongoing ">
             <v-col cols="12" md="11">
 
                 <UiParentCard variant="outlined">
@@ -1482,8 +1531,7 @@ const blankFn = () => {
                                 </div>
                             </v-tab>
 
-                            <v-tab value="tab-2" rounded="md" class="mb-3 mx-2 text-left" height="70"
-                                :disabled="!isLoggedInUserIsLeadAuditor || !isLoggedInUserIsLeadRepresentative">
+                            <v-tab value="tab-2" rounded="md" class="mb-3 mx-2 text-left" height="70">
                                 <FileDescriptionIcon stroke-width="1.5" width="20" class="v-icon--start" />
                                 <div>
                                     <div>Audit Documents</div>
@@ -1494,8 +1542,7 @@ const blankFn = () => {
                                 </div>
                             </v-tab>
 
-                            <v-tab value="tab-3" rounded="md" class="mb-3 mx-2 text-left" height="70"
-                                :disabled="!isLoggedInUserIsLeadAuditor || !isLoggedInUserIsLeadRepresentative">
+                            <v-tab value="tab-3" rounded="md" class="mb-3 mx-2 text-left" height="70">
                                 <CreditCardIcon stroke-width="1.5" width="20" class="v-icon--start" />
                                 <div>
                                     <div>Send Schedule</div>
@@ -1505,8 +1552,7 @@ const blankFn = () => {
                                     </span>
                                 </div>
                             </v-tab>
-                            <v-tab value="tab-4" rounded="md" class="mb-3 mx-2 text-left" height="70"
-                                :disabled="!isLoggedInUserIsLeadAuditor || !isLoggedInUserIsLeadRepresentative">
+                            <v-tab value="tab-4" rounded="md" class="mb-3 mx-2 text-left" height="70">
                                 <CreditCardIcon stroke-width="1.5" width="20" class="v-icon--start" />
                                 <div>
                                     <div>Onsite Audit</div>
@@ -1516,8 +1562,7 @@ const blankFn = () => {
                                     </span>
                                 </div>
                             </v-tab>
-                            <v-tab value="tab-5" rounded="md" class="mb-3 mx-2 text-left" height="70"
-                                :disabled="!isLoggedInUserIsLeadAuditor || !isLoggedInUserIsLeadRepresentative">
+                            <v-tab value="tab-5" rounded="md" class="mb-3 mx-2 text-left" height="70">
                                 <CreditCardIcon stroke-width="1.5" width="20" class="v-icon--start" />
                                 <div>
                                     <div>Audit Findings </div>
@@ -2066,7 +2111,8 @@ const blankFn = () => {
                                                                     @click="setSendDocumentDialog(true, document?.id)"  v-if="isLoggedInUserIsLeadRepresentative && (document?.is_pending || document?.is_rejected)">
                                                                     Upload Files
                                                                 </v-btn>
-                                                                <v-btn color='primary' size='small' class="mx-2">
+                                                                <v-btn color='primary' size='small' class="mx-2" v-if="document?.recipient_comment || document?.user_comment">
+
                                                                     Comment
                                                                 </v-btn>
                                                             </td>
@@ -2301,7 +2347,7 @@ const blankFn = () => {
 
 
                                                                                 <v-card-text>
-                                                                                    <div class="d-flex justify-space-between">
+                                                                                    <div class="d-flex justify-space-between"  v-if="isLoggedInUserIsLeadAuditor">
                                                                                         <h3 class="text-h3">Send Comment </h3>
                                                                                         <v-btn icon @click="setSendCommentDialog(false)"
                                                                                             size="small" flat>
@@ -2319,7 +2365,7 @@ const blankFn = () => {
 
                                                                                             <VCol cols="12" md="12">
                                                                                                 <v-label class="text-subtitle-1 font-weight-medium pb-1">Comments</v-label>
-                                                                                                <VTextarea variant="outlined" outlined name="Comment"
+                                                                                                <VTextarea variant="outlined" outlined name="Comment" :readonly="!isLoggedInUserIsLeadAuditor"
                                                                                                     label="Comment" v-model="stepFourFields.comments"
                                                                                                     :rules="stepFourFieldRules.comments" required
                                                                                                     :color="stepFourFields.comments.length > 10 ? 'success' : 'primary'">
@@ -2331,11 +2377,11 @@ const blankFn = () => {
                                                                                             <VCol cols="12" lg="12" class="text-right">
                                                                                                 <v-btn color="error"
                                                                                                     @click="setSendCommentDialog(false)"
-                                                                                                    variant="text">Cancel</v-btn>
+                                                                                                    variant="text">Close</v-btn>
 
                                                                                                 <v-btn color="primary" type="submit"
                                                                                                     :loading="loading" :disabled="!valid"
-                                                                                                    @click="auditSendComment">
+                                                                                                    @click="auditSendComment" v-if="isLoggedInUserIsLeadAuditor">
                                                                                                     <span v-if="!loading">
                                                                                                         Send
                                                                                                     </span>
@@ -2385,45 +2431,68 @@ const blankFn = () => {
                                                                                     <!-- <td>{{ ++index }}</td> -->
                                                                                     <td>{{ `${question?.question}` }}</td>
                                                                                     <td>
+                                                                                        <!-- isAuditingOrg -->
+                                                                <!-- isAuditeeOrg -->
+                                                                                        <template  v-if="question?.answer ? question?.answer == 'yes' : question?.response?.answer == 'yes'">
+                                                                                            <v-btn  color='success' size='small' flat >
+                                                                                                selected
+                                                                                            </v-btn>
+                                                                                        </template>
+                                                                                        <template v-else>
+                                                                                            <v-btn  color='primary' size='small' flat  @click="auditSendResponse(question?.id, 'yes', title_question.id)" v-if="isLoggedInUserIsLeadAuditor" >
+                                                                                                select
+                                                                                            </v-btn>
+                                                                                        </template>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <template  v-if="question?.answer ? question?.answer == 'nc_minor' : question?.response?.answer == 'nc_minor'">
+                                                                                            <v-btn  color='success' size='small' flat >
+                                                                                                selected
+                                                                                            </v-btn>
+                                                                                        </template>
+                                                                                        <template v-else>
+                                                                                            <v-btn  color='primary' size='small' flat  @click="auditSendResponse(question?.id, 'nc_minor', title_question.id)" v-if="isLoggedInUserIsLeadAuditor" >
+                                                                                                select
+                                                                                            </v-btn>
+                                                                                        </template>
+                                                                                                         
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <template  v-if="question?.answer ? question?.answer == 'nc_major' : question?.response?.answer == 'nc_major'">
+                                                                                            <v-btn  color='success' size='small' flat >
+                                                                                                selected
+                                                                                            </v-btn>
+                                                                                        </template>
+                                                                                        <template v-else>
+                                                                                            <v-btn  color='primary' size='small' flat  @click="auditSendResponse(question?.id, 'nc_major', title_question.id)" v-if="isLoggedInUserIsLeadAuditor" >
+                                                                                                select
+                                                                                            </v-btn>
+                                                                                        </template>
                                                                                         
-                                                                                        <v-btn  v-if="question?.answer ? question?.answer == 'yes' : question?.response?.answer == 'yes'" color='success' size='small' flat >
-                                                                                            selected
-                                                                                        </v-btn>
-                                                                                        <v-btn  v-else color='primary' size='small' flat  @click="auditSendResponse(question?.id, 'yes', title_question.id)" >
-                                                                                            select
-                                                                                        </v-btn>
                                                                                     </td>
                                                                                     <td>
-                                                                                                            
-                                                                                        <v-btn  v-if="question?.answer ? question?.answer == 'nc_minor' : question?.response?.answer == 'nc_minor'" color='success' size='small' flat >
-                                                                                            selected
-                                                                                        </v-btn>
-                                                                                        <v-btn  v-else color='primary' size='small' flat  @click="auditSendResponse(question?.id, 'nc_minor', title_question.id)" >
-                                                                                            select
-                                                                                        </v-btn>
+                                                                                        <template  v-if="question?.answer ? question?.answer == 'na' : question?.response?.answer == 'na'">
+                                                                                            <v-btn  color='success' size='small' flat >
+                                                                                                selected
+                                                                                            </v-btn>
+                                                                                        </template>
+                                                                                        <template v-else>
+                                                                                            <v-btn  color='primary' size='small' flat  @click="auditSendResponse(question?.id, 'na', title_question.id)" v-if="isLoggedInUserIsLeadAuditor" >
+                                                                                                select
+                                                                                            </v-btn>
+                                                                                        </template>
                                                                                     </td>
                                                                                     <td>
-                                                                                        
-                                                                                        <v-btn  v-if="question?.answer ? question?.answer == 'nc_major' : question?.response?.answer == 'nc_major'" color='success' size='small' flat >
-                                                                                            selected
-                                                                                        </v-btn>
-                                                                                        <v-btn  v-else color='primary' size='small' flat  @click="auditSendResponse(question?.id, 'nc_major', title_question.id)" >
-                                                                                            select
-                                                                                        </v-btn>
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        <v-btn  v-if="question?.answer ? question?.answer == 'na' : question?.response?.answer == 'na'" color='success' size='small' flat >
-                                                                                            selected
-                                                                                        </v-btn>
-                                                                                        <v-btn  v-else color='primary' size='small' flat  @click="auditSendResponse(question?.id, 'na', title_question.id)" >
-                                                                                            select
-                                                                                        </v-btn>
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        
-                                                                                        <v-btn color='primary' size='small' @click="setSendCommentDialog(true, question?.id, title_question.id, question)" flat >
-                                                                                            {{ question?.comment || question?.response?.comment ? 'Edit Comment'  : "Add Comment" }}
-                                                                                        </v-btn>
+                                                                                        <template  v-if="isLoggedInUserIsLeadAuditor">
+                                                                                            <v-btn color='primary' size='small' @click="setSendCommentDialog(true, question?.id, title_question.id, question)" flat >
+                                                                                                {{ question?.comment || question?.response?.comment ? 'Edit Comment'  : "Add Comment" }}
+                                                                                            </v-btn>
+                                                                                        </template>
+                                                                                        <template v-else>
+                                                                                            <v-btn color='primary' size='small' @click="setSendCommentDialog(true, question?.id, title_question.id, question)" flat  v-if="question?.response?.comment">
+                                                                                                {{  "View Comment" }}
+                                                                                            </v-btn>
+                                                                                        </template>
                                                                                     </td>
                                                                                 </tr>
                                                                             <!-- </template> -->
@@ -2442,7 +2511,7 @@ const blankFn = () => {
                                                                 <v-btn color="primary" variant="tonal" @click="changeQuestionTab(`questionTab-${index-1}`)" v-if="index > 0">Previous Questions</v-btn>
                                                             </v-col>
                                                             <v-col cols="12" sm="6" class="text-sm-right">
-                                                                <v-btn color="primary"  @click="changeQuestionTab(`questionTab-${index+1}`)"  >Next Questions</v-btn>
+                                                                <v-btn color="primary"  @click="changeQuestionTab(`questionTab-${index+1}`)"   v-if="index < (getQuestions.length - 1)">Next Questions</v-btn>
                                                             </v-col>
                                                         </v-row>
                                                     </v-window-item>    
@@ -2719,7 +2788,7 @@ const blankFn = () => {
                                     </v-col>
                                     <v-col cols="12" sm="6" class="text-sm-right">
                                         <v-btn color="primary" @click="completeAudit"
-                                            v-if="isLoggedInUserIsLeadAuditor">Close Audit</v-btn>
+                                            v-if="isLoggedInUserIsLeadAuditor && getOngoingMainAudit.is_ongoing">Close Audit</v-btn>
 
                                     </v-col>
                                     

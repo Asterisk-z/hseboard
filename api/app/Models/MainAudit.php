@@ -14,11 +14,31 @@ class MainAudit extends Model
 
     protected $with = ['user', 'recipient_organization', 'organization', 'audit_template', 'audit_type', 'all_auditors', 'all_representatives', 'support_auditor', 'lead_auditor', 'representatives', 'lead_representative', 'findings', 'actions', 'documents', 'schedule'];
 
-    protected $appends = ['questions'];
+    protected $appends = ['questions', 'is_ongoing', 'is_pending', 'is_accepted', 'is_completed'];
 
     public function user()
     {
         return $this->hasOne(User::class, 'id', 'user_id');
+    }
+    public function getIsPendingAttribute()
+    {
+        return $this->status == 'pending';
+    }
+
+    public function getIsOngoingAttribute()
+    {
+        return $this->status == 'ongoing';
+
+    }
+
+    public function getIsAcceptedAttribute()
+    {
+        return $this->status == 'accepted';
+
+    }
+    public function getIsCompletedAttribute()
+    {
+        return $this->status == 'completed';
     }
 
     public function organization()
@@ -112,25 +132,43 @@ class MainAudit extends Model
     {
         return $this->hasMany(Action::class, 'audit_id', 'id');
     }
-    // public function members()
-    // {
-    //     return $this->hasMany(InvestigationMember::class, 'investigation_id', 'id')->where('position', 'member');
-    // }
-    // public function lead()
-    // {
-    //     return $this->hasOne(InvestigationMember::class, 'investigation_id', 'id')->where('position', 'lead');
-    // }
-    // public function questions()
-    // {
-    //     return $this->hasMany(InvestigationQuestionUser::class, 'investigation_id', 'id');
-    // }
-    // public function interviews()
-    // {
-    //     return $this->hasMany(InvestigationInterview::class, 'investigation_id', 'id');
-    // }
 
-    // public function findings()
-    // {
-    //     return $this->hasMany(InvestigationFinding::class, 'investigation_id', 'id');
-    // }
+    public function is_completed()
+    {
+        return ($this->lead_auditor)
+        && ($this->lead_representative)
+        && ($this->findings)
+        && ($this->schedule)
+        && ($this->checkAllAnsweredQuestions())
+        && ($this->checkAllRequestedDocuments())
+        && (count($this->actions) > 0)
+        ? true : false;
+    }
+
+    private function checkAllAnsweredQuestions()
+    {
+        foreach ($this->questions as $topic_question) {
+            if (count($topic_question->questions) > 0) {
+                foreach ($topic_question->questions as $question) {
+                    if (!$question->response) {
+                        logger($topic_question->title);
+                        logger($question);
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+    private function checkAllRequestedDocuments()
+    {
+        foreach ($this->documents as $document) {
+            if ($document->status != 'accepted') {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
