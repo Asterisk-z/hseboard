@@ -12,6 +12,7 @@ use App\Http\Controllers\CountryController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\IndustryController;
+use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\InvestigationController;
 use App\Http\Controllers\MainAuditController;
 use App\Http\Controllers\ObservationController;
@@ -121,6 +122,7 @@ Route::middleware('auth:api')->group(function ($router) {
         Route::get('/questions/{observation_id?}', [InvestigationController::class, 'getQuestions']);
         Route::post('/question/{investigation_id?}', [InvestigationController::class, 'setQuestions']);
         Route::get('/show/{observation_id}', [InvestigationController::class, 'show']);
+        Route::get('/completed/{investigation_id}', [InvestigationController::class, 'completed']);
 
         Route::post('/create', [InvestigationController::class, 'store']);
         Route::post('/delete', [InvestigationController::class, 'delete']);
@@ -182,32 +184,35 @@ Route::middleware('auth:api')->group(function ($router) {
         Route::get('/plans/{organization_id?}', [SubscriptionController::class, 'plans']);
         Route::get('/features/{organization_id?}', [FeatureController::class, 'features']);
         Route::get('/currencies/{organization_id?}', [CurrencyController::class, 'index']);
+    });
 
-        // Route::get('/ongoing/{main_audit_id}', [MainAuditController::class, 'ongoing']);
-        // Route::get('/completed/{main_audit_id}', [MainAuditController::class, 'completed']);
-        // Route::post('/start', [MainAuditController::class, 'store']);
-        // Route::get('/auditors/{main_audit_id}', [MainAuditController::class, 'auditors']);
-        // Route::get('/auditees/{main_audit_id}', [MainAuditController::class, 'auditees']);
-        // Route::post('/action/{organization_id?}', [MainAuditController::class, 'actionAudit']);
-        // Route::post('/set-auditors/{organization_id?}', [MainAuditController::class, 'setAuditors']);
-        // Route::post('/set-auditees/{organization_id?}', [MainAuditController::class, 'setAuditees']);
-        // Route::post('/remove-member/{organization_id?}', [MainAuditController::class, 'removeMember']);
-        // Route::post('/request-document/{organization_id?}', [MainAuditController::class, 'requestDocument']);
-        // Route::post('/send-document/{organization_id?}', [MainAuditController::class, 'sendDocument']);
-        // Route::post('/revert-document/{organization_id?}', [MainAuditController::class, 'actionRevertDocument']);
-        // Route::post('/remove-document/{organization_id?}', [MainAuditController::class, 'actionRemoveDocument']);
-        // Route::post('/action-document/{organization_id?}', [MainAuditController::class, 'actionAuditDocument']);
-        // Route::post('/auditor-time/{organization_id?}', [MainAuditController::class, 'actionAuditorTime']);
-        // Route::post('/auditee-time/{organization_id?}', [MainAuditController::class, 'actionAuditeeTime']);
-        // Route::post('/accept-time/{organization_id?}', [MainAuditController::class, 'actionAcceptedTime']);
-        // Route::post('/send-response/{organization_id?}', [MainAuditController::class, 'actionSendResponse']);
-        // Route::post('/send-comment/{organization_id?}', [MainAuditController::class, 'actionSendComment']);
-        // Route::post('/send-finding/{organization_id?}', [MainAuditController::class, 'sendAuditFinding']);
-        // Route::post('/send-recommendation/{organization_id?}', [MainAuditController::class, 'sendAuditRecommendation']);
-        // Route::post('/complete/{organization_id?}', [MainAuditController::class, 'complete']);
+    Route::prefix('inspection')->group(function ($router) {
+        Route::get('/all/{organization_id?}', [InspectionController::class, 'index']);
+        Route::get('/ongoing/{main_audit_id}', [MainAuditController::class, 'ongoing']);
+        Route::get('/completed/{main_audit_id}', [MainAuditController::class, 'completed']);
+        Route::post('/start', [MainAuditController::class, 'store']);
+        Route::get('/auditors/{main_audit_id}', [MainAuditController::class, 'auditors']);
+        Route::get('/auditees/{main_audit_id}', [MainAuditController::class, 'auditees']);
+        Route::post('/action/{organization_id?}', [MainAuditController::class, 'actionAudit']);
+        Route::post('/set-auditors/{organization_id?}', [MainAuditController::class, 'setAuditors']);
+        Route::post('/set-auditees/{organization_id?}', [MainAuditController::class, 'setAuditees']);
+        Route::post('/remove-member/{organization_id?}', [MainAuditController::class, 'removeMember']);
+        Route::post('/request-document/{organization_id?}', [MainAuditController::class, 'requestDocument']);
+        Route::post('/send-document/{organization_id?}', [MainAuditController::class, 'sendDocument']);
+        Route::post('/revert-document/{organization_id?}', [MainAuditController::class, 'actionRevertDocument']);
+        Route::post('/remove-document/{organization_id?}', [MainAuditController::class, 'actionRemoveDocument']);
+        Route::post('/action-document/{organization_id?}', [MainAuditController::class, 'actionAuditDocument']);
+        Route::post('/auditor-time/{organization_id?}', [MainAuditController::class, 'actionAuditorTime']);
+        Route::post('/auditee-time/{organization_id?}', [MainAuditController::class, 'actionAuditeeTime']);
+        Route::post('/accept-time/{organization_id?}', [MainAuditController::class, 'actionAcceptedTime']);
+        Route::post('/send-response/{organization_id?}', [MainAuditController::class, 'actionSendResponse']);
+        Route::post('/send-comment/{organization_id?}', [MainAuditController::class, 'actionSendComment']);
+        Route::post('/send-finding/{organization_id?}', [MainAuditController::class, 'sendAuditFinding']);
+        Route::post('/send-recommendation/{organization_id?}', [MainAuditController::class, 'sendAuditRecommendation']);
+        Route::post('/complete/{organization_id?}', [MainAuditController::class, 'complete']);
 
-        // Route::post('/create', [InvestigationController::class, 'store']);
-        // Route::post('/delete', [InvestigationController::class, 'delete']);
+        Route::post('/create', [InvestigationController::class, 'store']);
+        Route::post('/delete', [InvestigationController::class, 'delete']);
     });
 
 });

@@ -10,6 +10,17 @@ class Investigation extends Model
     use HasFactory;
     protected $guarded = [];
     protected $with = ['user', 'observation', 'organization', 'members', 'lead', 'all_members', 'questions', 'interviews', 'findings', 'actions', 'report'];
+    protected $appends = ['is_completed', 'is_ongoing'];
+
+    public function getIsCompletedAttribute()
+    {
+        return $this->end_date ? true : false;
+    }
+
+    public function getIsOngoingAttribute()
+    {
+        return !$this->end_date ? true : false;
+    }
 
     public function user()
     {
@@ -80,9 +91,9 @@ class Investigation extends Model
     {
         return ($this->lead)
         && (count($this->actions) > 0)
-        // && count($this->findings) > 0
-        // && count($this->interviews) > 0
-        // && count($this->questions) > 0
+        && count($this->findings) > 0
+        && count($this->interviews) > 0
+        && count($this->questions) > 0
         && count($this->members) > 0 ? true : false;
     }
 }

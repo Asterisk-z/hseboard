@@ -227,19 +227,23 @@ const gotoRoute = (link: string) => {
                                                             <tr>
                                                                 <td></td>
                                                                 <td>Observation Type </td>
-                                                                <td>{{ `${selectedItem?.observation?.observation_type?.description}`
+                                                                <td>{{
+                                                                    `${selectedItem?.observation?.observation_type?.description}`
                                                                     }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td></td>
                                                                 <td>Observer </td>
-                                                                <td>{{ `${selectedItem?.observation?.observer?.firstName}
-                                                                    ${selectedItem?.observation?.observer?.lastName}` }}</td>
+                                                                <td>{{
+                                                                    `${selectedItem?.observation?.observer?.firstName}
+                                                                    ${selectedItem?.observation?.observer?.lastName}` }}
+                                                                </td>
                                                             </tr>
                                                             <tr>
                                                                 <td></td>
                                                                 <td>Description </td>
-                                                                <td>{{ `${selectedItem?.observation?.description}` }}</td>
+                                                                <td>{{ `${selectedItem?.observation?.description}` }}
+                                                                </td>
                                                             </tr>
                                                             <tr>
                                                                 <td></td>
@@ -249,17 +253,20 @@ const gotoRoute = (link: string) => {
                                                             <tr>
                                                                 <td></td>
                                                                 <td>Location Details </td>
-                                                                <td>{{ `${selectedItem?.observation?.location_details}` }}</td>
+                                                                <td>{{ `${selectedItem?.observation?.location_details}`
+                                                                    }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td></td>
                                                                 <td>Affected Workers </td>
-                                                                <td>{{ `${selectedItem?.observation?.affected_workers}` }}</td>
+                                                                <td>{{ `${selectedItem?.observation?.affected_workers}`
+                                                                    }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td></td>
                                                                 <td>Incident Date </td>
-                                                                <td>{{ `${selectedItem?.observation?.incident_datetime}` }}</td>
+                                                                <td>{{ `${selectedItem?.observation?.incident_datetime}`
+                                                                    }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td></td>
@@ -272,11 +279,15 @@ const gotoRoute = (link: string) => {
                                             </VCol>
 
 
-                                            <VCol cols="12" lg="12" class="text-right"
-                                                v-if="isLoggedInUserOwnsActionOrg">
-                                                <span>
+                                            <VCol cols="12" lg="12" class="text-right">
+                                                <span v-if="isLoggedInUserOwnsActionOrg && selectedItem?.is_ongoing">
                                                     <v-btn color="primary" class="mr-3"
                                                         @click="gotoRoute(`/hse-investigating/${selectedItem?.observation?.uuid}`)">Continue
+                                                        Investigation</v-btn>
+                                                </span>
+                                                <span v-if="selectedItem?.is_completed">
+                                                    <v-btn color="primary" class="mr-3"
+                                                        @click="gotoRoute(`/hse-investigated/${selectedItem?.uuid}`)">View
                                                         Investigation</v-btn>
                                                 </span>
 

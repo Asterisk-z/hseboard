@@ -66,6 +66,11 @@ const MainRoutes = {
             component: () => import('@/views/HSEInvestigation/Ongoing.vue')
         },
         {
+            name: 'HSE investigated',
+            path: '/hse-investigated/:investigation_id',
+            component: () => import('@/views/HSEInvestigation/Done.vue')
+        },
+        {
             name: 'Audit Management',
             path: '/hse-audit',
             component: () => import('@/views/HSEAudit/Index.vue')

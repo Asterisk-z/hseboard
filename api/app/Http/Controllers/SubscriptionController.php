@@ -150,7 +150,7 @@ class SubscriptionController extends Controller
             $transaction->save();
 
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer FLWSECK_TEST-77a2a2b4aea35574197e5092572df8aa-X',
+                'Authorization' => 'Bearer ' . config('app.flutter_wave'),
             ])->post("https://api.flutterwave.com/v3/payments", [
                 'tx_ref' => $transaction->uuid, //U
                 "amount" => $cost,

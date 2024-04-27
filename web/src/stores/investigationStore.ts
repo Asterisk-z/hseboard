@@ -75,6 +75,17 @@ export const useInvestigationStore = defineStore({
                 });
             this.investigation = data;
         },
+        async getCompletedInvestigation(item: string) {
+
+            const data = await fetchWrapper
+                .get(`investigations/completed/${item}`)
+                .then((response: any) => {
+                    return response.data
+                }).catch((error: any) => {
+                    console.log(error)
+                });
+            this.investigation = data;
+        },
         async getInvestigationQuestions(values: any) {
             
             const data = await fetchWrapper

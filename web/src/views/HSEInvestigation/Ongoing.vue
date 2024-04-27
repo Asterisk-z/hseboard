@@ -704,7 +704,8 @@ const completeInvestigation = async (member: any) => {
                     })
                     .then((resp: any) => {
                         //  investigationStore.getInvestigation(route.params.observation_id);
-                        // router.push(`/hse-investigation`)
+                        console.log(resp)
+                        router.push(`/hse-investigation`)
                         return resp
                     });
 
@@ -776,7 +777,8 @@ const selectImage = (image: any) => {
                                 </div>
                             </v-tab>
 
-                            <v-tab value="tab-2" rounded="md" class="mb-3 mx-2 text-left" height="70" :disabled="!isLoggedInUserIsLead">
+                            <v-tab value="tab-2" rounded="md" class="mb-3 mx-2 text-left" height="70"
+                                :disabled="!isLoggedInUserIsLead">
                                 <FileDescriptionIcon stroke-width="1.5" width="20" class="v-icon--start" />
                                 <div>
                                     <div>Questionaire</div>
@@ -787,7 +789,8 @@ const selectImage = (image: any) => {
                                 </div>
                             </v-tab>
 
-                            <v-tab value="tab-3" rounded="md" class="mb-3 mx-2 text-left" height="70" :disabled="!isLoggedInUserIsLead">
+                            <v-tab value="tab-3" rounded="md" class="mb-3 mx-2 text-left" height="70"
+                                :disabled="!isLoggedInUserIsLead">
                                 <CreditCardIcon stroke-width="1.5" width="20" class="v-icon--start" />
                                 <div>
                                     <div>Send Invitations</div>
@@ -797,7 +800,8 @@ const selectImage = (image: any) => {
                                     </span>
                                 </div>
                             </v-tab>
-                            <v-tab value="tab-4" rounded="md" class="mb-3 mx-2 text-left" height="70" :disabled="!isLoggedInUserIsLead">
+                            <v-tab value="tab-4" rounded="md" class="mb-3 mx-2 text-left" height="70"
+                                :disabled="!isLoggedInUserIsLead">
                                 <CreditCardIcon stroke-width="1.5" width="20" class="v-icon--start" />
                                 <div>
                                     <div>Finding</div>
@@ -807,7 +811,8 @@ const selectImage = (image: any) => {
                                     </span>
                                 </div>
                             </v-tab>
-                            <v-tab value="tab-5" rounded="md" class="mb-3 mx-2 text-left" height="70" :disabled="!isLoggedInUserIsLead">
+                            <v-tab value="tab-5" rounded="md" class="mb-3 mx-2 text-left" height="70"
+                                :disabled="!isLoggedInUserIsLead">
                                 <CreditCardIcon stroke-width="1.5" width="20" class="v-icon--start" />
                                 <div>
                                     <div>Recommendation </div>
@@ -817,7 +822,8 @@ const selectImage = (image: any) => {
                                     </span>
                                 </div>
                             </v-tab>
-                            <v-tab value="tab-6" rounded="md" class="mb-3 mx-2 text-left" height="70" :disabled="!isLoggedInUserIsLead">
+                            <v-tab value="tab-6" rounded="md" class="mb-3 mx-2 text-left" height="70"
+                                :disabled="!isLoggedInUserIsLead">
                                 <CreditCardIcon stroke-width="1.5" width="20" class="v-icon--start" />
                                 <div>
                                     <div>Incident Report</div>
@@ -833,10 +839,11 @@ const selectImage = (image: any) => {
 
                                 <div>
                                     <v-row class="mt-3 px-4">
-                                        
+
                                         <v-col cols="12">
-                                            
-                                            <v-btn  color="primary"  @click="setAddMemberDialog(true)" class="mr-2">Add Members</v-btn>
+
+                                            <v-btn color="primary" @click="setAddMemberDialog(true)" class="mr-2">Add
+                                                Members</v-btn>
                                             <v-sheet>
                                                 <v-dialog v-model="addMemberDialog" max-width="800">
                                                     <v-card>
@@ -844,7 +851,8 @@ const selectImage = (image: any) => {
                                                         <v-card-text>
                                                             <div class="d-flex justify-space-between">
                                                                 <h3 class="text-h3">Add Member </h3>
-                                                                <v-btn icon @click="setAddMemberDialog(false)" size="small" flat>
+                                                                <v-btn icon @click="setAddMemberDialog(false)"
+                                                                    size="small" flat>
                                                                     <XIcon size="16" />
                                                                 </v-btn>
                                                             </div>
@@ -853,56 +861,69 @@ const selectImage = (image: any) => {
 
                                                         <v-card-text>
 
-                                                            <VForm v-model="valid" ref="formContainer" fast-fail lazy-validation
-                                                                @submit.prevent="save" class="py-1">
+                                                            <VForm v-model="valid" ref="formContainer" fast-fail
+                                                                lazy-validation @submit.prevent="save" class="py-1">
                                                                 <VRow class="mt-5 mb-3">
-                                                                    
+
                                                                     <VCol cols="12" md="12">
-                                                                        <v-label class="font-weight-medium pb-1">Select a lead
+                                                                        <v-label class="font-weight-medium pb-1">Select
+                                                                            a lead
                                                                             investigator</v-label>
                                                                         <VSelect v-model="fields.leadInvestigator"
-                                                                            :items="getMembers" update:modelValue="fields.teamMember.length = 0"
-                                                                            
-                                                                            :rules="fieldRules.leadInvestigator" label="Select" item-title="lastName" item-value="id"
-                                                                            
+                                                                            :items="getMembers"
+                                                                            update:modelValue="fields.teamMember.length = 0"
+                                                                            :rules="fieldRules.leadInvestigator"
+                                                                            label="Select" item-title="lastName"
+                                                                            item-value="id"
                                                                             :item-props="(item) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
-                                                                            single-line variant="outlined" class="text-capitalize" >
+                                                                            single-line variant="outlined"
+                                                                            class="text-capitalize">
                                                                         </VSelect>
                                                                     </VCol>
 
-                                                                    <VCol cols="12" md="12" v-if="fields.leadInvestigator">
-                                                                        <v-label class="font-weight-medium pb-1">Select Team Member</v-label>
+                                                                    <VCol cols="12" md="12"
+                                                                        v-if="fields.leadInvestigator">
+                                                                        <v-label class="font-weight-medium pb-1">Select
+                                                                            Team Member</v-label>
                                                                         <VSelect v-model="fields.teamMember"
                                                                             :items="filteredMember"
-                                                                            :rules="fieldRules.teamMember" label="Select"
-                                                                            item-title="lastName" item-value="id"
-                                                                            single-line variant="outlined" class="text-capitalize"
-                                                                            chips :item-props="(item) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
+                                                                            :rules="fieldRules.teamMember"
+                                                                            label="Select" item-title="lastName"
+                                                                            item-value="id" single-line
+                                                                            variant="outlined" class="text-capitalize"
+                                                                            chips
+                                                                            :item-props="(item) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
                                                                             multiple>
-                                                                            
+
                                                                         </VSelect>
                                                                     </VCol>
 
                                                                     <VCol cols="12" md="12">
-                                                                        <v-label class="text-subtitle-1 font-weight-medium pb-1">Group Chat Name</v-label>
-                                                                        <VTextField type="text" v-model="fields.groupChatName"
-                                                                            :rules="fieldRules.groupChatName" required variant="outlined"
-                                                                            label="Group Chat Name"
+                                                                        <v-label
+                                                                            class="text-subtitle-1 font-weight-medium pb-1">Group
+                                                                            Chat Name</v-label>
+                                                                        <VTextField type="text"
+                                                                            v-model="fields.groupChatName"
+                                                                            :rules="fieldRules.groupChatName" required
+                                                                            variant="outlined" label="Group Chat Name"
                                                                             :color="fields.groupChatName.length > 2 ? 'success' : 'primary'">
                                                                         </VTextField>
                                                                     </VCol>
 
 
                                                                     <VCol cols="12" lg="12" class="text-right">
-                                                                        <v-btn color="error" @click="setAddMemberDialog(false)"
+                                                                        <v-btn color="error"
+                                                                            @click="setAddMemberDialog(false)"
                                                                             variant="text">Cancel</v-btn>
 
-                                                                        <v-btn color="primary" type="submit" :loading="loading"
-                                                                            :disabled="!valid" @click="save">
+                                                                        <v-btn color="primary" type="submit"
+                                                                            :loading="loading" :disabled="!valid"
+                                                                            @click="save">
                                                                             <span v-if="!loading">
                                                                                 Save
                                                                             </span>
-                                                                            <clip-loader v-else :loading="loading" color="white"
+                                                                            <clip-loader v-else :loading="loading"
+                                                                                color="white"
                                                                                 :size="'25px'"></clip-loader>
                                                                         </v-btn>
 
@@ -914,8 +935,8 @@ const selectImage = (image: any) => {
                                                 </v-dialog>
                                             </v-sheet>
                                         </v-col>
-                                        
-                                        <v-col cols="12" >
+
+                                        <v-col cols="12">
                                             <v-table>
                                                 <thead>
                                                     <tr>
@@ -937,13 +958,16 @@ const selectImage = (image: any) => {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr v-for="(member, index) in getInvestigation?.all_members" :key="member">
+                                                    <tr v-for="(member, index) in getInvestigation?.all_members"
+                                                        :key="member">
                                                         <td>{{ ++index }}</td>
-                                                        <td>{{ `${member?.member?.lastName} ${member?.member?.firstName}` }}</td>
+                                                        <td>{{ `${member?.member?.lastName}
+                                                            ${member?.member?.firstName}` }}</td>
                                                         <td>{{ `${member?.member?.email}` }}</td>
                                                         <td>{{ `${member?.position}` }}</td>
                                                         <td>
-                                                            <v-btn color='error' size='small' @click="removeMember(member?.member?.id)">
+                                                            <v-btn color='error' size='small'
+                                                                @click="removeMember(member?.member?.id)">
                                                                 Remove
                                                             </v-btn>
                                                         </td>
@@ -960,7 +984,8 @@ const selectImage = (image: any) => {
                                         <!-- <v-btn color="primary" variant="tonal">Continue</v-btn> -->
                                     </v-col>
                                     <v-col cols="12" sm="6" class="text-sm-right">
-                                        <v-btn color="primary" @click="changeTab('tab-2')" v-if="isLoggedInUserIsLead">Next Step</v-btn>
+                                        <v-btn color="primary" @click="changeTab('tab-2')"
+                                            v-if="isLoggedInUserIsLead">Next Step</v-btn>
                                     </v-col>
                                 </v-row>
                             </v-window-item>
@@ -968,7 +993,7 @@ const selectImage = (image: any) => {
                                 <div>
                                     <v-row v-if="getInvestigation?.questions?.length === 0">
                                         <v-col v-if="!viewQuestionTeamDialog">
-                                                
+
                                             <v-table>
                                                 <thead>
                                                     <tr>
@@ -987,20 +1012,22 @@ const selectImage = (image: any) => {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr v-for="(question, index) in getInvestigationQuestions" :key="question">
+                                                    <tr v-for="(question, index) in getInvestigationQuestions"
+                                                        :key="question">
                                                         <td>{{ ++index }}</td>
                                                         <td>{{ question?.question }}</td>
                                                         <td>{{ question?.type }}</td>
                                                         <td class=''>
-                                                            <v-checkbox v-model="stepTwoFields.questions" :value="question?.id" class="m-0"></v-checkbox>
+                                                            <v-checkbox v-model="stepTwoFields.questions"
+                                                                :value="question?.id" class="m-0"></v-checkbox>
                                                         </td>
                                                     </tr>
-                                                    
+
                                                 </tbody>
                                             </v-table>
                                         </v-col>
-                                        
-                                            
+
+
                                         <v-col cols="12" v-else>
                                             <VForm v-model="valid" ref="formContainer" fast-fail lazy-validation
                                                 @submit.prevent="sendQuestion" class="py-1">
@@ -1011,9 +1038,9 @@ const selectImage = (image: any) => {
                                                         <VSelect v-model="stepTwoFields.members"
                                                             :items="filteredNonMember"
                                                             :rules="stepTwoFieldRules.members" label="Select"
-                                                             item-title="lastName" item-value="id"
-                                                            single-line variant="outlined" class="text-capitalize"
-                                                            chips :item-props="(item) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
+                                                            item-title="lastName" item-value="id" single-line
+                                                            variant="outlined" class="text-capitalize" chips
+                                                            :item-props="(item) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
                                                             multiple>
                                                         </VSelect>
                                                     </VCol>
@@ -1034,10 +1061,12 @@ const selectImage = (image: any) => {
                                                 </VRow>
                                             </VForm>
                                         </v-col>
-                                        
+
                                         <v-col cols="12">
-                                            <v-btn  color="primary"  @click="selectItem({}, 'viewQuestion')" class="mr-2">Add Question</v-btn>
-                                            <v-btn  color="primary"  @click="setSelectQuestionaireTeam(true)" class="mr-2"  v-if="stepTwoFields.questions.length > 0">Select Team Members</v-btn>
+                                            <v-btn color="primary" @click="selectItem({}, 'viewQuestion')"
+                                                class="mr-2">Add Question</v-btn>
+                                            <v-btn color="primary" @click="setSelectQuestionaireTeam(true)" class="mr-2"
+                                                v-if="stepTwoFields.questions.length > 0">Select Team Members</v-btn>
                                             <v-sheet>
                                                 <v-dialog v-model="viewQuestionDialog" max-width="500">
                                                     <v-card>
@@ -1045,7 +1074,8 @@ const selectImage = (image: any) => {
                                                         <v-card-text>
                                                             <div class="d-flex justify-space-between">
                                                                 <h3 class="text-h3">Add </h3>
-                                                                <v-btn icon @click="setViewQuestionDialog(false)" size="small" flat>
+                                                                <v-btn icon @click="setViewQuestionDialog(false)"
+                                                                    size="small" flat>
                                                                     <XIcon size="16" />
                                                                 </v-btn>
                                                             </div>
@@ -1054,28 +1084,34 @@ const selectImage = (image: any) => {
 
                                                         <v-card-text>
 
-                                                            <VForm v-model="valid" ref="formContainer" fast-fail lazy-validation
-                                                                @submit.prevent="addQuestion" class="py-1">
+                                                            <VForm v-model="valid" ref="formContainer" fast-fail
+                                                                lazy-validation @submit.prevent="addQuestion"
+                                                                class="py-1">
                                                                 <VRow class="mt-5 mb-3">
 
                                                                     <VCol cols="12" md="12">
-                                                                        <v-label class="text-subtitle-1 font-weight-medium pb-1">Question</v-label>
-                                                                        <VTextarea variant="outlined" outlined name="Description"
-                                                                            label="Question" v-model="stepTwoFields.question"
+                                                                        <v-label
+                                                                            class="text-subtitle-1 font-weight-medium pb-1">Question</v-label>
+                                                                        <VTextarea variant="outlined" outlined
+                                                                            name="Description" label="Question"
+                                                                            v-model="stepTwoFields.question"
                                                                             :rules="stepTwoFieldRules.question" required
                                                                             :color="stepTwoFields.question.length > 10 ? 'success' : 'primary'">
                                                                         </VTextarea>
                                                                     </VCol>
                                                                     <VCol cols="12" lg="12" class="text-right">
-                                                                        <v-btn color="error" @click="setViewQuestionDialog(false)"
+                                                                        <v-btn color="error"
+                                                                            @click="setViewQuestionDialog(false)"
                                                                             variant="text">Cancel</v-btn>
 
-                                                                        <v-btn color="primary" type="submit" :loading="loading"
-                                                                            :disabled="!valid" @click="addQuestion">
+                                                                        <v-btn color="primary" type="submit"
+                                                                            :loading="loading" :disabled="!valid"
+                                                                            @click="addQuestion">
                                                                             <span v-if="!loading">
                                                                                 Submit
                                                                             </span>
-                                                                            <clip-loader v-else :loading="loading" color="white"
+                                                                            <clip-loader v-else :loading="loading"
+                                                                                color="white"
                                                                                 :size="'25px'"></clip-loader>
                                                                         </v-btn>
 
@@ -1091,7 +1127,7 @@ const selectImage = (image: any) => {
                                     </v-row>
                                     <v-row v-else>
                                         <v-col>
-                                                
+
                                             <v-table>
                                                 <thead>
                                                     <tr>
@@ -1113,19 +1149,22 @@ const selectImage = (image: any) => {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr v-for="(question, index) in getInvestigation?.questions" :key="question">
+                                                    <tr v-for="(question, index) in getInvestigation?.questions"
+                                                        :key="question">
                                                         <td>{{ ++index }}</td>
-                                                        <td>{{ `${question?.responder?.lastName} ${question?.responder?.firstName}` }}</td>
-                                                        <td>{{ `${question?.user?.lastName} ${question?.user?.firstName}` }}</td>
+                                                        <td>{{ `${question?.responder?.lastName}
+                                                            ${question?.responder?.firstName}` }}</td>
+                                                        <td>{{ `${question?.user?.lastName}
+                                                            ${question?.user?.firstName}` }}</td>
                                                         <td>{{ question?.question?.question }}</td>
                                                         <td class=''>{{ question?.response }}</td>
                                                     </tr>
-                                                    
+
                                                 </tbody>
                                             </v-table>
                                         </v-col>
-                                        
-                                    
+
+
                                     </v-row>
                                 </div>
                                 <v-row class="mt-3">
@@ -1133,17 +1172,19 @@ const selectImage = (image: any) => {
                                         <v-btn color="primary" variant="tonal" @click="changeTab('tab-1')">Back</v-btn>
                                     </v-col>
                                     <v-col cols="6" class="text-right">
-                                        <v-btn color="primary" @click="changeTab('tab-3')" v-if="isLoggedInUserIsLead">Next Step</v-btn>
+                                        <v-btn color="primary" @click="changeTab('tab-3')"
+                                            v-if="isLoggedInUserIsLead">Next Step</v-btn>
                                     </v-col>
                                 </v-row>
                             </v-window-item>
                             <v-window-item value="tab-3" class="pa-1">
-                                
+
                                 <div>
                                     <v-row class="mt-3 px-4">
                                         <v-col cols="12">
-                                            
-                                            <v-btn  color="primary"  @click="setAddInviteDialog(true)" class="mr-2">Create Interview</v-btn>
+
+                                            <v-btn color="primary" @click="setAddInviteDialog(true)" class="mr-2">Create
+                                                Interview</v-btn>
                                             <v-sheet>
                                                 <v-dialog v-model="addInviteDialog" max-width="800">
                                                     <v-card>
@@ -1151,7 +1192,8 @@ const selectImage = (image: any) => {
                                                         <v-card-text>
                                                             <div class="d-flex justify-space-between">
                                                                 <h3 class="text-h3">Add Invite </h3>
-                                                                <v-btn icon @click="setAddInviteDialog(false)" size="small" flat>
+                                                                <v-btn icon @click="setAddInviteDialog(false)"
+                                                                    size="small" flat>
                                                                     <XIcon size="16" />
                                                                 </v-btn>
                                                             </div>
@@ -1159,51 +1201,71 @@ const selectImage = (image: any) => {
                                                         <v-divider></v-divider>
 
                                                         <v-card-text>
-                                                            <VForm v-model="valid" ref="formContainer" fast-fail lazy-validation
-                                                                @submit.prevent="sendInvites" class="py-1">
+                                                            <VForm v-model="valid" ref="formContainer" fast-fail
+                                                                lazy-validation @submit.prevent="sendInvites"
+                                                                class="py-1">
                                                                 <VRow class="mt-5 mb-3">
-                                                                    
+
                                                                     <VCol cols="12" md="12">
-                                                                        <v-label class="font-weight-medium pb-1">Select Members</v-label>
+                                                                        <v-label class="font-weight-medium pb-1">Select
+                                                                            Members</v-label>
                                                                         <VSelect v-model="stepThreeFields.members"
                                                                             :items="filteredNonMember"
-                                                                            :rules="stepThreeFieldRules.members" label="Select"
-                                                                            item-title="lastName" item-value="id"
-                                                                            single-line variant="outlined" class="text-capitalize"
-                                                                            chips :item-props="(item) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
+                                                                            :rules="stepThreeFieldRules.members"
+                                                                            label="Select" item-title="lastName"
+                                                                            item-value="id" single-line
+                                                                            variant="outlined" class="text-capitalize"
+                                                                            chips
+                                                                            :item-props="(item) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
                                                                             multiple>
-                                                                            
+
                                                                         </VSelect>
                                                                     </VCol>
                                                                     <VCol cols="12" md="12">
-                                                                        <v-label class="font-weight-medium pb-1">Select Interview Type</v-label>
-                                                                        <VSelect v-model="stepThreeFields.interview_type"
+                                                                        <v-label class="font-weight-medium pb-1">Select
+                                                                            Interview Type</v-label>
+                                                                        <VSelect
+                                                                            v-model="stepThreeFields.interview_type"
                                                                             :items="['online', 'physical']"
-                                                                            :rules="stepThreeFieldRules.interview_type" label="Select"
-                                                                            single-line variant="outlined" class="text-capitalize" >
-                                                                            
+                                                                            :rules="stepThreeFieldRules.interview_type"
+                                                                            label="Select" single-line
+                                                                            variant="outlined" class="text-capitalize">
+
                                                                         </VSelect>
                                                                     </VCol>
                                                                     <VCol cols="12" md="12">
-                                                                        <v-label class="font-weight-medium pb-1">Select Dates</v-label>
-                                                                        <VueDatePicker input-class-name="dp-custom-input"
-                                                                            v-model="stepThreeFields.date_times" :min-date="new Date()"  multi-dates required>
+                                                                        <v-label class="font-weight-medium pb-1">Select
+                                                                            Dates</v-label>
+                                                                        <VueDatePicker
+                                                                            input-class-name="dp-custom-input"
+                                                                            v-model="stepThreeFields.date_times"
+                                                                            :min-date="new Date()" multi-dates required>
                                                                         </VueDatePicker>
                                                                     </VCol>
 
-                                                                    <VCol cols="12" md="12" v-if="stepThreeFields.interview_type == 'online'">
-                                                                        <v-label class="text-subtitle-1 font-weight-medium pb-1">Interview Link</v-label>
-                                                                        <VTextField type="text" v-model="stepThreeFields.interview_link"
-                                                                            :rules="stepThreeFieldRules.interview_link" required variant="outlined"
+                                                                    <VCol cols="12" md="12"
+                                                                        v-if="stepThreeFields.interview_type == 'online'">
+                                                                        <v-label
+                                                                            class="text-subtitle-1 font-weight-medium pb-1">Interview
+                                                                            Link</v-label>
+                                                                        <VTextField type="text"
+                                                                            v-model="stepThreeFields.interview_link"
+                                                                            :rules="stepThreeFieldRules.interview_link"
+                                                                            required variant="outlined"
                                                                             label="Interview Link"
                                                                             :color="stepThreeFields.interview_link.length > 2 ? 'success' : 'primary'">
                                                                         </VTextField>
                                                                     </VCol>
-                                                                    
-                                                                    <VCol cols="12" md="12" v-if="stepThreeFields.interview_type == 'physical'">
-                                                                        <v-label class="text-subtitle-1 font-weight-medium pb-1">Interview Location</v-label>
-                                                                        <VTextField type="text" v-model="stepThreeFields.interview_location"
-                                                                            :rules="stepThreeFieldRules.interview_location" required variant="outlined"
+
+                                                                    <VCol cols="12" md="12"
+                                                                        v-if="stepThreeFields.interview_type == 'physical'">
+                                                                        <v-label
+                                                                            class="text-subtitle-1 font-weight-medium pb-1">Interview
+                                                                            Location</v-label>
+                                                                        <VTextField type="text"
+                                                                            v-model="stepThreeFields.interview_location"
+                                                                            :rules="stepThreeFieldRules.interview_location"
+                                                                            required variant="outlined"
                                                                             label="Interview Location"
                                                                             :color="stepThreeFields.interview_location.length > 2 ? 'success' : 'primary'">
                                                                         </VTextField>
@@ -1212,60 +1274,67 @@ const selectImage = (image: any) => {
 
                                                                     <VCol cols="12" lg="12" class="text-right">
 
-                                                                        <v-btn color="error" @click="setAddInviteDialog(false)"
+                                                                        <v-btn color="error"
+                                                                            @click="setAddInviteDialog(false)"
                                                                             variant="text">Cancel</v-btn>
 
-                                                                        <v-btn color="primary" type="submit" :loading="loading"
-                                                                            :disabled="!valid" @click="sendInvites">
+                                                                        <v-btn color="primary" type="submit"
+                                                                            :loading="loading" :disabled="!valid"
+                                                                            @click="sendInvites">
                                                                             <span v-if="!loading">
                                                                                 Send Invites
                                                                             </span>
-                                                                            <clip-loader v-else :loading="loading" color="white"
+                                                                            <clip-loader v-else :loading="loading"
+                                                                                color="white"
                                                                                 :size="'25px'"></clip-loader>
                                                                         </v-btn>
 
                                                                     </VCol>
                                                                 </VRow>
                                                             </VForm>
-                                            
+
                                                         </v-card-text>
                                                     </v-card>
                                                 </v-dialog>
                                             </v-sheet>
                                         </v-col>
-                                        
+
                                         <v-col cols="12">
-                                        <v-table>
-                                            <thead>
-                                                <tr>
-                                                    
-                                                    <th class="text-left">
-                                                        #
-                                                    </th>
-                                                    <th class="text-left">
-                                                        Interviewer
-                                                    </th>
-                                                    <th class="text-left">
-                                                        Interviewee
-                                                    </th>
-                                                    <th class="text-left">
-                                                        Type
-                                                    </th>
-                                                    <th class="text-left">
-                                                        Selected Date
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr v-for="(interview, index) in getInvestigation?.interviews" :key="interview">
-                                                    <td>{{ ++index }}</td>
-                                                    <td>{{ `${interview?.user?.lastName} ${interview?.user?.firstName}` }}</td>
-                                                    <td>{{ `${interview?.invitee?.lastName} ${interview?.invitee?.firstName}` }}</td>
-                                                    <td>{{ `${interview?.type}` }}</td>
-                                                    <td>{{ `${interview?.selected_date ? interview?.selected_date : ''}` }}</td>
-                                                </tr>
-                                            </tbody>
-                                        </v-table>
+                                            <v-table>
+                                                <thead>
+                                                    <tr>
+
+                                                        <th class="text-left">
+                                                            #
+                                                        </th>
+                                                        <th class="text-left">
+                                                            Interviewer
+                                                        </th>
+                                                        <th class="text-left">
+                                                            Interviewee
+                                                        </th>
+                                                        <th class="text-left">
+                                                            Type
+                                                        </th>
+                                                        <th class="text-left">
+                                                            Selected Date
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="(interview, index) in getInvestigation?.interviews"
+                                                        :key="interview">
+                                                        <td>{{ ++index }}</td>
+                                                        <td>{{ `${interview?.user?.lastName}
+                                                            ${interview?.user?.firstName}` }}</td>
+                                                        <td>{{ `${interview?.invitee?.lastName}
+                                                            ${interview?.invitee?.firstName}` }}</td>
+                                                        <td>{{ `${interview?.type}` }}</td>
+                                                        <td>{{ `${interview?.selected_date ? interview?.selected_date :
+                                                            ''}` }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </v-table>
                                         </v-col>
                                     </v-row>
 
@@ -1275,22 +1344,27 @@ const selectImage = (image: any) => {
                                         <v-btn color="primary" variant="tonal" @click="changeTab('tab-2')">Back</v-btn>
                                     </v-col>
                                     <v-col cols="6" class="text-right">
-                                        <v-btn color="primary" @click="changeTab('tab-4')" v-if="isLoggedInUserIsLead">Next Step</v-btn>
+                                        <v-btn color="primary" @click="changeTab('tab-4')"
+                                            v-if="isLoggedInUserIsLead">Next Step</v-btn>
                                     </v-col>
                                 </v-row>
                             </v-window-item>
                             <v-window-item value="tab-4" class="pa-1">
-                                
+
                                 <div>
                                     <v-row class="mt-3 px-4">
-                                        
-                                        
+
+
                                         <v-col cols="12">
-                                            <v-btn  color="primary"  @click="selectItem({}, 'viewFinding', 'evidence')" class="mr-2">Add Evidence</v-btn>
-                                            <v-btn  color="primary"  @click="selectItem({}, 'viewFinding', 'root')" class="mr-2">Add Root Cause</v-btn>
-                                            <v-btn  color="primary"  @click="selectItem({}, 'viewFinding', 'immediate')" class="mr-2">Add Immediate Cause</v-btn>
-                                            <v-btn  color="primary"  @click="selectItem({}, 'viewFinding', 'conclusion')" class="mr-2">Add Conclusion</v-btn>
-                                            
+                                            <v-btn color="primary" @click="selectItem({}, 'viewFinding', 'evidence')"
+                                                class="mr-2">Add Evidence</v-btn>
+                                            <v-btn color="primary" @click="selectItem({}, 'viewFinding', 'root')"
+                                                class="mr-2">Add Root Cause</v-btn>
+                                            <v-btn color="primary" @click="selectItem({}, 'viewFinding', 'immediate')"
+                                                class="mr-2">Add Immediate Cause</v-btn>
+                                            <v-btn color="primary" @click="selectItem({}, 'viewFinding', 'conclusion')"
+                                                class="mr-2">Add Conclusion</v-btn>
+
                                             <v-sheet>
                                                 <v-dialog v-model="viewFindingDialog" max-width="700">
                                                     <v-card>
@@ -1298,7 +1372,8 @@ const selectImage = (image: any) => {
                                                         <v-card-text>
                                                             <div class="d-flex justify-space-between">
                                                                 <h3 class="text-h3">Add </h3>
-                                                                <v-btn icon @click="setViewFindingDialog(false)" size="small" flat>
+                                                                <v-btn icon @click="setViewFindingDialog(false)"
+                                                                    size="small" flat>
                                                                     <XIcon size="16" />
                                                                 </v-btn>
                                                             </div>
@@ -1307,66 +1382,80 @@ const selectImage = (image: any) => {
 
                                                         <v-card-text>
 
-                                                            <VForm v-model="valid" ref="formContainer" fast-fail lazy-validation
-                                                                @submit.prevent="sendFindings" class="py-1">
+                                                            <VForm v-model="valid" ref="formContainer" fast-fail
+                                                                lazy-validation @submit.prevent="sendFindings"
+                                                                class="py-1">
                                                                 <VRow class="mt-5 mb-3">
 
                                                                     <VCol cols="12" md="12">
-                                                                        <v-label class="text-subtitle-1 font-weight-medium pb-1">Details</v-label>
-                                                                        <VTextarea variant="outlined" outlined name="Description"
-                                                                            label="Details" v-model="stepFourFields.detail"
+                                                                        <v-label
+                                                                            class="text-subtitle-1 font-weight-medium pb-1">Details</v-label>
+                                                                        <VTextarea variant="outlined" outlined
+                                                                            name="Description" label="Details"
+                                                                            v-model="stepFourFields.detail"
                                                                             :rules="stepFourFieldRules.detail" required
                                                                             :color="stepFourFields.detail.length > 10 ? 'success' : 'primary'">
                                                                         </VTextarea>
                                                                     </VCol>
-                                                        <VCol cols="12" md="12" v-if="stepFourFields.type == 'evidence'">
-                                                            <v-label class="font-weight-medium pb-1">Image</v-label>
+                                                                    <VCol cols="12" md="12"
+                                                                        v-if="stepFourFields.type == 'evidence'">
+                                                                        <v-label
+                                                                            class="font-weight-medium pb-1">Image</v-label>
 
-                                                            <v-file-input v-model="files" :show-size="1000"
-                                                                color="deep-purple-accent-4" label="File input"
-                                                                placeholder="Select your files"
-                                                                prepend-icon="mdi-paperclip" variant="outlined" counter
-                                                                multiple accept="image/*" @change="selectImage">
-                                                                <template v-slot:selection="{ fileNames }">
-                                                                    <template v-for="(fileName, index) in fileNames"
-                                                                        :key="fileName">
-                                                                        <v-chip v-if="index < 2" class="me-2"
-                                                                            color="deep-purple-accent-4" size="small"
-                                                                            label>
-                                                                            {{ fileName }}
-                                                                        </v-chip>
+                                                                        <v-file-input v-model="files" :show-size="1000"
+                                                                            color="deep-purple-accent-4"
+                                                                            label="File input"
+                                                                            placeholder="Select your files"
+                                                                            prepend-icon="mdi-paperclip"
+                                                                            variant="outlined" counter multiple
+                                                                            accept="image/*" @change="selectImage">
+                                                                            <template v-slot:selection="{ fileNames }">
+                                                                                <template
+                                                                                    v-for="(fileName, index) in fileNames"
+                                                                                    :key="fileName">
+                                                                                    <v-chip v-if="index < 2"
+                                                                                        class="me-2"
+                                                                                        color="deep-purple-accent-4"
+                                                                                        size="small" label>
+                                                                                        {{ fileName }}
+                                                                                    </v-chip>
 
-                                                                        <span v-else-if="index === 2"
-                                                                            class="text-overline text-grey-darken-3 mx-2">
-                                                                            +{{ files.length - 2 }} File(s)
-                                                                        </span>
-                                                                    </template>
-                                                                </template>
-                                                            </v-file-input>
+                                                                                    <span v-else-if="index === 2"
+                                                                                        class="text-overline text-grey-darken-3 mx-2">
+                                                                                        +{{ files.length - 2 }} File(s)
+                                                                                    </span>
+                                                                                </template>
+                                                                            </template>
+                                                                        </v-file-input>
 
-                                                            <div v-if="previewImage">
-                                                                <VRow>
-                                                                    <VCol cols="4" v-for="image in previewImage"
-                                                                        :key="image">
+                                                                        <div v-if="previewImage">
+                                                                            <VRow>
+                                                                                <VCol cols="4"
+                                                                                    v-for="image in previewImage"
+                                                                                    :key="image">
 
-                                                                        <div>
-                                                                            <img class="preview my-3" :src="image"
-                                                                                alt="" style="max-width: 200px;" />
+                                                                                    <div>
+                                                                                        <img class="preview my-3"
+                                                                                            :src="image" alt=""
+                                                                                            style="max-width: 200px;" />
+                                                                                    </div>
+                                                                                </VCol>
+                                                                            </VRow>
                                                                         </div>
                                                                     </VCol>
-                                                                </VRow>
-                                                            </div>
-                                                        </VCol>
                                                                     <VCol cols="12" lg="12" class="text-right">
-                                                                        <v-btn color="error" @click="setViewQuestionDialog(false)"
+                                                                        <v-btn color="error"
+                                                                            @click="setViewQuestionDialog(false)"
                                                                             variant="text">Cancel</v-btn>
 
-                                                                        <v-btn color="primary" type="submit" :loading="loading"
-                                                                            :disabled="!valid" @click="sendFindings">
+                                                                        <v-btn color="primary" type="submit"
+                                                                            :loading="loading" :disabled="!valid"
+                                                                            @click="sendFindings">
                                                                             <span v-if="!loading">
                                                                                 Submit
                                                                             </span>
-                                                                            <clip-loader v-else :loading="loading" color="white"
+                                                                            <clip-loader v-else :loading="loading"
+                                                                                color="white"
                                                                                 :size="'25px'"></clip-loader>
                                                                         </v-btn>
 
@@ -1378,31 +1467,34 @@ const selectImage = (image: any) => {
                                                 </v-dialog>
                                             </v-sheet>
                                         </v-col>
-                                        
+
                                         <v-col cols="12" v-if="getInvestigation?.findings">
-                                        <v-table>
-                                            <thead>
-                                                <tr>
-                                                    
-                                                    <th class="text-left">
-                                                        Investigator
-                                                    </th>
-                                                    <th class="text-left">
-                                                        Description
-                                                    </th>
-                                                    <th class="text-left">
-                                                        Type
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr v-for="(interview) in getInvestigation?.findings" :key="interview">
-                                                    <td>{{ `${interview?.user?.lastName} ${interview?.user?.firstName}` }}</td>
-                                                    <td>{{ `${interview?.description}` }}</td>
-                                                    <td>{{ `${interview?.type} ${interview?.type == 'conclusion' ? '' : 'Cause'}` }}</td>
-                                                </tr>
-                                            </tbody>
-                                        </v-table>
+                                            <v-table>
+                                                <thead>
+                                                    <tr>
+
+                                                        <th class="text-left">
+                                                            Investigator
+                                                        </th>
+                                                        <th class="text-left">
+                                                            Description
+                                                        </th>
+                                                        <th class="text-left">
+                                                            Type
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="(interview) in getInvestigation?.findings"
+                                                        :key="interview">
+                                                        <td>{{ `${interview?.user?.lastName}
+                                                            ${interview?.user?.firstName}` }}</td>
+                                                        <td>{{ `${interview?.description}` }}</td>
+                                                        <td>{{ `${interview?.type} ${interview?.type == 'conclusion' ?
+                                                            '' : 'Cause'}` }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </v-table>
                                         </v-col>
                                     </v-row>
 
@@ -1412,19 +1504,21 @@ const selectImage = (image: any) => {
                                         <v-btn color="primary" variant="tonal" @click="changeTab('tab-3')">Back</v-btn>
                                     </v-col>
                                     <v-col cols="6" class="text-right">
-                                        <v-btn color="primary" @click="changeTab('tab-5')" v-if="isLoggedInUserIsLead">Next Step</v-btn>
+                                        <v-btn color="primary" @click="changeTab('tab-5')"
+                                            v-if="isLoggedInUserIsLead">Next Step</v-btn>
                                     </v-col>
                                 </v-row>
                             </v-window-item>
                             <v-window-item value="tab-5" class="pa-1">
                                 <div>
                                     <v-row class="mt-3 px-4">
-                                        
-                                        
+
+
                                         <v-col cols="12">
-                                            <v-btn  color="primary"  @click="setViewRecommendationDialog(true)" class="mr-2">Add Recommendation</v-btn>
-                                            
-                                            
+                                            <v-btn color="primary" @click="setViewRecommendationDialog(true)"
+                                                class="mr-2">Add Recommendation</v-btn>
+
+
                                             <v-sheet>
                                                 <v-dialog v-model="viewRecommendationDialog" max-width="500">
                                                     <v-card>
@@ -1432,7 +1526,8 @@ const selectImage = (image: any) => {
                                                         <v-card-text>
                                                             <div class="d-flex justify-space-between">
                                                                 <h3 class="text-h3">Add </h3>
-                                                                <v-btn icon @click="setViewRecommendationDialog(false)" size="small" flat>
+                                                                <v-btn icon @click="setViewRecommendationDialog(false)"
+                                                                    size="small" flat>
                                                                     <XIcon size="16" />
                                                                 </v-btn>
                                                             </div>
@@ -1441,58 +1536,77 @@ const selectImage = (image: any) => {
 
                                                         <v-card-text>
 
-                                                            <VForm v-model="valid" ref="formContainer" fast-fail lazy-validation
-                                                                @submit.prevent="sendRecommendation" class="py-1">
+                                                            <VForm v-model="valid" ref="formContainer" fast-fail
+                                                                lazy-validation @submit.prevent="sendRecommendation"
+                                                                class="py-1">
                                                                 <VRow class="mt-5 mb-3">
 
                                                                     <VCol cols="12" md="12">
                                                                         <v-label
                                                                             class="text-subtitle-1 font-weight-medium pb-1">Title</v-label>
-                                                                        <VTextField type="text" v-model="stepFiveFields.title"
-                                                                            :rules="stepFiveFieldRules.title" required variant="outlined"
-                                                                            label="Title"
+                                                                        <VTextField type="text"
+                                                                            v-model="stepFiveFields.title"
+                                                                            :rules="stepFiveFieldRules.title" required
+                                                                            variant="outlined" label="Title"
                                                                             :color="stepFiveFields.title.length > 2 ? 'success' : 'primary'">
                                                                         </VTextField>
                                                                     </VCol>
                                                                     <VCol cols="12" md="12">
                                                                         <v-label
                                                                             class="text-subtitle-1 font-weight-medium pb-1">Description</v-label>
-                                                                        <VTextarea variant="outlined" outlined name="Description"
-                                                                            label="Description" v-model="stepFiveFields.description"
-                                                                            :rules="stepFiveFieldRules.description" required
+                                                                        <VTextarea variant="outlined" outlined
+                                                                            name="Description" label="Description"
+                                                                            v-model="stepFiveFields.description"
+                                                                            :rules="stepFiveFieldRules.description"
+                                                                            required
                                                                             :color="stepFiveFields.description.length > 10 ? 'success' : 'primary'">
                                                                         </VTextarea>
                                                                     </VCol>
                                                                     <VCol cols="12" md="12">
-                                                                        <v-label class="font-weight-medium pb-1">User</v-label>
-                                                                        <VSelect v-model="stepFiveFields.assigneeId" :items="getMembers"
-                                                                            :rules="stepFiveFieldRules.assigneeId" label="Select" :selected="''"
-                                                                            item-title='lastName' item-value="uuid" single-line
-                                                                            variant="outlined" class="text-capitalize" :item-props="(item) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})">
+                                                                        <v-label
+                                                                            class="font-weight-medium pb-1">User</v-label>
+                                                                        <VSelect v-model="stepFiveFields.assigneeId"
+                                                                            :items="getMembers"
+                                                                            :rules="stepFiveFieldRules.assigneeId"
+                                                                            label="Select" :selected="''"
+                                                                            item-title='lastName' item-value="uuid"
+                                                                            single-line variant="outlined"
+                                                                            class="text-capitalize"
+                                                                            :item-props="(item) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})">
 
                                                                         </VSelect>
                                                                     </VCol>
                                                                     <VCol cols="12" md="12">
-                                                                        <v-label class="font-weight-medium pb-1">Severity</v-label>
-                                                                        <VSelect v-model="stepFiveFields.priorityId" :items="getPriorities"
-                                                                            :rules="stepFiveFieldRules.priorityId" label="Select" :selected="''"
-                                                                            item-title="description" item-value="id" single-line
-                                                                            variant="outlined" class="text-capitalize">
+                                                                        <v-label
+                                                                            class="font-weight-medium pb-1">Severity</v-label>
+                                                                        <VSelect v-model="stepFiveFields.priorityId"
+                                                                            :items="getPriorities"
+                                                                            :rules="stepFiveFieldRules.priorityId"
+                                                                            label="Select" :selected="''"
+                                                                            item-title="description" item-value="id"
+                                                                            single-line variant="outlined"
+                                                                            class="text-capitalize">
                                                                         </VSelect>
                                                                     </VCol>
 
                                                                     <VCol cols="12" md="6">
-                                                                        <v-label class="text-subtitle-1 font-weight-medium pb-1">Start
+                                                                        <v-label
+                                                                            class="text-subtitle-1 font-weight-medium pb-1">Start
                                                                             Date</v-label>
-                                                                        <VueDatePicker input-class-name="dp-custom-input"
-                                                                            v-model="stepFiveFields.start_date" :min-date="new Date()" required>
+                                                                        <VueDatePicker
+                                                                            input-class-name="dp-custom-input"
+                                                                            v-model="stepFiveFields.start_date"
+                                                                            :min-date="new Date()" required>
                                                                         </VueDatePicker>
                                                                     </VCol>
                                                                     <VCol cols="12" md="6">
-                                                                        <v-label class="text-subtitle-1 font-weight-medium pb-1">End
+                                                                        <v-label
+                                                                            class="text-subtitle-1 font-weight-medium pb-1">End
                                                                             Date</v-label>
-                                                                        <VueDatePicker input-class-name="dp-custom-input"
-                                                                            :disabled='!stepFiveFields.start_date' v-model="stepFiveFields.end_date"
+                                                                        <VueDatePicker
+                                                                            input-class-name="dp-custom-input"
+                                                                            :disabled='!stepFiveFields.start_date'
+                                                                            v-model="stepFiveFields.end_date"
                                                                             :min-date="stepFiveFields.start_date ? new Date(stepFiveFields.start_date) : new Date()"
                                                                             required></VueDatePicker>
                                                                     </VCol>
@@ -1501,12 +1615,14 @@ const selectImage = (image: any) => {
                                                                         <v-btn color="error" @click="dialog = false"
                                                                             variant="text">Cancel</v-btn>
 
-                                                                        <v-btn color="primary" type="submit" :loading="loading"
-                                                                            :disabled="!valid" @click="sendRecommendation">
+                                                                        <v-btn color="primary" type="submit"
+                                                                            :loading="loading" :disabled="!valid"
+                                                                            @click="sendRecommendation">
                                                                             <span v-if="!loading">
                                                                                 Submit
                                                                             </span>
-                                                                            <clip-loader v-else :loading="loading" color="white"
+                                                                            <clip-loader v-else :loading="loading"
+                                                                                color="white"
                                                                                 :size="'25px'"></clip-loader>
                                                                         </v-btn>
 
@@ -1519,12 +1635,12 @@ const selectImage = (image: any) => {
 
                                             </v-sheet>
                                         </v-col>
-                                        
-                                        <v-col cols="12" >
+
+                                        <v-col cols="12">
                                             <v-table>
                                                 <thead>
                                                     <tr>
-                                                        
+
                                                         <th class="text-left">
                                                             #
                                                         </th>
@@ -1546,11 +1662,13 @@ const selectImage = (image: any) => {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr v-for="(actions, index) in getInvestigation?.actions" :key="actions">
+                                                    <tr v-for="(actions, index) in getInvestigation?.actions"
+                                                        :key="actions">
                                                         <td>{{ ++index }}</td>
                                                         <td>{{ `${actions?.title}` }}</td>
                                                         <td>{{ `${actions?.description}` }}</td>
-                                                        <td>{{ `${actions?.assignee?.lastName} ${actions?.assignee?.firstName}` }}</td>
+                                                        <td>{{ `${actions?.assignee?.lastName}
+                                                            ${actions?.assignee?.firstName}` }}</td>
                                                         <td>{{ `${actions?.status}` }}</td>
                                                         <td>{{ `${actions?.priority?.description}` }}</td>
                                                     </tr>
@@ -1565,153 +1683,161 @@ const selectImage = (image: any) => {
                                         <v-btn color="primary" variant="tonal" @click="changeTab('tab-4')">Back</v-btn>
                                     </v-col>
                                     <v-col cols="6" class="text-right">
-                                        <v-btn color="primary" @click="changeTab('tab-6')" v-if="isLoggedInUserIsLead">Next Step</v-btn>
+                                        <v-btn color="primary" @click="changeTab('tab-6')"
+                                            v-if="isLoggedInUserIsLead">Next Step</v-btn>
                                     </v-col>
                                 </v-row>
                             </v-window-item>
                             <v-window-item value="tab-6" class="pa-1">
-                                
-                                    <v-btn  color="primary"  @click="setViewReportDialog(true)" class="mr-2">Add Report</v-btn>
-                                    
-                                    <v-sheet>
-                                        <v-dialog v-model="viewReportDialog" max-width="500">
-                                            <v-card>
 
-                                                <v-card-text>
-                                                    <div class="d-flex justify-space-between">
-                                                        <h3 class="text-h3">Add Report</h3>
-                                                        <v-btn icon @click="setViewReportDialog(false)" size="small" flat>
-                                                            <XIcon size="16" />
-                                                        </v-btn>
-                                                    </div>
-                                                </v-card-text>
-                                                <v-divider></v-divider>
+                                <v-btn color="primary" @click="setViewReportDialog(true)" class="mr-2">Add
+                                    Report</v-btn>
 
-                                                <v-card-text>
+                                <v-sheet>
+                                    <v-dialog v-model="viewReportDialog" max-width="500">
+                                        <v-card>
 
-                                                    <VForm v-model="valid" ref="formContainer" fast-fail lazy-validation
-                                                        @submit.prevent="sendReport" class="py-1">
-                                                        <VRow class="mt-5 mb-3">
+                                            <v-card-text>
+                                                <div class="d-flex justify-space-between">
+                                                    <h3 class="text-h3">Add Report</h3>
+                                                    <v-btn icon @click="setViewReportDialog(false)" size="small" flat>
+                                                        <XIcon size="16" />
+                                                    </v-btn>
+                                                </div>
+                                            </v-card-text>
+                                            <v-divider></v-divider>
 
-                                                            <VCol cols="12" md="12">
-                                                                <v-label
-                                                                    class="text-subtitle-1 font-weight-medium pb-1">Method Of Investigation</v-label>
-                                                                <VTextField type="text" v-model="stepSixFields.method"
-                                                                    :rules="stepSixFieldRules.method" required variant="outlined"
-                                                                    label="Method"
-                                                                    :color="stepSixFields.method.length > 2 ? 'success' : 'primary'">
-                                                                </VTextField>
-                                                            </VCol>
-                                                            <VCol cols="12" md="12">
-                                                                <v-label
-                                                                    class="text-subtitle-1 font-weight-medium pb-1">Title</v-label>
-                                                                <VTextField type="text" v-model="stepSixFields.title"
-                                                                    :rules="stepSixFieldRules.title" required variant="outlined"
-                                                                    label="Title"
-                                                                    :color="stepSixFields.title.length > 2 ? 'success' : 'primary'">
-                                                                </VTextField>
-                                                            </VCol>
-                                                            <VCol cols="12" md="12">
-                                                                <v-label
-                                                                    class="text-subtitle-1 font-weight-medium pb-1">Description</v-label>
-                                                                <VTextarea variant="outlined" outlined name="Description"
-                                                                    label="Description" v-model="stepSixFields.description"
-                                                                    :rules="stepSixFieldRules.description" required
-                                                                    :color="stepSixFields.description.length > 10 ? 'success' : 'primary'">
-                                                                </VTextarea>
-                                                            </VCol>
-                                                            <VCol cols="12" md="12">
-                                                                <v-label class="text-subtitle-1 font-weight-medium pb-1">Incident Date and Time</v-label>
-                                                                <VueDatePicker input-class-name="dp-custom-input"
-                                                                    v-model="stepSixFields.incident_date_time" :max-date="new Date()" required>
-                                                                </VueDatePicker>
-                                                            </VCol>
-                                                            <VCol cols="12" md="12">
-                                                                <v-label
-                                                                    class="text-subtitle-1 font-weight-medium pb-1">Location</v-label>
-                                                                <VTextField type="text" v-model="stepSixFields.location"
-                                                                    :rules="stepSixFieldRules.location" required variant="outlined"
-                                                                    label="location"
-                                                                    :color="stepSixFields.location.length > 2 ? 'success' : 'primary'">
-                                                                </VTextField>
-                                                            </VCol>
-                                                            <VCol cols="12" md="12">
-                                                                <v-label
-                                                                    class="text-subtitle-1 font-weight-medium pb-1">Details of injured workers/damages</v-label>
-                                                                <VTextarea variant="outlined" outlined name="Details"
-                                                                    label="Details" v-model="stepSixFields.damages"
-                                                                    :rules="stepSixFieldRules.damages" required
-                                                                    :color="stepSixFields.damages.length > 10 ? 'success' : 'primary'">
-                                                                </VTextarea>
-                                                            </VCol>
+                                            <v-card-text>
+
+                                                <VForm v-model="valid" ref="formContainer" fast-fail lazy-validation
+                                                    @submit.prevent="sendReport" class="py-1">
+                                                    <VRow class="mt-5 mb-3">
+
+                                                        <VCol cols="12" md="12">
+                                                            <v-label
+                                                                class="text-subtitle-1 font-weight-medium pb-1">Method
+                                                                Of Investigation</v-label>
+                                                            <VTextField type="text" v-model="stepSixFields.method"
+                                                                :rules="stepSixFieldRules.method" required
+                                                                variant="outlined" label="Method"
+                                                                :color="stepSixFields.method.length > 2 ? 'success' : 'primary'">
+                                                            </VTextField>
+                                                        </VCol>
+                                                        <VCol cols="12" md="12">
+                                                            <v-label
+                                                                class="text-subtitle-1 font-weight-medium pb-1">Title</v-label>
+                                                            <VTextField type="text" v-model="stepSixFields.title"
+                                                                :rules="stepSixFieldRules.title" required
+                                                                variant="outlined" label="Title"
+                                                                :color="stepSixFields.title.length > 2 ? 'success' : 'primary'">
+                                                            </VTextField>
+                                                        </VCol>
+                                                        <VCol cols="12" md="12">
+                                                            <v-label
+                                                                class="text-subtitle-1 font-weight-medium pb-1">Description</v-label>
+                                                            <VTextarea variant="outlined" outlined name="Description"
+                                                                label="Description" v-model="stepSixFields.description"
+                                                                :rules="stepSixFieldRules.description" required
+                                                                :color="stepSixFields.description.length > 10 ? 'success' : 'primary'">
+                                                            </VTextarea>
+                                                        </VCol>
+                                                        <VCol cols="12" md="12">
+                                                            <v-label
+                                                                class="text-subtitle-1 font-weight-medium pb-1">Incident
+                                                                Date and Time</v-label>
+                                                            <VueDatePicker input-class-name="dp-custom-input"
+                                                                v-model="stepSixFields.incident_date_time"
+                                                                :max-date="new Date()" required>
+                                                            </VueDatePicker>
+                                                        </VCol>
+                                                        <VCol cols="12" md="12">
+                                                            <v-label
+                                                                class="text-subtitle-1 font-weight-medium pb-1">Location</v-label>
+                                                            <VTextField type="text" v-model="stepSixFields.location"
+                                                                :rules="stepSixFieldRules.location" required
+                                                                variant="outlined" label="location"
+                                                                :color="stepSixFields.location.length > 2 ? 'success' : 'primary'">
+                                                            </VTextField>
+                                                        </VCol>
+                                                        <VCol cols="12" md="12">
+                                                            <v-label
+                                                                class="text-subtitle-1 font-weight-medium pb-1">Details
+                                                                of injured workers/damages</v-label>
+                                                            <VTextarea variant="outlined" outlined name="Details"
+                                                                label="Details" v-model="stepSixFields.damages"
+                                                                :rules="stepSixFieldRules.damages" required
+                                                                :color="stepSixFields.damages.length > 10 ? 'success' : 'primary'">
+                                                            </VTextarea>
+                                                        </VCol>
 
 
-                                                            <VCol cols="12" lg="12" class="text-right">
-                                                                <v-btn color="error" @click="dialog = false"
-                                                                    variant="text">Cancel</v-btn>
+                                                        <VCol cols="12" lg="12" class="text-right">
+                                                            <v-btn color="error" @click="dialog = false"
+                                                                variant="text">Cancel</v-btn>
 
-                                                                <v-btn color="primary" type="submit" :loading="loading"
-                                                                    :disabled="!valid" @click="sendReport">
-                                                                    <span v-if="!loading">
-                                                                        Submit
-                                                                    </span>
-                                                                    <clip-loader v-else :loading="loading" color="white"
-                                                                        :size="'25px'"></clip-loader>
-                                                                </v-btn>
+                                                            <v-btn color="primary" type="submit" :loading="loading"
+                                                                :disabled="!valid" @click="sendReport">
+                                                                <span v-if="!loading">
+                                                                    Submit
+                                                                </span>
+                                                                <clip-loader v-else :loading="loading" color="white"
+                                                                    :size="'25px'"></clip-loader>
+                                                            </v-btn>
 
-                                                            </VCol>
-                                                        </VRow>
-                                                    </VForm>
-                                                </v-card-text>
-                                            </v-card>
-                                        </v-dialog>
+                                                        </VCol>
+                                                    </VRow>
+                                                </VForm>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-dialog>
 
-                                    </v-sheet>
-                                    
-                                        <v-col cols="12" >
-                                            <v-table>
-                                                <thead>
-                                                    <tr>
-                                                        
-                                                        <th class="text-left">
-                                                            #
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Title
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Description
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Location
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Damages
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Incident Date
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr :key="getInvestigation?.report" v-if="getInvestigation?.report">
-                                                        <td>{{ '1' }}</td>
-                                                        <td>{{ `${getInvestigation?.report?.title}` }}</td>
-                                                        <td>{{ `${getInvestigation?.report?.description}` }}</td>
-                                                        <td>{{ `${getInvestigation?.report?.location}` }}</td>
-                                                        <td>{{ `${getInvestigation?.report?.damages}` }}</td>
-                                                        <td>{{ `${getInvestigation?.report?.incident_date_time}` }}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </v-table>
-                                        </v-col>
+                                </v-sheet>
+
+                                <v-col cols="12">
+                                    <v-table>
+                                        <thead>
+                                            <tr>
+
+                                                <th class="text-left">
+                                                    #
+                                                </th>
+                                                <th class="text-left">
+                                                    Title
+                                                </th>
+                                                <th class="text-left">
+                                                    Description
+                                                </th>
+                                                <th class="text-left">
+                                                    Location
+                                                </th>
+                                                <th class="text-left">
+                                                    Damages
+                                                </th>
+                                                <th class="text-left">
+                                                    Incident Date
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr :key="getInvestigation?.report" v-if="getInvestigation?.report">
+                                                <td>{{ '1' }}</td>
+                                                <td>{{ `${getInvestigation?.report?.title}` }}</td>
+                                                <td>{{ `${getInvestigation?.report?.description}` }}</td>
+                                                <td>{{ `${getInvestigation?.report?.location}` }}</td>
+                                                <td>{{ `${getInvestigation?.report?.damages}` }}</td>
+                                                <td>{{ `${getInvestigation?.report?.incident_date_time}` }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </v-table>
+                                </v-col>
                                 <v-row class="mt-3">
                                     <v-col cols="12" sm="6">
                                         <v-btn color="primary" variant="tonal" @click="changeTab('tab-5')">Back</v-btn>
                                     </v-col>
                                     <v-col cols="12" sm="6" class="text-sm-right">
-                                        <v-btn color="primary" @click="completeInvestigation" v-if="isLoggedInUserIsLead">Complete Investigation</v-btn>
-                                       
+                                        <v-btn color="primary" @click="completeInvestigation"
+                                            v-if="isLoggedInUserIsLead">Complete Investigation</v-btn>
+
                                     </v-col>
                                 </v-row>
                             </v-window-item>

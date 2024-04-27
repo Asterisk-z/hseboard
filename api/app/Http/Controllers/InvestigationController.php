@@ -587,17 +587,18 @@ class InvestigationController extends Controller
             logger($investigation->is_completed());
             if ($investigation->is_completed()) {
 
-                // $investigation->end_date = now();
-                // $investigation->save();
+                $investigation->end_date = now();
+                $investigation->save();
 
-                // $observation->status = Observation::status['DOI'];
-                // $observation->save();
+                $observation->status = Observation::status['DOI'];
+                $observation->save();
 
+                return successResponse('Report Sent Successfully', []);
             }
 
-            // logAction(auth()->user()->email, 'You started an investigation ', 'Start Investigation', $request->ip());
+            return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Something Went Wrong");
 
-            return successResponse('Report Sent Successfully', []);
+            // logAction(auth()->user()->email, 'You started an investigation ', 'Start Investigation', $request->ip());
 
         } catch (Exception $e) {
             logger($e);
@@ -634,6 +635,26 @@ class InvestigationController extends Controller
             }
 
             if (!$investigation = Investigation::where('observation_id', $observation->id)->where('end_date', null)->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "There is no running investigation");
+            }
+
+            return successResponse('Investigation Fetched Successfully', $investigation);
+
+        } catch (Exception $error) {
+
+            return successResponse('Investigation Fetched Successfully', []);
+
+        }
+
+    }
+
+    public function completed()
+    {
+        try {
+
+            $stats = [];
+
+            if (!$investigation = Investigation::where('uuid', request('investigation_id'))->where('end_date', '!=', null)->first()) {
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "There is no running investigation");
             }
 

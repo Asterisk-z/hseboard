@@ -43,6 +43,7 @@ return [
 
     'debug' => (bool) env('APP_DEBUG', false),
 
+    'FLW' => env('FLW', 'null'),
     /*
     |--------------------------------------------------------------------------
     | Application URL
