@@ -66,7 +66,7 @@ const sidebarItem: menu[] = [
         to: '/hse-investigation'
     },
     {
-        title: 'HSE Audit',
+        title: 'Audit Management',
         icon: CircleIcon,
         to: '/hse-audit'
     },

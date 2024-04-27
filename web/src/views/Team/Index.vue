@@ -218,9 +218,14 @@ const save = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setDialog(false)
-            setTimeout(() => {
-                formContainer.value.reset()
-            }, 2000)
+            
+            fields.value.firstName = "";
+            fields.value.lastName = "";
+            fields.value.phoneNumber = "";
+            fields.value.emailAddress = "";
+            fields.value.password = "";
+            fields.value.confirmPassword = "";
+            fields.value.accountRole = "";
             teamMemberStore.getTeamMembers();
         }
 
@@ -638,25 +643,47 @@ const goToRequest = () => {
 
                     <VDataTable :headers="headers" :items="getTeamMembers" :search="search" item-key="name"
                         items-per-page="5" item-value="fat" show-select>
-                        <template v-slot:item.action="{ item }">
-                            <div v-if="isLoggedInUserOwnsActionOrg">
-                                <v-btn size="small" @click="selectItem(item, 'view')">
-                                    <v-icon class="" size="small">
-                                        mdi-eye
-                                    </v-icon>
-                                </v-btn>
-                                <v-btn size="small" @click="selectItem(item, 'edit')">
-                                    <v-icon class="" size="small">
-                                        mdi-pencil
-                                    </v-icon>
-                                </v-btn>
-                                <v-btn size="small" @click="selectItem(item, 'delete')">
-                                    <v-icon class="" size="small">
-                                        mdi-delete
-                                    </v-icon>
-                                </v-btn>
-                            </div>
-                        </template>
+                       
+
+                            <template v-slot:item.action="{ item }">
+
+                                <v-menu>
+                                    <template v-slot:activator="{ props }">
+                                        <v-btn color="primary" dark v-bind="props" flat
+                                            v-if="isLoggedInUserOwnsActionOrg">
+                                            Action </v-btn>
+                                    </template>
+
+                                    <v-list>
+                                        <v-list-item @click="selectItem(item, 'view')">
+                                            <v-list-item-title>
+                                                <v-icon class="mr-2" size="small">
+                                                    mdi-eye
+                                                </v-icon>
+                                                View Member
+                                            </v-list-item-title>
+                                        </v-list-item>
+
+                                        <v-list-item @click="selectItem(item, 'edit')">
+                                            <v-list-item-title>
+                                                <v-icon class="mr-2" size="small">
+                                                    mdi-pencil
+                                                </v-icon>
+                                                Edit Member
+                                            </v-list-item-title>
+                                        </v-list-item>
+                                        <v-list-item @click="selectItem(item, 'delete')">
+                                            <v-list-item-title>
+                                                <v-icon class="mr-2" size="small">
+                                                    mdi-delete
+                                                </v-icon>
+                                                Delete Member
+                                            </v-list-item-title>
+                                        </v-list-item>
+
+                                    </v-list>
+                                </v-menu>
+                            </template>
 
                         <template v-slot:item.sn="{ index }">
                             {{ ++index }}

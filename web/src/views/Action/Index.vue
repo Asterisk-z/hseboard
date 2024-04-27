@@ -247,10 +247,17 @@ const save = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setDialog(false)
-            setTimeout(() => {
-                formContainer.value.reset()
-            }, 2000)
+
+            fields.value.title = "";
+            fields.value.description = "";
+            fields.value.assigneeId = "";
+            fields.value.priorityId = "";
+            fields.value.end_date = "";
+            fields.value.start_date = "";
+
             actionStore.getActions();
+            
+
         }
 
         setLoading(false)
@@ -295,10 +302,15 @@ const update = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setEditDialog(false)
-            setTimeout(() => {
-                formContainer.value.reset()
-            }, 2000)
+
             actionStore.getActions();
+
+            editFields.value.title = "";
+            editFields.value.description = "";
+            editFields.value.actionId = "";
+            editFields.value.priorityId = "";
+            editFields.value.end_date = "";
+            editFields.value.start_date = "";
         }
 
         setLoading(false)
@@ -376,7 +388,8 @@ const statusUpdate = async (action: any) => {
             setLoading(false)
             setSubViewDialog(false)
             setViewDialog(false)
-
+            sFields.value.status = ''
+            sFields.value.message = ''
             actionStore.getActions();
         }
 
@@ -633,28 +646,75 @@ const selectImage = (image: any) => {
                                             <!-- {{ selectedItem }} -->
 
                                             <VCol cols="12" lg="12" v-if="!subViewDialog">
-                                                <v-list lines="one" v-if="selectedItem">
 
-                                                    <v-list-item
-                                                        :title="`Title : ${selectedItem?.title}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`Description : ${selectedItem?.description}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`Assignee : ${selectedItem?.assignee?.firstName} ${selectedItem?.assignee?.lastName}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`Assignor : ${selectedItem?.creator?.firstName} ${selectedItem?.creator?.lastName}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`Status : ${selectedItem?.status}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`Start Date time : ${selectedItem?.start_datetime}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`End Date time : ${selectedItem?.end_datetime}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`Priority : ${selectedItem?.priority?.description}`"></v-list-item>
-                                                    <v-list-item v-if="selectedItem?.statusMessage"
-                                                        :title="`Status Reason : ${selectedItem?.statusMessage}`"></v-list-item>
+                                                <v-table v-if="selectedItem">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-left">
 
-                                                </v-list>
+                                                            </th>
+                                                            <th class="text-left">
+
+                                                            </th>
+                                                            <th class="text-left">
+
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                        <template v-if="selectedItem">
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Title </td>
+                                                                <td>{{ `${selectedItem?.title}`
+                                                                    }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Description </td>
+                                                                <td>{{ `${selectedItem?.description}` }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Assignee </td>
+                                                                <td>{{ `${selectedItem?.assignee?.firstName}
+                                                                    ${selectedItem?.assignee?.lastName}` }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Assignor </td>
+                                                                <td>{{ `${selectedItem?.creator?.firstName}
+                                                                    ${selectedItem?.creator?.lastName}` }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Status </td>
+                                                                <td>{{ `${selectedItem?.status}` }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Start Date time </td>
+                                                                <td>{{ `${selectedItem?.start_datetime}` }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>End Date time </td>
+                                                                <td>{{ `${selectedItem?.end_datetime}` }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Priority </td>
+                                                                <td>{{ `${selectedItem?.priority?.description}` }}</td>
+                                                            </tr>
+                                                            <tr v-if="selectedItem?.statusMessage">
+                                                                <td></td>
+                                                                <td>Status Reason </td>
+                                                                <td>{{ `${selectedItem?.statusMessage}` }}</td>
+                                                            </tr>
+                                                        </template>
+                                                    </tbody>
+                                                </v-table>
                                             </VCol>
                                             <VCol cols="12" lg="12" v-else>
 

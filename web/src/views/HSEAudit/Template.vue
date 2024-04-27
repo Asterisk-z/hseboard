@@ -12,7 +12,7 @@ import Swal from 'sweetalert2'
 import readXlsxFile from 'read-excel-file'
 
 
-const page = ref({ title: 'HSE Audit Template' });
+const page = ref({ title: 'Audit Template' });
 const breadcrumbs = ref([
     {
         text: 'Dashboard',
@@ -20,7 +20,7 @@ const breadcrumbs = ref([
         href: 'dashboard'
     },
     {
-        text: 'HSE Audit',
+        text: 'Audit Management',
         disabled: false,
         href: 'hse-audit'
     },
@@ -293,7 +293,7 @@ const selectImage = (image: any) => {
         <v-row>
             <v-col cols="12" md="12">
 
-                <v-card :title="`HSE Audit Documents`" flat>
+                <v-card :title="`Audit Documents`" flat>
 
 
                     <template v-slot:append>

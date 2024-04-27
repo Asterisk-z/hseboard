@@ -709,31 +709,74 @@ const startInvestigationAction = async (item: any) => {
 
                                     <v-card-text>
 
-                                        <VRow class="mt-5 mb-3">
+                                        <VRow class="mt-0 mb-3">
 
                                             <!-- {{ selectedItem }} -->
 
                                             <VCol cols="12" lg="12">
-                                                <v-list lines="one" v-if="selectedItem">
 
-                                                    <v-list-item
-                                                        :title="`Observation Type : ${selectedItem?.observation_type?.description}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`Observer : ${selectedItem?.observer?.firstName} ${selectedItem?.observer?.lastName}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`Description : ${selectedItem?.description}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`Address : ${selectedItem?.address}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`Location Details : ${selectedItem?.location_details}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`Affected Workers : ${selectedItem?.affected_workers}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`Incident Date : ${selectedItem?.incident_datetime}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`Status : ${selectedItem?.status}`"></v-list-item>
+                                                <v-table>
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-left">
 
-                                                </v-list>
+                                                            </th>
+                                                            <th class="text-left">
+
+                                                            </th>
+                                                            <th class="text-left">
+
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                        <template v-if="selectedItem">
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Observation Type </td>
+                                                                <td>{{ `${selectedItem?.observation_type?.description}`
+                                                                    }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Observer </td>
+                                                                <td>{{ `${selectedItem?.observer?.firstName}
+                                                                    ${selectedItem?.observer?.lastName}` }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Description </td>
+                                                                <td>{{ `${selectedItem?.description}` }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Address </td>
+                                                                <td>{{ `${selectedItem?.address}` }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Location Details </td>
+                                                                <td>{{ `${selectedItem?.location_details}` }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Affected Workers </td>
+                                                                <td>{{ `${selectedItem?.affected_workers}` }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Incident Date </td>
+                                                                <td>{{ `${selectedItem?.incident_datetime}` }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Status </td>
+                                                                <td>{{ `${selectedItem?.status}` }}</td>
+                                                            </tr>
+                                                        </template>
+                                                    </tbody>
+                                                </v-table>
                                             </VCol>
 
                                             <VCol cols="12" lg="12" class="text-right"
@@ -812,7 +855,7 @@ const startInvestigationAction = async (item: any) => {
 
                     <VDataTable :headers="headers" :items="getObservations" :search="search" item-key="name"
                         items-per-page="5" item-value="fat" show-select>
-                        <template v-slot:item.action="{ item }">
+                        <!-- <template v-slot:item.action="{ item }">
                             <div v-if="isLoggedInUserOwnsActionOrg">
                                 <v-btn size="small" @click="selectItem(item, 'view')">
                                     <v-icon class="" size="small">
@@ -830,6 +873,46 @@ const startInvestigationAction = async (item: any) => {
                                     </v-icon>
                                 </v-btn>
                             </div>
+                        </template> -->
+
+
+                        <template v-slot:item.action="{ item }">
+
+                            <v-menu>
+                                <template v-slot:activator="{ props }">
+                                    <v-btn color="primary" dark v-bind="props" flat v-if="isLoggedInUserOwnsActionOrg">
+                                        Action </v-btn>
+                                </template>
+
+                                <v-list>
+                                    <v-list-item @click="selectItem(item, 'view')">
+                                        <v-list-item-title>
+                                            <v-icon class="mr-2" size="small">
+                                                mdi-eye
+                                            </v-icon>
+                                            View Observation
+                                        </v-list-item-title>
+                                    </v-list-item>
+                                    
+                                    <v-list-item @click="selectItem(item, 'edit')">
+                                        <v-list-item-title>
+                                            <v-icon class="mr-2" size="small">
+                                                mdi-pencil
+                                            </v-icon>
+                                            Edit Observation
+                                        </v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item @click="selectItem(item, 'delete')">
+                                        <v-list-item-title>
+                                            <v-icon class="mr-2" size="small">
+                                                mdi-delete
+                                            </v-icon>
+                                            Delete Observation
+                                        </v-list-item-title>
+                                    </v-list-item>
+                                        
+                                </v-list>
+                            </v-menu>
                         </template>
 
                         <template v-slot:item.sn="{ index }">

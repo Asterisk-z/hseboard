@@ -198,8 +198,62 @@ class MainAuditController extends Controller
             if (!$main_audit = MainAudit::where('uuid', request('main_audit_id'))->where('end_date', '!=', null)->where('status', 'completed')->first()) {
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Audit");
             }
+            $total_questions = 0;
+            $number_of_yeses = 0;
+            $number_of_nc_minor = 0;
+            $number_of_nc_major = 0;
+            $number_of_na = 0;
+
+            $questions = $main_audit->questions;
+
+            foreach ($questions as $title_question) {
+                $title_questions = $title_question->questions;
+                foreach ($title_questions as $question) {
+                    ++$total_questions;
+
+                    if ($question->response->answer == 'yes') {
+                        ++$number_of_yeses;
+                    }
+
+                    if ($question->response->answer == 'nc_minor') {
+                        ++$number_of_nc_minor;
+                    }
+
+                    if ($question->response->answer == 'nc_major') {
+                        ++$number_of_nc_major;
+                    }
+
+                    if ($question->response->answer == 'na') {
+                        ++$number_of_na;
+                    }
+
+                }
+
+            }
 
             $stats['main_audit'] = $main_audit;
+            $stats['stats'] = [];
+            $stats['stats']['total_questions'] = $total_questions;
+            $stats['stats']['number_of_yeses'] = $number_of_yeses;
+            $stats['stats']['number_of_nc_minor'] = $number_of_nc_minor;
+            $stats['stats']['number_of_nc_major'] = $number_of_nc_major;
+            $stats['stats']['number_of_na'] = $number_of_na;
+            $stats['stats']['maximum_score'] = $number_of_yeses + $number_of_nc_minor + $number_of_nc_major;
+            $stats['stats']['audit_score'] = round(((($number_of_yeses - ($number_of_nc_minor + $number_of_nc_major)) * 100) / ($number_of_yeses + $number_of_nc_minor + $number_of_nc_major)), 2);
+            if($stats['stats']['audit_score'] < 59) {
+                 $stats['stats']['audit_rate'] = 'Fail';
+            }
+            if($stats['stats']['audit_score'] < 69) {
+                 $stats['stats']['audit_rate'] = 'Poor';
+            }
+            if($stats['stats']['audit_score'] < 79) {
+                 $stats['stats']['audit_rate'] = 'Good';
+            }
+            if($stats['stats']['audit_score'] > 79) {
+                 $stats['stats']['audit_rate'] = 'Excellent';
+            }
+
+            $stats['stats']['start_onsite'] = 32323;
 
             return successResponse('Audit Fetched Successfully', $stats);
 

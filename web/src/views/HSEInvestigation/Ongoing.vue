@@ -200,6 +200,9 @@ const save = async (e: any) => {
         setLoading(false)
         setAddMemberDialog(false)
 
+        fields.value.leadInvestigator = "";
+        fields.value.teamMember = [];
+        fields.value.groupChatName = "";
 
 
     } catch (error) {
@@ -306,6 +309,8 @@ const sendQuestion = async (e: any) => {
 
         setLoading(false)
 
+        stepTwoFields.value.questions = [];
+        stepTwoFields.value.members = [];
 
 
     } catch (error) {
@@ -378,6 +383,11 @@ const sendInvites = async (e: any) => {
         setLoading(false)
         setAddInviteDialog(false)
 
+        stepThreeFields.value.members = "";
+            stepThreeFields.value.date_times = [];
+            stepThreeFields.value.interview_type = "";
+            stepThreeFields.value.interview_link = "";
+            stepThreeFields.value.interview_location = "";
 
 
     } catch (error) {
@@ -429,6 +439,7 @@ const sendFindings = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setViewFindingDialog(false)
+
             investigationStore.getInvestigation(route.params.observation_id);
         }
 
@@ -512,6 +523,14 @@ const sendRecommendation = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setViewRecommendationDialog(false)
+
+            stepFiveFields.value.title = "";
+            stepFiveFields.value.description = "";
+            stepFiveFields.value.assigneeId = "";
+            stepFiveFields.value.start_date = "";
+            stepFiveFields.value.end_date = "";
+            stepFiveFields.value.priorityId = "";
+
             investigationStore.getInvestigation(route.params.observation_id);
         }
 
@@ -594,6 +613,13 @@ const sendReport = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setViewReportDialog(false)
+            
+            stepSixFields.value.title = "";
+            stepSixFields.value.method = "";
+            stepSixFields.value.description = "";
+            stepSixFields.value.damages = "";
+            stepSixFields.value.location = "";
+            stepSixFields.value.incident_date_time = "";
             investigationStore.getInvestigation(route.params.observation_id);
         }
 
@@ -634,7 +660,7 @@ const addQuestion = async (e: any) => {
 
         if (resp?.message == 'success') {
             setLoading(false)
-            
+            stepTwoFields.value.question = "";
             investigationStore.getInvestigationQuestions(route.params.observation_id);
         }
 
@@ -1553,7 +1579,7 @@ const selectImage = (image: any) => {
 
                                                 <v-card-text>
                                                     <div class="d-flex justify-space-between">
-                                                        <h3 class="text-h3">Add </h3>
+                                                        <h3 class="text-h3">Add Report</h3>
                                                         <v-btn icon @click="setViewReportDialog(false)" size="small" flat>
                                                             <XIcon size="16" />
                                                         </v-btn>
@@ -1668,7 +1694,7 @@ const selectImage = (image: any) => {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr :key="getInvestigation?.report">
+                                                    <tr :key="getInvestigation?.report" v-if="getInvestigation?.report">
                                                         <td>{{ '1' }}</td>
                                                         <td>{{ `${getInvestigation?.report?.title}` }}</td>
                                                         <td>{{ `${getInvestigation?.report?.description}` }}</td>

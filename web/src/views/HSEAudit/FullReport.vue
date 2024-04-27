@@ -10,9 +10,12 @@ import { useMainAuditStore } from '@/stores/mainAuditStore';
 import { useAuthStore } from '@/stores/auth';
 import moment from 'moment'
 import Swal from 'sweetalert2'
+import {
+    CheckIcon,
+} from 'vue-tabler-icons';
 
 
-const page = ref({ title: 'Full Report HSE Audit' });
+const page = ref({ title: 'Full Report Audit' });
 const breadcrumbs = ref([
     {
         text: 'Dashboard',
@@ -20,7 +23,7 @@ const breadcrumbs = ref([
         href: '/dashboard'
     },
     {
-        text: 'HSE Audit',
+        text: 'Audit Management',
         disabled: false,
         href: '/hse-audit'
     },
@@ -146,14 +149,14 @@ const blankFn = () => {
                         <VRow>
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">Start Time</label>
-                                <p class="text-body-1">19th-April-2024 06:42</p>
+                                <p class="text-body-1"> {{ `${moment(getCompletedMainAudit?.main_audit?.start_date).format('MMMM Do YYYY, h:mm a')}` }}</p>
                             </VCol>
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">End Time</label>
-                                <p class="text-body-1">19th-April-2024 06:42</p>
+                                <p class="text-body-1"> {{ `${moment(getCompletedMainAudit?.main_audit?.end_date).format('MMMM Do YYYY, h:mm a')}` }}</p>
                             </VCol>
                             <VCol cols='12' md="4">
-                                <label class="text-subtitle-1">ISON</label>
+                                <label class="text-subtitle-1">ISPON</label>
                                 <p class="text-body-1">NA</p>
                             </VCol>
                             <VCol cols='12' md="4">
@@ -164,454 +167,186 @@ const blankFn = () => {
                                 <label class="text-subtitle-1">Address</label>
                                 <p class="text-body-1">{{ getCompletedMainAudit?.main_audit?.recipient_organization?.address }}</p>
                             </VCol>
-                            <VCol cols='12' md="4">
+                            <!-- <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">Organization Reps.</label>
-                                <p class="text-body-1">Lead Auditor :{{ `${getCompletedMainAudit?.main_audit?.lead_auditor?.member?.firstName} ${getCompletedMainAudit?.main_audit?.lead_auditor?.member?.firstName}` }}</p>
-                                <p class="text-body-1">Audit Support :{{ `${getCompletedMainAudit?.main_audit?.lead_auditor?.member?.firstName} ${getCompletedMainAudit?.main_audit?.lead_auditor?.member?.firstName}` }}</p>
+                                <p class="text-body-1">Lead Representative : {{ `${getCompletedMainAudit?.main_audit?.lead_representative?.member?.full_name}` }}</p>
+                                <p class="text-body-1">Other Representative : {{ `${getCompletedMainAudit?.main_audit?.representatives?.length} Other Representatives` }}</p>
+                            </VCol> -->
+                            <VCol cols='12' md="12">
+                                <h2 class="text-uppercase mb-3">Organization Reps.</h2>
+                                <v-table>
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left">
+                                                Auditors
+                                            </th>
+                                            <th class="text-left">
+                                                Representatives
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                            <tr>
+                                            
+                                                <td>
+                                                    <div v-for="(auditor) in getCompletedMainAudit?.main_audit?.all_auditors" :key="auditor" class="text-uppercase mb-3">
+                                                        {{ auditor?.member?.full_name }}
+                                                        {{ ` - ${auditor?.position.split('_').join(' ')}`  }}
+                                                    </div>
+                                                </td>
+                                            
+                                                <td>
+                                                    <div v-for="(representative) in getCompletedMainAudit?.main_audit?.all_representatives" :key="representative" class="text-uppercase mb-3">
+                                                        {{ representative?.member?.full_name }}
+                                                        {{ ` - ${representative?.position.split('_').join(' ')}`  }}
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                        
+                                    </tbody>
+                                </v-table>
                             </VCol>
-                        </VRow>
-                    </v-card-text>
-                    <v-card-text>
-                        <v-tabs v-model="tab" color="primary" class="customTab">
-                            <v-tab value="tab-1" rounded="md" class="mb-3 mx-2 text-left" height="70">
-                                <UsersIcon stroke-width="1.5" width="20" class="v-icon--start" />
-                                <div>
-                                    <div>Build Team</div>
-                                    <span
-                                        class="text-subtitle-2 text-lightText text-medium-emphasis font-weight-medium d-block">Members</span>
-                                </div>
-                            </v-tab>
-
-                            <v-tab value="tab-2" rounded="md" class="mb-3 mx-2 text-left" height="70">
-                                <FileDescriptionIcon stroke-width="1.5" width="20" class="v-icon--start" />
-                                <div>
-                                    <div>Audit Documents</div>
-                                    <span
-                                        class="text-subtitle-2 text-lightText text-medium-emphasis font-weight-medium d-block">
-                                        Request
-                                    </span>
-                                </div>
-                            </v-tab>
-
-                            <v-tab value="tab-3" rounded="md" class="mb-3 mx-2 text-left" height="70">
-                                <CreditCardIcon stroke-width="1.5" width="20" class="v-icon--start" />
-                                <div>
-                                    <div>Send Schedule</div>
-                                    <span
-                                        class="text-subtitle-2 text-lightText text-medium-emphasis font-weight-medium d-block">
-                                        To Organization
-                                    </span>
-                                </div>
-                            </v-tab>
-                            <v-tab value="tab-4" rounded="md" class="mb-3 mx-2 text-left" height="70">
-                                <CreditCardIcon stroke-width="1.5" width="20" class="v-icon--start" />
-                                <div>
-                                    <div>Onsite Audit</div>
-                                    <span
-                                        class="text-subtitle-2 text-lightText text-medium-emphasis font-weight-medium d-block">
-                                        Start
-                                    </span>
-                                </div>
-                            </v-tab>
-                            <v-tab value="tab-5" rounded="md" class="mb-3 mx-2 text-left" height="70">
-                                <CreditCardIcon stroke-width="1.5" width="20" class="v-icon--start" />
-                                <div>
-                                    <div>Audit Findings </div>
-                                    <span
-                                        class="text-subtitle-2 text-lightText text-medium-emphasis font-weight-medium d-block">
-                                        And Action
-                                    </span>
-                                </div>
-                            </v-tab>
-                        </v-tabs>
-                        <v-window v-model="tab" class="customTab">
-                            <v-window-item value="tab-1" class="pa-1">
-
-                                <div>
-                                    <v-row class="mt-3 px-4">
-
-                                        <v-col cols="12">
-                                            <v-table>
-                                                <thead>
-                                                    <tr>
-                                                        <th class="text-left">
-                                                            #
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Full Name
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Email
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Position
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Action
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
+                            <VCol cols='12'>
+                                <p>
+                                    This general audit checklist may be used for all ISPON audit exercises to assess performance of Health, Safety and Environmental Management System (HSE-MS) and establish compliance with minimum safety requirements in an organization. The exercise shall cover all areas of the facility. Issues shall be summarized on the last page. Recommendations will be made and documented on the summary page. All recommendations are expected to be completed within the time advised by the Auditor.
+                                </p>
+                            </VCol>
+                            
+                            <VCol cols="12">
+                                <h2 class="text-uppercase mb-3">Questions.</h2>
+                                <v-table>
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left">
+                                                Questions
+                                            </th>
+                                            <th class="text-left"  width="5%">
+                                                Yes
+                                            </th>
+                                            <th class="text-left"  width="5%">
+                                                NC Minor
+                                            </th>
+                                            <th class="text-left"  width="5%">
+                                                NC Major
+                                            </th>
+                                            <th class="text-left"  width="5%">
+                                                NA
+                                            </th>
+                                            <th class="text-left">
+                                                Comments / Audit Evidence
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template  v-for="(title_question) in getQuestions" >
+                                            <tr v-for="(question) in title_question.questions" :key="question">
+                                            
+                                                <td>{{ `${question?.question}` }}</td>
+                                                <td>
+                                                    <template  v-if="question?.answer ? question?.answer == 'yes' : question?.response?.answer == 'yes'">
+                                                        <CheckIcon stroke-width="1.5" width="20"  />
+                                                    </template>
+                                                </td>
+                                                <td>
+                                                    <template  v-if="question?.answer ? question?.answer == 'nc_minor' : question?.response?.answer == 'nc_minor'">
+                                                        <CheckIcon stroke-width="1.5" width="20"  />
+                                                    </template>
+                                                                        
+                                                </td>
+                                                <td>
+                                                    <template  v-if="question?.answer ? question?.answer == 'nc_major' : question?.response?.answer == 'nc_major'">
+                                                        <CheckIcon stroke-width="1.5" width="20"  />
+                                                    </template>
                                                     
-                                                        <tr v-for="(member, index) in getAuditors"
-                                                            :key="member">
-                                                            <td>{{ ++index }}</td>
-                                                            <td>{{ `${member?.member?.lastName}
-                                                                ${member?.member?.firstName}` }}</td>
-                                                            <td>{{ `${member?.member?.email}` }}</td>
-                                                            <td>{{ `${member?.position.split('_').join(' ')}` }}</td>
-                                                            <td>
-                                                            </td>
-                                                        </tr>
-                                                        <tr v-for="(member, index) in getRepresentatives"
-                                                            :key="member">
-                                                            <td>{{ ++index }}</td>
-                                                            <td>{{ `${member?.member?.lastName}
-                                                                ${member?.member?.firstName}` }}</td>
-                                                            <td>{{ `${member?.member?.email}` }}</td>
-                                                            <td>{{ `${member?.position.split('_').join(' ')}` }}</td>
-                                                            <td>
-                                                            </td>
-                                                        </tr>
-                                                    
-                                                </tbody>
-                                            </v-table>
-                                        </v-col>
-                                    </v-row>
-
-                                </div>
-
-                                <v-row class="mt-3">
-                                    <v-col cols="12" sm="6">
+                                                </td>
+                                                <td>
+                                                    <template  v-if="question?.answer ? question?.answer == 'na' : question?.response?.answer == 'na'">
+                                                        <CheckIcon stroke-width="1.5" width="20"  />
+                                                    </template>
+                                                </td>
+                                                <td>
+                                                    {{ `${question?.response?.comment ? question?.response?.comment : ""}` }}
+                                                </td>
+                                            </tr>                                  
+                                        </template>
                                         
-                                    </v-col>
-                                    <v-col cols="12" sm="6" class="text-sm-right">
-                                        <v-btn color="primary" @click="changeTab('tab-2')">Next Step</v-btn>
-                                    </v-col>
-                                </v-row>
-                            </v-window-item>
-                            <v-window-item value="tab-2" class="pa-1">
+                                    </tbody>
+                                </v-table>
+                            </VCol>
+                            
+                            <VCol cols='12' class="text-center">
+                                <h2 class="text-uppercase mb-3">AUDIT SUMMARY</h2>
+                                <p>Audit Score (%): (Total Score -Total Non Conformance / Maximum Score ) * 100</p>
+                                <p>Audit Rating: 80-100% is Excellent, 70-79% is Good, 60-69% is Poor, 0-59% is Fail</p>
+                                <p>Total score = number of YES</p>
+                                <p>Total Non Conformance (NC) = Minor NC + Major NC</p>
+                                <p>Maximum Score = Total Score + Minor NC + Major NC</p>
                                 
-                                <div>
-                                    <v-row class="mt-3 px-4">
-
-                                        <v-col cols="12">
-                                            <v-table>
-                                                <thead>
-                                                    <tr>
-                                                        <th class="text-left">
-                                                            #
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Title
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Description
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Upload By
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Status
-                                                        </th>
-                                                        <th class="text-left">
-                                                            File(s)
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Action
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    
-
-                                                        <tr v-for="(document, index) in getDocuments"
-                                                            :key="document">
-                                                            <td>{{ ++index }}</td>
-                                                            <td>{{ `${document?.title}` }}</td>
-                                                            <td>{{ `${document?.description}` }}</td>
-                                                            <td>{{ `${document?.recipient_user_id ? `${document?.uploaded_by?.lastName} ${document?.uploaded_by?.firstName}` : ''}` }}</td>
-                                                            <td class="text-uppercase">{{ `${document?.status}` }}</td>
-                                                            <td>
-                                                                
-                                                                <v-btn color='success' size='small' :href="document?.media?.full_url" v-if="document?.media && (document?.is_uploaded || document?.is_accepted)" flat target="_blank">
-                                                                    View
-                                                                </v-btn>
-                                                            </td>
-                                                            <td>
-                                                                <v-btn color='primary' size='small' class="mx-2" v-if="document?.recipient_comment || document?.user_comment">
-                                                                    Comment
-                                                                </v-btn>
-                                                            </td>
-                                                        </tr>
-                                                    
-                                                    
-                                                    
-                                                </tbody>
-                                            </v-table>
-                                        </v-col>
-                                    </v-row>
-
-                                </div>
-                                <v-row class="mt-3">
-                                    <v-col cols="6">
-                                        <v-btn color="primary" variant="tonal" @click="changeTab('tab-1')">Back</v-btn>
-                                    </v-col>
-                                    <v-col cols="6" class="text-right">
-                                        <v-btn color="primary" @click="changeTab('tab-3')">Next Step</v-btn>
-                                    </v-col>
-                                </v-row>
-                            </v-window-item>
-                            <v-window-item value="tab-3" class="pa-1">
-
-                                <div>
-                                    <v-row class="mt-3 px-4">
-                                    
-
-                                        <v-col cols="12">
-                                            <v-table>
-                                                <thead>
-                                                    <tr>
-
-                                                        <th class="text-left">
-                                                            #
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Auditor Time
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Representative Time
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Time Agreed
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Action
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td></td>
-                                                        <td>
-                                                            {{ `${getSchedule?.auditor_time ? getSchedule?.auditor_time : ""}` }}
-                                                        </td>
-                                                        <td>
-                                                            {{ `${getSchedule?.recipient_time ? getSchedule?.recipient_time : ""}` }}
-                                                        </td>
-                                                        <td>
-                                                            {{ `${getSchedule?.accepted_time ? getSchedule?.accepted_time : ""}` }}
-                                                        </td>
-                                                        <td>{{ `` }}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </v-table>
-                                        </v-col>
-                                    </v-row>
-
-                                </div>
-                                <v-row class="mt-3">
-                                    <v-col cols="6">
-                                        <v-btn color="primary" variant="tonal" @click="changeTab('tab-2')">Back</v-btn>
-                                    </v-col>
-                                    <v-col cols="6" class="text-right">
-                                        <v-btn color="primary" @click="changeTab('tab-4')">Next Step</v-btn>
-                                    </v-col>
-                                </v-row>
-                            </v-window-item>
-                            <v-window-item value="tab-4" class="pa-1">
-
-                                <div>
-                                    <v-row class="mt-3 px-4">
-
-
-                                        <v-col cols="12">
-                                            
-                                            <v-window v-model="questionTab" class="customTab">
-                                                <template v-if="getQuestions.length > 0">
-                                                    <v-window-item  v-for="(title_question, index) in getQuestions" :key="title_question" :value="`questionTab-${index}`" class="pa-1">
-
-                                                        <div>
-                                                            <v-row class="mt-3 px-4">
-
-                                                                <v-col cols="12">
-
-
-                                                                    <v-sheet>
-                                                                        <v-dialog v-model="sendCommentDialog" max-width="800">
-                                                                            <v-card>
-
-
-
-                                                                                <v-card-text>
-
-                                                                                    <VForm v-model="valid" ref="formContainer" fast-fail
-                                                                                        lazy-validation class="py-1">
-                                                                                        <VRow class="mt-5 mb-3">
-
-                                                                                            <VCol cols="12" md="12">
-                                                                                                <v-label class="text-subtitle-1 font-weight-medium pb-1">Comments</v-label>
-                                                                                                <VTextarea variant="outlined" outlined name="Comment" :readonly="true"
-                                                                                                    label="Comment" v-model="stepFourFields.comments" required
-                                                                                                    :color="stepFourFields.comments.length > 10 ? 'success' : 'primary'">
-                                                                                                </VTextarea>
-                                                                                            </VCol>
-
-
-
-                                                                                            <VCol cols="12" lg="12" class="text-right">
-                                                                                                <v-btn color="error"
-                                                                                                    @click="setSendCommentDialog(false)"
-                                                                                                    variant="text">Close</v-btn>
-
-
-                                                                                            </VCol>
-                                                                                        </VRow>
-                                                                                    </VForm>
-                                                                                </v-card-text>
-                                                                            </v-card>
-                                                                        </v-dialog>
-                                                                    </v-sheet>
-                                                                </v-col>
-                                                                
-                                                                <v-col cols="12">
-                                                                    <h2>{{title_question.title}}</h2>
-                                                                    <v-table>
-                                                                        <thead>
-                                                                            <tr>
-                                                                                <th class="text-left">
-                                                                                    Questions
-                                                                                </th>
-                                                                                <th class="text-left"  width="10%">
-                                                                                    Yes
-                                                                                </th>
-                                                                                <th class="text-left"  width="10%">
-                                                                                    NC Minor
-                                                                                </th>
-                                                                                <th class="text-left"  width="10%">
-                                                                                    NC Major
-                                                                                </th>
-                                                                                <th class="text-left"  width="10%">
-                                                                                    NA
-                                                                                </th>
-                                                                                <th class="text-left">
-                                                                                    Comments / Audit Evidence
-                                                                                </th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>
-                                                                            <!-- {{ title_question.questions }} -->
-                                                                            <!-- <template> -->
-                                                                                <tr v-for="(question) in title_question.questions" :key="question">
-                                                                                    <!-- <td>{{ ++index }}</td> -->
-                                                                                    <td>{{ `${question?.question}` }}</td>
-                                                                                    <td>
-                                                                                        <template  v-if="question?.answer ? question?.answer == 'yes' : question?.response?.answer == 'yes'">
-                                                                                            <v-btn  color='success' size='small' flat >
-                                                                                                selected
-                                                                                            </v-btn>
-                                                                                        </template>
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        <template  v-if="question?.answer ? question?.answer == 'nc_minor' : question?.response?.answer == 'nc_minor'">
-                                                                                            <v-btn  color='success' size='small' flat >
-                                                                                                selected
-                                                                                            </v-btn>
-                                                                                        </template>
-                                                                                                         
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        <template  v-if="question?.answer ? question?.answer == 'nc_major' : question?.response?.answer == 'nc_major'">
-                                                                                            <v-btn  color='success' size='small' flat >
-                                                                                                selected
-                                                                                            </v-btn>
-                                                                                        </template>
-                                                                                        
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        <template  v-if="question?.answer ? question?.answer == 'na' : question?.response?.answer == 'na'">
-                                                                                            <v-btn  color='success' size='small' flat >
-                                                                                                selected
-                                                                                            </v-btn>
-                                                                                        </template>
-                                                                                    </td>
-                                                                                    <td>
-                                                                                            <v-btn color='primary' size='small' @click="setSendCommentDialog(true, question?.id, title_question.id, question)" flat  v-if="question?.response?.comment">
-                                                                                                {{  "View Comment" }}
-                                                                                            </v-btn>
-                                                                                        
-                                                                                    </td>
-                                                                                </tr>
-                                                                            <!-- </template> -->
-                                                                            
-                                                                            
-                                                                        </tbody>
-                                                                    </v-table>
-                                                                </v-col>
-                                                                
-                                                            </v-row>
-
-                                                        </div>
-
-                                                        <v-row class="mt-3">
-                                                            <v-col cols="12" sm="6">
-                                                                <v-btn color="primary" variant="tonal" @click="changeQuestionTab(`questionTab-${index-1}`)" v-if="index > 0">Previous Questions</v-btn>
-                                                            </v-col>
-                                                            <v-col cols="12" sm="6" class="text-sm-right">
-                                                                <v-btn color="primary"  @click="changeQuestionTab(`questionTab-${index+1}`)"   v-if="index < (getQuestions.length - 1)">Next Questions</v-btn>
-                                                            </v-col>
-                                                        </v-row>
-                                                    </v-window-item>    
-                                                </template>
+                                <v-table>
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left">
                                                 
-                                            </v-window>
-                                            
-                                        </v-col>
-                                    </v-row>
+                                            </th>
+                                            <th class="text-left">
+                                                
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                            <tr>
+                                                <td>Total Questions</td>
+                                                <td>{{ getCompletedMainAudit?.stats?.total_questions }}</td>
 
-                                </div>
-                                <v-row class="mt-3">
-                                    <v-col cols="6">
-                                        <v-btn color="primary" variant="tonal" @click="changeTab('tab-3')">Back</v-btn>
-                                    </v-col>
-                                    <v-col cols="6" class="text-right">
-                                        <v-btn color="primary" @click="changeTab('tab-5')">Next Step</v-btn>
-                                    </v-col>
-                                </v-row>
-                            </v-window-item>
-                            <v-window-item value="tab-5" class="pa-1">
-                                <div>
-                                    <v-row class="mt-3 px-4">
-                                    
+                                            </tr>
+                                            <tr>
+                                                <td>Total Yes</td>
+                                                <td>{{ getCompletedMainAudit?.stats?.number_of_yeses }}</td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>Total Minor (NC)</td>
+                                                <td>{{ getCompletedMainAudit?.stats?.number_of_nc_minor }}</td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>Total Major (NC)</td>
+                                                <td>{{ getCompletedMainAudit?.stats?.number_of_nc_major }}</td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>Total Non Conformance</td>
+                                                <td>{{ getCompletedMainAudit?.stats?.number_of_na }}</td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>Maximum Score</td>
+                                                <td>{{ getCompletedMainAudit?.stats?.maximum_score }}</td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>Audit score</td>
+                                                <td>{{ getCompletedMainAudit?.stats?.audit_score }}%</td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>Audit rating</td>
+                                                <td> <span>{{ getCompletedMainAudit?.stats?.audit_rate }}</span> ( {{ getCompletedMainAudit?.stats?.audit_score }} %)</td>
+
+                                            </tr>
                                         
-                                        <v-col cols="12" >
-                                            <h3>Findings</h3>
-                                            <v-table>
-                                                <thead>
-                                                    <tr>
-                                                        
-                                                        <th class="text-left">
-                                                            Auditor
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Description
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>{{ getFindings ? `${getFindings?.user?.lastName} ${getFindings?.user?.firstName}` : '' }}</td>
-                                                        <td>{{ getFindings ? `${getFindings?.description}` : '' }}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </v-table>
-                                        </v-col>
-                                    </v-row>
+                                    </tbody>
+                                </v-table>
 
-                                    <v-row class="mt-3 px-4">
-
-                                        <v-col cols="12">
-                                            <h3>Corrective Action</h3>
+                            </VCol>
+                            <VCol cols='12' class="text-center">
+                                <h2 class="text-uppercase mb-3">AUDIT FINDING</h2>
+                                <p>{{ `${getFindings?.description}`  }}</p>
+                            </VCol>
+                            <VCol cols='12' class="text-center">
+                                <h2 class="text-uppercase mb-3">AUDIT RECOMMENDATION</h2>
+                                
                                             <v-table>
                                                 <thead>
                                                     <tr>
@@ -623,7 +358,7 @@ const blankFn = () => {
                                                             Title
                                                         </th>
                                                         <th class="text-left">
-                                                            Description
+                                                            Assignor
                                                         </th>
                                                         <th class="text-left">
                                                             Assignee
@@ -649,19 +384,8 @@ const blankFn = () => {
                                                     </tr>
                                                 </tbody>
                                             </v-table>
-                                        </v-col>
-                                    </v-row>
-
-                                </div>
-                                <v-row class="mt-3">
-                                    <v-col cols="6">
-                                        <v-btn color="primary" variant="tonal" @click="changeTab('tab-4')">Back</v-btn>
-                                    </v-col>
-                                    
-                                </v-row>
-                                
-                            </v-window-item>
-                        </v-window>
+                            </VCol>
+                        </VRow>
                     </v-card-text>
                 </UiParentCard>
 

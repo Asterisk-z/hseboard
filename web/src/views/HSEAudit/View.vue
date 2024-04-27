@@ -12,7 +12,7 @@ import moment from 'moment'
 import Swal from 'sweetalert2'
 
 
-const page = ref({ title: 'View HSE Audit' });
+const page = ref({ title: 'View Audit' });
 const breadcrumbs = ref([
     {
         text: 'Dashboard',
@@ -20,7 +20,7 @@ const breadcrumbs = ref([
         href: '/dashboard'
     },
     {
-        text: 'HSE Audit',
+        text: 'Audit Management',
         disabled: false,
         href: '/hse-audit'
     },

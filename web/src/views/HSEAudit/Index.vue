@@ -12,7 +12,7 @@ import { useMainAuditStore } from '@/stores/mainAuditStore';
 import moment from 'moment'
 import { router } from '@/router';
 
-const page = ref({ title: 'HSE Audit' });
+const page = ref({ title: 'Audit Management' });
 const breadcrumbs = ref([
     {
         text: 'Dashboard',
@@ -20,7 +20,7 @@ const breadcrumbs = ref([
         href: 'dashboard'
     },
     {
-        text: 'HSE Audit',
+        text: 'Audit Management',
         disabled: true,
         href: '#'
     }
@@ -211,7 +211,7 @@ const goToRoute = (url: string) => {
                             <v-btn color="primary" class="mr-2" @click="goToRoute('/hse-audit-templates')">Audit
                                 Templates</v-btn>
                             <v-btn color="primary" class="mr-2" @click="goToRoute('/create-hse-audit-report')">Create
-                                HSE Audit Report</v-btn>
+                                Audit Report</v-btn>
                         </v-sheet>
                     </template>
 
@@ -271,9 +271,9 @@ const goToRoute = (url: string) => {
                                                         @click="goToRoute(`/view-hse-audit-report/${selectedItem?.uuid}`)">View
                                                         Audit</v-btn>
                                                     <v-btn color="primary" class="mr-3" 
-                                                        @click="goToRoute(`/full-report-hse-audit-report/${selectedItem?.uuid}`)">Full HSE Audit Report</v-btn>
+                                                        @click="goToRoute(`/full-report-hse-audit-report/${selectedItem?.uuid}`)">Full Audit Report</v-btn>
                                                     <v-btn color="primary" class="mr-3" 
-                                                        @click="goToRoute(`/report-hse-audit-report/${selectedItem?.uuid}`)">HSE Audit Report</v-btn>
+                                                        @click="goToRoute(`/report-hse-audit-report/${selectedItem?.uuid}`)">Audit Summary</v-btn>
                                                 </template>
                                                 
                                             </VCol>

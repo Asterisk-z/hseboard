@@ -49,7 +49,7 @@ const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == get
 const isLoggedInUserIsLead= computed(() => (getAuthUser.value?.id == getInvestigation.value?.lead?.member?.id));
 
 
-const page = ref({ title: 'Create HSE Audit' });
+const page = ref({ title: 'Create Audit' });
 const breadcrumbs = ref([
     {
         text: 'Dashboard',
@@ -57,9 +57,9 @@ const breadcrumbs = ref([
         href: 'dashboard'
     },
     {
-        text: 'HSE Audit',
+        text: 'Audit Management',
         disabled: false,
-        href: 'hse-audit'
+        href: '/hse-audit'
     },
     {
         text: 'Create',

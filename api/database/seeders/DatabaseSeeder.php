@@ -34,5 +34,8 @@ class DatabaseSeeder extends Seeder
         $this->call(AuditDocumentSeeder::class);
         $this->call(AuditTemplateQuestionSeed::class);
         $this->call(AuditOptionSeed::class);
+        $this->call(CurrencySeeder::class);
+        $this->call(SubsciptionPlanSeeder::class);
+        $this->call(FeatureSeeder::class);
     }
 }

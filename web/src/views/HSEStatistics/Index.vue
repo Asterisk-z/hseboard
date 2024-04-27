@@ -308,7 +308,7 @@ const goToRoute = () => {
                                 <v-card>
                                     <v-card-text>
                                         <div class="d-flex justify-space-between">
-                                            <h3 class="text-h3">View Action</h3>
+                                            <h3 class="text-h3">View Statistics</h3>
                                             <v-btn icon @click="setViewDialog(false)" size="small" flat>
                                                 <XIcon size="16" />
                                             </v-btn>

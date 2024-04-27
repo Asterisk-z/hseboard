@@ -39,7 +39,7 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
-    protected $appends = ['organizations', 'privilege'];
+    protected $appends = ['organizations', 'privilege', 'full_name'];
     protected $with = ['accountRole'];
 
     public function getJWTIdentifier()
@@ -62,6 +62,13 @@ class User extends Authenticatable implements JWTSubject
 
         return [];
     }
+
+    public function getFullNameAttribute()
+    {
+
+        return $this->lastName . ' ' . $this->firstName;
+    }
+
     public function checkAccountStatus()
     {
 

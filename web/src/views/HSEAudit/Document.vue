@@ -13,7 +13,7 @@ import { router } from '@/router';
 import Swal from 'sweetalert2'
 
 
-const page = ref({ title: 'HSE Audit Document' });
+const page = ref({ title: 'Audit Document' });
 const breadcrumbs = ref([
     {
         text: 'Dashboard',
@@ -21,9 +21,9 @@ const breadcrumbs = ref([
         href: 'dashboard'
     },
     {
-        text: 'HSE Audit',
+        text: 'Audit Management',
         disabled: false,
-        href: 'hse-audit'
+        href: '/hse-audit'
     },
     {
         text: 'Document',
@@ -271,7 +271,7 @@ const selectImage = (image: any) => {
         <v-row>
             <v-col cols="12" md="12">
 
-                <v-card :title="`HSE Audit Documents`" flat>
+                <v-card :title="`Audit Documents`" flat>
 
 
                     <template v-slot:append>

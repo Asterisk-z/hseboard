@@ -191,7 +191,7 @@ const gotoRoute = (link: string) => {
                                 <v-card>
                                     <v-card-text>
                                         <div class="d-flex justify-space-between">
-                                            <h3 class="text-h3">View Action</h3>
+                                            <h3 class="text-h3">View Investigation</h3>
                                             <v-btn icon @click="setViewDialog(false)" size="small" flat>
                                                 <XIcon size="16" />
                                             </v-btn>
@@ -206,18 +206,69 @@ const gotoRoute = (link: string) => {
                                             <!-- {{ selectedItem }} -->
 
                                             <VCol cols="12" lg="12" v-if="!subViewDialog">
-                                                <v-list lines="one" v-if="selectedItem">
 
-                                                    <v-list-item :title="`Observation Type : ${selectedItem?.observation?.observation_type?.description}`"></v-list-item>
-                                                    <v-list-item :title="`Observer : ${selectedItem?.observation?.observer?.firstName} ${selectedItem?.observation?.observer?.lastName}`"></v-list-item>
-                                                    <v-list-item :title="`Description : ${selectedItem?.observation?.description}`"></v-list-item>
-                                                    <v-list-item :title="`Address : ${selectedItem?.observation?.address}`"></v-list-item>
-                                                    <v-list-item :title="`Location Details : ${selectedItem?.observation?.location_details}`"></v-list-item>
-                                                    <v-list-item :title="`Affected Workers : ${selectedItem?.observation?.affected_workers}`"></v-list-item>
-                                                    <v-list-item :title="`Incident Date : ${selectedItem?.observation?.incident_datetime}`"></v-list-item>
-                                                    <v-list-item :title="`Status : ${selectedItem?.observation?.status}`"></v-list-item>
+                                                <v-table>
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-left">
 
-                                                </v-list>
+                                                            </th>
+                                                            <th class="text-left">
+
+                                                            </th>
+                                                            <th class="text-left">
+
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                        <template v-if="selectedItem">
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Observation Type </td>
+                                                                <td>{{ `${selectedItem?.observation?.observation_type?.description}`
+                                                                    }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Observer </td>
+                                                                <td>{{ `${selectedItem?.observation?.observer?.firstName}
+                                                                    ${selectedItem?.observation?.observer?.lastName}` }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Description </td>
+                                                                <td>{{ `${selectedItem?.observation?.description}` }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Address </td>
+                                                                <td>{{ `${selectedItem?.observation?.address}` }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Location Details </td>
+                                                                <td>{{ `${selectedItem?.observation?.location_details}` }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Affected Workers </td>
+                                                                <td>{{ `${selectedItem?.observation?.affected_workers}` }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Incident Date </td>
+                                                                <td>{{ `${selectedItem?.observation?.incident_datetime}` }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Status </td>
+                                                                <td>{{ `${selectedItem?.observation?.status}` }}</td>
+                                                            </tr>
+                                                        </template>
+                                                    </tbody>
+                                                </v-table>
                                             </VCol>
 
 
@@ -225,7 +276,8 @@ const gotoRoute = (link: string) => {
                                                 v-if="isLoggedInUserOwnsActionOrg">
                                                 <span>
                                                     <v-btn color="primary" class="mr-3"
-                                                        @click="gotoRoute(`/hse-investigating/${selectedItem?.observation?.uuid}`)">Continue Investigation</v-btn>
+                                                        @click="gotoRoute(`/hse-investigating/${selectedItem?.observation?.uuid}`)">Continue
+                                                        Investigation</v-btn>
                                                 </span>
 
 
@@ -279,7 +331,7 @@ const gotoRoute = (link: string) => {
                                             View Investigation
                                         </v-list-item-title>
                                     </v-list-item>
-                                    
+
                                 </v-list>
                             </v-menu>
                         </template>

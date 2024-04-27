@@ -66,42 +66,42 @@ const MainRoutes = {
             component: () => import('@/views/HSEInvestigation/Ongoing.vue')
         },
         {
-            name: 'HSE Audit',
+            name: 'Audit Management',
             path: '/hse-audit',
             component: () => import('@/views/HSEAudit/Index.vue')
         },
         {
-            name: 'HSE Audit Document',
+            name: 'Audit Document',
             path: '/hse-audit-documents',
             component: () => import('@/views/HSEAudit/Document.vue')
         },
         {
-            name: 'HSE Audit Template',
+            name: 'Audit Template',
             path: '/hse-audit-templates',
             component: () => import('@/views/HSEAudit/Template.vue')
         },
         {
-            name: ' Create HSE Audit ',
+            name: ' Create Audit ',
             path: '/create-hse-audit-report',
             component: () => import('@/views/HSEAudit/Create.vue')
         },
         {
-            name: ' Ongoing HSE Audit ',
+            name: ' Ongoing Audit ',
             path: '/ongoing-hse-audit-report/:main_audit_id',
             component: () => import('@/views/HSEAudit/Ongoing.vue')
         },
         {
-            name: ' View HSE Audit ',
+            name: ' View Audit ',
             path: '/view-hse-audit-report/:main_audit_id',
             component: () => import('@/views/HSEAudit/View.vue')
         },
         {
-            name: ' Report HSE Audit ',
+            name: ' Report Audit ',
             path: '/report-hse-audit-report/:main_audit_id',
             component: () => import('@/views/HSEAudit/Report.vue')
         },
         {
-            name: 'Full Report HSE Audit ',
+            name: 'Full Report Audit ',
             path: '/full-report-hse-audit-report/:main_audit_id',
             component: () => import('@/views/HSEAudit/FullReport.vue')
         },
@@ -112,7 +112,7 @@ const MainRoutes = {
         },
         {
             name: 'Facility Inspection',
-            path: '/inspection',
+            path: '/inspections',
             component: () => import('@/views/Inspection/Index.vue')
         },
         {
