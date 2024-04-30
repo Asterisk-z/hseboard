@@ -36,7 +36,7 @@ class OrganisationController extends Controller
     public function show($organization)
     {
         $organizations = Organisation::where('uuid', $organization)->orderBy('created_at', 'DESC')
-            ->get()->toArray();
+            ->first()->toArray();
 
         $converted_organizations = arrayKeysToCamelCase($organizations);
         return successResponse('Organizations Fetched Successfully', $converted_organizations);

@@ -8,6 +8,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useOpenLinksStore } from '@/stores/openLinks';
 import { useActionStore } from '@/stores/actionStore';
 import { useMainAuditStore } from '@/stores/mainAuditStore';
+import { useInspectionStore } from '@/stores/inspectionStore';
 
 import moment from 'moment'
 import { router } from '@/router';
@@ -34,15 +35,14 @@ const openLinks = useOpenLinksStore();
 const actionStore = useActionStore();
 const reportStore = useMainAuditStore();
 const mainAuditStore = useMainAuditStore();
+const inspectionStore = useInspectionStore();
 
 onMounted(() => {
-    // teamMemberStore.getTeamMembersExcept();
-    // openLinks.getPriorities();
-    // actionStore.getActions();
-    mainAuditStore.getMainAudits()
+    
+    inspectionStore.getAllOrgInspections()
 });
 
-const getMainAudits = computed(() => (reportStore.mainAudits));
+const getAllOrgInspections = computed(() => (inspectionStore.orgInspections));
 
 const getActions = computed(() => (actionStore.actions));
 const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
@@ -123,9 +123,9 @@ const headers = ref([
         sortable: false,
     },
     {
-        key: 'audit_title',
-        title: 'Inspection Title',
-        value: (item: any) => `${item.audit_title} `,
+        key: 'facility_name',
+        title: 'Facility Name',
+        value: (item: any) => `${item.facility_name} `,
     },
     // {
     //     key: 'audit_template_id',
@@ -133,9 +133,9 @@ const headers = ref([
     //     value: (item: any) => `${item.audit_template?.title}`
     // },
     {
-        key: 'audit_type_id',
+        key: 'inspection_type_id',
         title: 'Inspection Type',
-        value: (item: any) => `${item.audit_type?.description}`
+        value: (item: any) => `${item?.inspection_template_type?.description}`
     },
     {
         key: 'recipient_organization_id',
@@ -206,9 +206,9 @@ const goToRoute = (url: string) => {
 
                     <template v-slot:append>
                         <v-sheet v-if="isLoggedInUserOwnsActionOrg">
-                            <v-btn color="primary" class="mr-2" @click="goToRoute('/hse-audit-templates')">Inspection
+                            <v-btn color="primary" class="mr-2" @click="goToRoute('/inspection-templates')">Inspection
                                 Templates</v-btn>
-                            <v-btn color="primary" class="mr-2" @click="goToRoute('/create-hse-audit-report')">Create
+                            <v-btn color="primary" class="mr-2" @click="goToRoute('/create-inspection-report')">Create
                                 Inspection Report</v-btn>
                         </v-sheet>
                     </template>
@@ -263,17 +263,17 @@ const goToRoute = (url: string) => {
 
                                                 <v-btn color="primary" class="mr-3"
                                                     v-if="selectedItem?.is_ongoing || selectedItem?.is_pending || selectedItem?.is_accepted"
-                                                    @click="goToRoute(`/ongoing-hse-audit-report/${selectedItem?.uuid}`)">Continue
-                                                    Audit</v-btn>
+                                                    @click="goToRoute(`/ongoing-inspection-report/${selectedItem?.uuid}`)">Continue
+                                                    Inspection</v-btn>
                                                 <template v-if="selectedItem?.is_completed">
                                                     <v-btn color="primary" class="mr-3"
-                                                        @click="goToRoute(`/view-hse-audit-report/${selectedItem?.uuid}`)">View
-                                                        Audit</v-btn>
+                                                        @click="goToRoute(`/view-inspection-report/${selectedItem?.uuid}`)">View
+                                                        Inspection</v-btn>
                                                     <v-btn color="primary" class="mr-3"
-                                                        @click="goToRoute(`/full-report-hse-audit-report/${selectedItem?.uuid}`)">Full
-                                                        Audit Report</v-btn>
+                                                        @click="goToRoute(`/full-report-inspection-report/${selectedItem?.uuid}`)">Full
+                                                        Inspection Report</v-btn>
                                                     <v-btn color="primary" class="mr-3"
-                                                        @click="goToRoute(`/report-hse-audit-report/${selectedItem?.uuid}`)">Audit
+                                                        @click="goToRoute(`/report-inspection-report/${selectedItem?.uuid}`)">Inspection
                                                         Summary</v-btn>
                                                 </template>
 
@@ -301,7 +301,7 @@ const goToRoute = (url: string) => {
                             variant="outlined" hide-details single-line></v-text-field>
                     </template>
 
-                    <VDataTable :headers="headers" :items="getMainAudits" :search="search" item-key="name"
+                    <VDataTable :headers="headers" :items="getAllOrgInspections" :search="search" item-key="name"
                         items-per-page="5" item-value="fat" show-select>
 
                         <template v-slot:item.action="{ item }">
@@ -320,24 +320,6 @@ const goToRoute = (url: string) => {
                                             View Inspection
                                         </v-list-item-title>
                                     </v-list-item>
-                                    <template v-if="isLoggedInUserOwnsActionOrg && item.selectable.is_pending">
-                                        <v-list-item @click="selectItem(item, 'edit')">
-                                            <v-list-item-title>
-                                                <v-icon class="mr-2" size="small">
-                                                    mdi-pencil
-                                                </v-icon>
-                                                Edit Action
-                                            </v-list-item-title>
-                                        </v-list-item>
-                                        <v-list-item @click="selectItem(item, 'delete')">
-                                            <v-list-item-title>
-                                                <v-icon class="mr-2" size="small">
-                                                    mdi-delete
-                                                </v-icon>
-                                                Delete Action
-                                            </v-list-item-title>
-                                        </v-list-item>
-                                    </template>
                                 </v-list>
                             </v-menu>
                         </template>

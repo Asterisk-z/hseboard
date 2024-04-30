@@ -9,4 +9,10 @@ class InspectionFinding extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $with = ['user'];
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
 }

@@ -23,6 +23,7 @@ return new class extends Migration
             $table->timestamp('propose_time')->nullable();
             $table->timestamp('suggested_time')->nullable();
             $table->timestamp('accepted_time')->nullable();
+            $table->text('comment')->nullable();
             $table->enum('status', ['sent', 'declined', 'accepted'])->default('sent');
             $table->timestamps();
         });

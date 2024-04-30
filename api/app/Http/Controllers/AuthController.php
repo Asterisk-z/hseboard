@@ -55,6 +55,8 @@ class AuthController extends Controller
                 'organization_id' => $organization->id,
             ]);
 
+            $createUser->active_organization = $organization->uuid;
+            $createUser->save();
         }
 
         $signature = Str::random(50);
@@ -81,7 +83,7 @@ class AuthController extends Controller
     public function login(Request $request): JsonResponse
     {
         $credentials = request(['email', 'password']);
-        logger(auth()->attempt($credentials));
+        // logger(auth()->attempt($credentials));
         if (!$token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Invalid Login details'], 401);
         }

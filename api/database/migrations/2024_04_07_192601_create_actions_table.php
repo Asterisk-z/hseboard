@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('organization_id');
             $table->integer('assignee_id');
             $table->integer('investigation_id')->nullable();
+            $table->integer('inspection_id')->nullable();
             $table->integer('audit_id')->nullable();
             $table->string('title');
             $table->text('description');

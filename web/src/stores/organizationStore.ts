@@ -30,6 +30,17 @@ export const useOrganizationStore = defineStore({
                 });
             this.organizations = data;
         },
+        async getOrganizations() {
+
+            const data = await fetchWrapper
+                .get(`organizations/${this.active}`)
+                .then((response: any) => {
+                    return response.data
+                }).catch((error: any) => {
+                    console.log(error)
+                });
+            this.organization = data;
+        },
         async getTokenOrganizations(org_token: string) {
 
             const data = await fetchWrapper

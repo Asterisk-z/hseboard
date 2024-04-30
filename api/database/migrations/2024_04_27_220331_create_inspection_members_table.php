@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->integer('user_id');
             $table->integer('organization_id');
-            $table->integer('audit_id');
+            $table->integer('inspection_id');
             $table->enum('position', ['LEAD_INSPECTOR', 'INSPECTION_MEMBER', 'LEAD_REPRESENTATIVE', 'REPRESENTATIVE']);
             $table->timestamps();
         });

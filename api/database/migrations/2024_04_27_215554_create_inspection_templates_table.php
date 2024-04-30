@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->integer('user_id')->nullable();
             $table->integer('organization_id')->nullable();
-            $table->integer('template_type_id');
+            $table->integer('inspection_template_type_id');
             $table->integer('file_id')->nullable();
             $table->string('title');
             $table->text('description');

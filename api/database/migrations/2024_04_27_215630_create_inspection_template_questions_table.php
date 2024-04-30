@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->text('question')->nullable();
             $table->text('title')->nullable();
-            $table->integer('audit_template_id');
+            $table->integer('inspection_template_id');
             $table->integer('group_id')->nullable();
             $table->integer('header_id')->nullable();
             $table->integer('topic_id')->nullable();

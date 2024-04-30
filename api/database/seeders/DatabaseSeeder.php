@@ -37,5 +37,10 @@ class DatabaseSeeder extends Seeder
         $this->call(CurrencySeeder::class);
         $this->call(SubsciptionPlanSeeder::class);
         $this->call(FeatureSeeder::class);
+        $this->call(InspectionTypeSeeder::class);
+        $this->call(InspectionTemplateSeeder::class);
+        $this->call(InspectionTemplateTypeSeeder::class);
+        $this->call(InspectionTemplateQuestionSeeder::class);
+
     }
 }

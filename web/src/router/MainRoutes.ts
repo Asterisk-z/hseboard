@@ -121,9 +121,49 @@ const MainRoutes = {
             component: () => import('@/views/Inspection/Index.vue')
         },
         {
+            name: 'Inspection Template',
+            path: '/inspection-templates',
+            component: () => import('@/views/Inspection/Template.vue')
+        },
+        {
+            name: ' Create Inspection ',
+            path: '/create-inspection-report',
+            component: () => import('@/views/Inspection/Create.vue')
+        },
+        {
+            name: ' Ongoing Inspection ',
+            path: '/ongoing-inspection-report/:inspection_id',
+            component: () => import('@/views/Inspection/Ongoing.vue')
+        },
+        {
+            name: ' View Inspection ',
+            path: '/view-inspection-report/:inspection_id',
+            component: () => import('@/views/Inspection/View.vue')
+        },
+        {
+            name: ' Report Inspection ',
+            path: '/report-inspection-report/:inspection_id',
+            component: () => import('@/views/Inspection/Report.vue')
+        },
+        {
+            name: 'Full Report Inspection ',
+            path: '/full-report-inspection-report/:inspection_id',
+            component: () => import('@/views/Inspection/FullReport.vue')
+        },
+        {
             name: 'Job Hazard Analysis',
             path: '/hazard-analysis',
             component: () => import('@/views/JobAnalysis/Index.vue')
+        },
+        {
+            name: 'Update Job Hazard Analysis',
+            path: '/update-hazard-analysis/:job_id',
+            component: () => import('@/views/JobAnalysis/Update.vue')
+        },
+        {
+            name: 'Review Job Hazard Analysis',
+            path: '/review-hazard-analysis/:job_id',
+            component: () => import('@/views/JobAnalysis/Review.vue')
         },
         {
             name: 'Permit to Work System',

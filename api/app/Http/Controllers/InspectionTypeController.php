@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\InspectionType;
+use Exception;
 use Illuminate\Http\Request;
 
 class InspectionTypeController extends Controller
@@ -14,7 +15,21 @@ class InspectionTypeController extends Controller
      */
     public function index()
     {
-        //
+
+        try {
+
+            $stats = InspectionType::where('is_del', 'no')->orderBy('created_at', 'desc')->get();
+
+            $converted_stats = arrayKeysToCamelCase($stats);
+
+            return successResponse('Inspection Type Fetched Successfully', $converted_stats);
+
+        } catch (Exception $error) {
+
+            return successResponse('Inspection Type Fetched Successfully', []);
+
+        }
+
     }
 
     /**

@@ -9,4 +9,10 @@ class InspectionMember extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $with = ['member'];
+
+    public function member()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
 }

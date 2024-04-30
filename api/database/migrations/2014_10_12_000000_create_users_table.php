@@ -27,6 +27,7 @@ return new class extends Migration
             $table->enum('is_admin', ['yes', 'no'])->default('no');
             $table->timestamp('email_verified_at')->nullable();
             $table->enum('is_del', ['yes', 'no'])->default('no');
+            $table->string('active_organization')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

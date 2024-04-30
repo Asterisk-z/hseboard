@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use App\Models\Action;
 use App\Models\Feature;
+use App\Models\Inspection;
 use App\Models\Investigation;
+use App\Models\JobHazardAnalysis;
 use App\Models\MainAudit;
 use App\Models\Observation;
 use App\Models\Offer;
@@ -15,7 +17,9 @@ use App\Models\Subscription;
 use App\Models\User;
 use App\Observers\ActionObserver;
 use App\Observers\FeatureObserver;
+use App\Observers\InspectionObserver;
 use App\Observers\InvestigationObserver;
+use App\Observers\JobHazardAnalysisObserver;
 use App\Observers\MainAuditObserver;
 use App\Observers\ObservationObserver;
 use App\Observers\OfferObserver;
@@ -57,5 +61,7 @@ class AppServiceProvider extends ServiceProvider
         Feature::observe(FeatureObserver::class);
         Subscription::observe(SubscriptionObserver::class);
         OrganizationFeature::observe(OrganizationFeatureObserver::class);
+        Inspection::observe(InspectionObserver::class);
+        JobHazardAnalysis::observe(JobHazardAnalysisObserver::class);
     }
 }
