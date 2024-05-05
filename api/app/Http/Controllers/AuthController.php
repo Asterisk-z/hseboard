@@ -32,7 +32,7 @@ class AuthController extends Controller
             'email' => $data['emailAddress'],
             'phone' => $data['phoneNumber'],
             'account_type_id' => (AccountType::where('name', $data['accountType'])->first())->id,
-            'account_role_id' => (AccountRole::where('name', AccountRole::role['MEM'])->first())->id,
+            'account_role_id' => (AccountRole::where('name', AccountRole::roles['MEM'])->first())->id,
             'password' => Hash::make($data['password']),
         ]);
 
@@ -47,7 +47,7 @@ class AuthController extends Controller
                 'user_id' => $createUser->id,
             ]);
 
-            $createUser->account_role_id = (AccountRole::where('name', AccountRole::role['MAN'])->first())->id;
+            $createUser->account_role_id = (AccountRole::where('name', AccountRole::roles['MAN'])->first())->id;
             $createUser->save();
 
             OrganisationUser::create([
@@ -150,6 +150,7 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         $user = auth()->user();
+        logger($user);
         return response()->json([
             'user' => $user,
             'access_token' => $token,

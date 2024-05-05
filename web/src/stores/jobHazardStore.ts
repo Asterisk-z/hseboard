@@ -83,7 +83,7 @@ export const useJobHazardStore = defineStore({
                 });
             this.jobHazards = data;
         },
-        async getOngoingJobHazardAnalysis(job_id: number) {
+        async getOngoingJobHazardAnalysis(job_id: string) {
             
             const organizationStore = useOrganizationStore();
             const data = await fetchWrapper
@@ -95,7 +95,7 @@ export const useJobHazardStore = defineStore({
                 });
             this.ongoingJobHazard = data;
         },
-        async getReviewJobHazardAnalysis(job_id: number) {
+        async getReviewJobHazardAnalysis(job_id: string) {
 
             const organizationStore = useOrganizationStore();
             const data = await fetchWrapper

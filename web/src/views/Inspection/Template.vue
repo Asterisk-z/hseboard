@@ -41,11 +41,13 @@ onMounted(() => {
     auditTemplateStore.getAuditTemplates()
 });
 
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser = computed(() => (authStore.loggedUser));
-const getAuditTemplates = computed(() => (auditTemplateStore.auditTemplates));
-const getAuditTypes = computed(() => (auditTemplateStore.auditTypes));
-const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const computedIndex = (index : any) => ++index;
+
+const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser : any  = computed(() => (authStore.loggedUser));
+const getAuditTemplates : any  = computed(() => (auditTemplateStore.auditTemplates));
+const getAuditTypes : any  = computed(() => (auditTemplateStore.auditTypes));
+const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 const valid = ref(true);
@@ -74,7 +76,7 @@ const setDeleteDialog = (value: boolean) => {
     deleteDialog.value = value;
     if (value == false) selectItem({})
 }
-const selectedItem = ref({});
+const selectedItem = ref({} as any);
 const selectItem = (item: any, action: string = '') => {
     selectedItem.value = Object.assign({}, item.raw);
 
@@ -106,17 +108,17 @@ const headers = ref([
     {
         key: 'title',
         title: 'Title',
-        value: (item: any) => `${item.title}`,
+        value: (item: any): string => `${item.title}`,
     },
     {
         key: 'description',
         title: 'Description',
-        value: (item: any) => `${item.description}`
+        value: (item: any): string => `${item.description}`
     },
     {
         key: 'created_at',
         title: 'Date Created',
-        value: (item: any) => `${moment(item.created_at).format('MMMM Do YYYY, h:mm a')}`
+        value: (item: any): string => `${moment(item.created_at).format('MMMM Do YYYY, h:mm a')}`
     },
     {
         key: 'action',
@@ -154,7 +156,7 @@ const fieldRules: any = ref({
 })
 
 
-const newRow = ref([]);
+const newRow : any = ref([]);
 const save = async (e: any) => {
     e.preventDefault();
 
@@ -261,7 +263,7 @@ const setQuestionDialog = (value: boolean) => {
     questionDialog.value = value;
 }
 const images = ref([])
-const previewImage = ref([])
+const previewImage = ref([] as any)
 
 const selectImage = (image: any) => {
     fields.value.file = image.target.files;
@@ -280,7 +282,7 @@ const selectImage = (image: any) => {
 
     for (let index = 0; index < images.value.length; index++) {
         const element = images.value[index];
-        previewImage.value.push(URL.createObjectURL(element))
+        previewImage.value.push(URL.createObjectURL(element) as string)
     }
 
 }
@@ -389,7 +391,7 @@ const selectImage = (image: any) => {
                                                     </VTextField> -->
                                                 </VCol>
                                                 <VCol cols="12" lg="12" class="text-right">
-                                                    <v-btn color="error" @click="dialog = false"
+                                                    <v-btn color="error" @click="setDialog(false)"
                                                         variant="text">Cancel</v-btn>
 
                                                     <v-btn color="primary" type="submit" :loading="loading"
@@ -517,7 +519,7 @@ const selectImage = (image: any) => {
                         </template>
 
                         <template v-slot:item.sn="{ index }">
-                            {{ ++index }}
+                            {{ computedIndex(index) }}
                         </template>
 
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PermitType;
+use Exception;
 use Illuminate\Http\Request;
 
 class PermitTypeController extends Controller
@@ -14,7 +15,21 @@ class PermitTypeController extends Controller
      */
     public function index()
     {
-        //
+
+        try {
+
+            $stats = PermitType::where('is_del', 'no')->orderBy('created_at', 'desc')->get();
+
+            $converted_stats = arrayKeysToCamelCase($stats);
+
+            return successResponse('Type Fetched Successfully', $converted_stats);
+
+        } catch (Exception $error) {
+
+            return successResponse('Type Fetched Successfully', []);
+
+        }
+
     }
 
     /**

@@ -33,20 +33,20 @@ onMounted(() => {
 
     // teamMemberStore.getTeamMembers();
     // openLinks.getPriorities();
-    // investigationStore.getInvestigationQuestions(route.params.observation_id);
+    // investigationStore.getInvestigationQuestions(route.params.observation_id as string);
 });
 
-const getAuditOptions = computed(() => (auditTemplateStore.auditOptions));
-const getAuditTypes = computed(() => (auditTemplateStore.auditTypes));
+const getAuditOptions : any   = computed(() => (auditTemplateStore.auditOptions));
+const getAuditTypes : any   = computed(() => (auditTemplateStore.auditTypes));
 
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser = computed(() => (authStore.loggedUser));
-const getMembers = computed(() => (teamMemberStore.members));
-const getInvestigationQuestions = computed(() => (investigationStore.questions));
-const getInvestigation = computed(() => (investigationStore.investigation));
-const getPriorities = computed(() => (openLinks.priorities));
-const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
-const isLoggedInUserIsLead= computed(() => (getAuthUser.value?.id == getInvestigation.value?.lead?.member?.id));
+const getActiveOrg : any   = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser : any   = computed(() => (authStore.loggedUser));
+const getMembers : any   = computed(() => (teamMemberStore.members));
+const getInvestigationQuestions : any   = computed(() => (investigationStore.questions));
+const getInvestigation : any   = computed(() => (investigationStore.investigation));
+const getPriorities : any   = computed(() => (openLinks.priorities));
+const isLoggedInUserOwnsActionOrg : any   = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const isLoggedInUserIsLead : any   = computed(() => (getAuthUser.value?.id == getInvestigation.value?.lead?.member?.id));
 
 
 const page = ref({ title: 'Create Audit' });
@@ -111,7 +111,7 @@ const setViewRecommendationDialog = (value: boolean, type: string = '') => {
     viewRecommendationDialog.value = value;
     if (value == false) selectItem({})
 }
-const selectedItem = ref({});
+const selectedItem = ref({} as any);
 const selectItem = (item: any, action: string = '', extra: any = '') => {
     selectedItem.value = Object.assign({}, item.raw);
 
@@ -147,10 +147,10 @@ const fields = ref({
     organization_id: getActiveOrg.value?.uuid,
 });
 
-const filteredMember = computed(() => (getMembers.value?.filter((member: any) => (member.id != fields.value?.leadInvestigator))));
+const filteredMember : any  = computed(() => (getMembers.value?.filter((member: any) => (member.id != fields.value?.leadInvestigator))));
 
-const members_ids = computed(() => (getInvestigation.value?.all_members.map((member: any) => (member.member_id))));
-const filteredNonMember = computed(() => (getMembers.value?.filter((member: any) => (!members_ids.value?.includes(member.id)))));
+const members_ids : any  = computed(() => (getInvestigation.value?.all_members.map((member: any) => (member.member_id))));
+const filteredNonMember : any  = computed(() => (getMembers.value?.filter((member: any) => (!members_ids.value?.includes(member.id)))));
 
 
 const fieldRules: any = ref({
@@ -196,19 +196,19 @@ const save = async (e: any) => {
 
         if (resp?.message == 'success') {
             setLoading(false)
-            setAddMemberDialog(false)
-            // investigationStore.getInvestigation(route.params.observation_id);
+            // setAddMemberDialog(false)
+            // investigationStore.getInvestigation(route.params.observation_id as string);
         }
 
         setLoading(false)
-        setAddMemberDialog(false)
+        // setAddMemberDialog(false)
 
 
 
     } catch (error) {
         console.log(error)
         setLoading(false)
-        setAddMemberDialog(false)
+        // setAddMemberDialog(false)
     }
 
 }
@@ -241,7 +241,7 @@ const removeMember = async (member: any) => {
                         throw error
                     })
                     .then((resp: any) => {
-                        //  investigationStore.getInvestigation(route.params.observation_id);
+                        //  investigationStore.getInvestigation(route.params.observation_id as string);
                         return resp
                     });
 
@@ -304,7 +304,7 @@ const sendQuestion = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             
-            // investigationStore.getInvestigation(route.params.observation_id);
+            // investigationStore.getInvestigation(route.params.observation_id as string);
         }
 
         setLoading(false)
@@ -375,7 +375,7 @@ const sendInvites = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setAddInviteDialog(false)
-            // investigationStore.getInvestigation(route.params.observation_id);
+            // investigationStore.getInvestigation(route.params.observation_id as string);
         }
 
         setLoading(false)
@@ -432,7 +432,7 @@ const sendFindings = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setViewFindingDialog(false)
-            // investigationStore.getInvestigation(route.params.observation_id);
+            // investigationStore.getInvestigation(route.params.observation_id as string);
         }
 
         setLoading(false)
@@ -515,7 +515,7 @@ const sendRecommendation = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setViewRecommendationDialog(false)
-            // investigationStore.getInvestigation(route.params.observation_id);
+            // investigationStore.getInvestigation(route.params.observation_id as string);
         }
 
         setLoading(false)
@@ -597,7 +597,7 @@ const sendReport = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setViewReportDialog(false)
-            // investigationStore.getInvestigation(route.params.observation_id);
+            // investigationStore.getInvestigation(route.params.observation_id as string);
         }
 
         setLoading(false)
@@ -638,7 +638,7 @@ const addQuestion = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             
-            // investigationStore.getInvestigationQuestions(route.params.observation_id);
+            // investigationStore.getInvestigationQuestions(route.params.observation_id as string);
         }
 
         setLoading(false)
@@ -680,7 +680,7 @@ const completeInvestigation = async (member: any) => {
                         throw error
                     })
                     .then((resp: any) => {
-                        //  investigationStore.getInvestigation(route.params.observation_id);
+                        //  investigationStore.getInvestigation(route.params.observation_id as string);route.params.main_audit_id as string
                         // router.push(`/hse-investigation`)
                         return resp
                     });
@@ -734,9 +734,15 @@ const completeInvestigation = async (member: any) => {
 // ----------------------------------------------------------------------------------------------------
 // ----------------------------------------------------------------------------------------------------
 
+type OrganizationType = {
+    uuid: string,
+    name: string,
+    token: string,
+};
+
 const stepOneFields = ref({
     orgToken: '',
-    organization: '',
+    organization: null as null || {} as OrganizationType,
     auditTitle: '',
     auditType: '',
     auditScope: '',
@@ -788,7 +794,11 @@ const fetchOrganization = async (token: string) => {
             stepOneFields.value.organization = resp
         } else {
 
-            stepOneFields.value.organization = ''
+            stepOneFields.value.organization = {
+                        uuid: '',
+                        name: '',
+                        token: '',
+                    };
         }
 
 
@@ -800,7 +810,6 @@ const fetchOrganization = async (token: string) => {
 const fetchTemplate = async (token: string) => {
 
     try {
-        console.log(stepOneFields.value.auditType)
         
 
         const resp = await auditTemplateStore.getAuditTypeTemplate(stepOneFields.value.auditType)
@@ -861,7 +870,11 @@ const sendAuditOption = async (e: any) => {
             stepOneFields.value.auditOption = '';
             stepOneFields.value.auditType = '';
                 stepOneFields.value.orgToken = '';
-                stepOneFields.value.organization = '';
+                stepOneFields.value.organization = {
+                        uuid: '',
+                        name: '',
+                        token: '',
+                    };
                 stepOneFields.value.auditTitle = '';
                 stepOneFields.value.auditScope = '';
                 stepOneFields.value.auditTemplate = '';
@@ -934,10 +947,10 @@ const sendAuditOption = async (e: any) => {
                                                 <div class="d-flex align-center">
                                                     <div class="pl-4 mt-n1">
                                                         <h5 class="text-h6">{{
-            stepOneFields.organization.name
+            stepOneFields.organization?.name
         }}</h5>
                                                         <h5 class="text-h6">{{
-                stepOneFields.organization.token
+                stepOneFields.organization?.token
             }}</h5>
                                                     </div>
                                                 </div>

@@ -35,17 +35,17 @@ onMounted(() => {
     
     // teamMemberStore.getTeamMembers();
     // openLinks.getPriorities();
-    // investigationStore.getInvestigationQuestions(route.params.observation_id);
+    // investigationStore.getInvestigationQuestions(route.params.observation_id as string);
 });
 
-const getInspectionTypes = computed(() => (inspectionStore.inspectionTypes));
-const getInvestigationTemplateTypes = computed(() => (inspectionStore.inspectionTemplateTypes));
-const getInspectionTemplateForTypeId = computed(() => (inspectionStore.inspectionTypeTemplates));
+const getInspectionTypes : any  = computed(() => (inspectionStore.inspectionTypes));
+const getInvestigationTemplateTypes : any  = computed(() => (inspectionStore.inspectionTemplateTypes));
+const getInspectionTemplateForTypeId : any  = computed(() => (inspectionStore.inspectionTypeTemplates));
 
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser = computed(() => (authStore.loggedUser));
-const getInvestigation = computed(() => (investigationStore.investigation));
-const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser : any  = computed(() => (authStore.loggedUser));
+const getInvestigation : any  = computed(() => (investigationStore.investigation));
+const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 const page = ref({ title: 'Create Inspection' });
 const breadcrumbs = ref([
@@ -74,9 +74,15 @@ const setLoading = (value: boolean) => {
     loading.value = value;
 }
 
+type OrganizationType = {
+    uuid: string
+    name: string,
+    token: string,
+};
+
 const stepOneFields = ref({
     orgToken: '',
-    organization: '',
+    organization: null as null || {} as OrganizationType,
     selectedType: '',
     templateId: '',
     name: '',
@@ -127,7 +133,7 @@ const fetchInspectionTemplate = async () => {
     try {
 
 
-    const resp = await inspectionStore.getInspectionTemplateForTypeId(stepOneFields.value.inspectionTemplateTypeId)
+    const resp = await inspectionStore.getInspectionTemplateForTypeId(stepOneFields.value.inspectionTemplateTypeId as string)
         .catch((error: any) => {
             console.log(error)
             throw error
@@ -161,7 +167,11 @@ const fetchOrganization = async (token: string) => {
             stepOneFields.value.organization = resp
         } else {
 
-            stepOneFields.value.organization = ''
+            stepOneFields.value.organization = {
+                        uuid: '',
+                        name: '',
+                        token: '',
+                    }
         }
 
 
@@ -212,7 +222,11 @@ const sendInitiateInspection = async (e: any) => {
             stepOneFields.value.selectedType = '';
             stepOneFields.value.inspectionTemplateTypeId = '';
             stepOneFields.value.orgToken = '';
-            stepOneFields.value.organization = '';
+            stepOneFields.value.organization =   {
+                        uuid: '',
+                        name: '',
+                        token: '',
+                    };
             stepOneFields.value.templateId = '';
             stepOneFields.value.name = '';
             stepOneFields.value.location = '';
@@ -291,10 +305,10 @@ const sendInitiateInspection = async (e: any) => {
                                                 <div class="d-flex align-center">
                                                     <div class="pl-4 mt-n1">
                                                         <h5 class="text-h6">{{
-                                                            stepOneFields.organization.name
+                                                            stepOneFields.organization?.name
                                                             }}</h5>
                                                         <h5 class="text-h6">{{
-                                                            stepOneFields.organization.token
+                                                            stepOneFields.organization?.token
                                                             }}</h5>
                                                     </div>
                                                 </div>

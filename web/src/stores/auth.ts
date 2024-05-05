@@ -45,7 +45,7 @@ export const useAuthStore = defineStore({
     }),
     getters: {
         loggedUser: (state) => {
-            return JSON.parse(atob(state.user))
+            return JSON.parse(atob(state.user as any))
         },
         accessToken: (state) => {
             return state.hse_tok_passer
@@ -94,6 +94,7 @@ export const useAuthStore = defineStore({
                     localStorage.setItem("hse_tok_passer", data.access_token);
                     localStorage.setItem("logger", btoa(JSON.stringify(data.user)));
                     localStorage.setItem("loggerOrg", btoa(JSON.stringify(data.user.organizations)));
+                    localStorage.setItem("loggerActiveOrg", data.user.active_organization);
                     localStorage.setItem("user_mail", data.user.email);
                     localStorage.setItem("firstName", data.user.firstName);
                     localStorage.setItem("id", data.user.id);

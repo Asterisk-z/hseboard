@@ -9,6 +9,7 @@ import { useOrganizationStore } from '@/stores/organizationStore';
 import { useAccountStore } from '@/stores/accountStore';
 import { useAuthStore } from '@/stores/auth';
 import moment from 'moment'
+
 import Swal from 'sweetalert2'
 import {
     CheckIcon,
@@ -36,6 +37,61 @@ const authStore = useAuthStore();
 const organizationStore = useOrganizationStore();
 const accountStore = useAccountStore();
 
+const valid = ref(true);
+const formContainer = ref('')
+const loading = ref(false);
+const setLoading = (value: boolean) => {
+    loading.value = value;
+}
+const dialog = ref(false);
+const setDialog = (value: boolean) => {
+    dialog.value = value;
+}
+const passwordDialog = ref(false);
+const setPasswordDialog = (value: boolean) => {
+    passwordDialog.value = value;
+}
+
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+const showPassword = ref(false);
+
+const fields = ref({
+    lastName: "",
+    firstName: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+    end_date: "",
+    start_date: ""
+});
+
+
+const fieldRules : any = ref({
+    lastName: [
+        (v: string) => !!v || 'Last Name is required',
+    ],
+    firstName: [
+        (v: string) => !!v || 'First Name is required',
+    ],
+    email: [
+        (v: string) => !!v || 'Email  is required',
+    ],
+    phone: [
+        (v: string) => !!v || 'Phone Number is required',
+        (v: string) => (v && v.length == 11) || 'Phone Number must be 11 characters',
+    ],
+    password: [
+        (v: string) => !!v || 'Password is required',
+        (v: string) => (v && passwordRegex.test(fields.value.password)) || 'Password must be uppercase, lowercase, numbers and 8 characters',
+    ],
+    confirmPassword: [
+        (v: string) => !!v || 'Password is required',
+        (v: string) => (v && v == fields.value.password) || 'Password does not march',
+        (v: string) => (v && passwordRegex.test(fields.value.confirmPassword)) || 'Password most be uppercase, lowercase, numbers and 8 characters',
+    ],
+})
+
 
 onMounted(() => {
     accountStore.getUserDetail()
@@ -43,11 +99,66 @@ onMounted(() => {
 
 
 
-const getAuthUser = computed(() => (authStore.loggedUser));
-const getUserDetail = computed(() => (accountStore.userDetail));
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const getAuthUser : any  = computed(() => (authStore.loggedUser));
+const getUserDetail : any  = computed(() => (accountStore.userDetail));
+const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
+const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
+
+const save = async (e: any) => {
+    e.preventDefault();
+
+    try {
+        setLoading(true)
+
+        const values = { ...fields.value }
+
+        // let objectValues = {
+        //     "title": values?.title,
+        //     "description": values?.description,
+        //     "assignee_id": values?.assigneeId,
+        //     "start_date": moment(values?.start_date).format('YYYY-MM-DD HH:mm:ss'),
+        //     "end_date": moment(values?.end_date).format('YYYY-MM-DD HH:mm:ss'),
+        //     // "priority_id": values?.priorityId
+        // }
+
+        // const resp = await actionStore.addAction(objectValues)
+        //     .catch((error: any) => {
+        //         console.log(error)
+        //         throw error
+        //     })
+        //     .then((resp: any) => {
+        //         return resp
+        //     });
+
+        // if (resp?.message == 'success') {
+        //     setLoading(false)
+        //     setDialog(false)
+
+        //     fields.value.title = "";
+        //     fields.value.description = "";
+        //     fields.value.assigneeId = "";
+        //     fields.value.priorityId = "";
+        //     fields.value.end_date = "";
+        //     fields.value.start_date = "";
+
+        //     actionStore.getActions();
+
+
+        // }
+
+        setLoading(false)
+        setDialog(false)
+
+
+
+    } catch (error) {
+        console.log(error)
+        setLoading(false)
+        setDialog(false)
+    }
+
+}
 
 </script>
 
@@ -60,10 +171,160 @@ const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == get
             <v-col cols="12" md="11">
                 <UiParentCard variant="outlined">
                     <v-card-text class="text-right">
-                        <v-btn color="primary">Update Information</v-btn>
-                        <!-- <h1 class="text-uppercase mb-3"> {{ getCompletedInspection?.inspection?.facility_name }}</h1> -->
-                        <!-- <h1 class="text-uppercase mb-3"> {{ getCompletedInspection?.inspection?.inspection_template?.description }}</h1> -->
-                        <!-- <h2 class="text-uppercase mb-3">Organization : {{ getCompletedInspection?.inspection?.recipient_organization?.name }}</h2> -->
+
+                        <v-sheet>
+                            <v-btn color="primary" class="mr-2" @click="setDialog(true)">Update Information</v-btn>
+                            <v-btn color="primary" class="mr-2" @click="setPasswordDialog(true)">Update Password</v-btn>
+
+
+                            <v-dialog v-model="passwordDialog" max-width="600">
+                                <v-card>
+                                    <v-card-text>
+                                        <div class="d-flex justify-space-between">
+                                            <h3 class="text-h3">Update Password</h3>
+                                            <v-btn icon @click="setPasswordDialog(false)" size="small" flat>
+                                                <XIcon size="16" />
+                                            </v-btn>
+                                        </div>
+                                    </v-card-text>
+                                    <v-divider></v-divider>
+
+                                    <v-card-text>
+
+                                        <VForm v-model="valid" ref="formContainer" fast-fail lazy-validation
+                                            @submit.prevent="save" class="py-1">
+                                            <VRow class="mt-5 mb-3">
+
+                                                <VCol cols="12" md="12">
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Current Password</v-label>
+                                                    <VTextField :type="showPassword ? 'text' : 'password'"
+                                                        v-model="fields.lastName" :rules="fieldRules.lastName" required
+                                                        variant="outlined" label="Current Password"
+                                                        :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                                                        @click:append-inner="showPassword = !showPassword">
+                                                    </VTextField>
+                                                </VCol>
+
+                                                <VCol cols="12" md="6">
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-2">New
+                                                        Password</v-label>
+                                                    <VTextField :type="showPassword ? 'text' : 'password'"
+                                                        v-model="fields.password" :rules="fieldRules.password" required
+                                                        variant="outlined" label="Password"
+                                                        :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                                                        @click:append-inner="showPassword = !showPassword"></VTextField>
+                                                </VCol>
+                                                <VCol cols="12" md="6">
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-2">Confirm
+                                                        New Password</v-label>
+                                                    <VTextField :type="showPassword ? 'text' : 'password'"
+                                                        v-model="fields.confirmPassword"
+                                                        :rules="fieldRules.confirmPassword" required variant="outlined"
+                                                        label="Password"
+                                                        :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                                                        @click:append-inner="showPassword = !showPassword"></VTextField>
+                                                </VCol>
+                                                <VCol cols="12" lg="12" class="text-right">
+                                                    <v-btn color="error" @click="setPasswordDialog(false)"
+                                                        variant="text">Cancel</v-btn>
+
+                                                    <v-btn color="primary" type="submit" :loading="loading"
+                                                        :disabled="!valid" @click="save">
+                                                        <span v-if="!loading">
+                                                            Update
+                                                        </span>
+                                                        <clip-loader v-else :loading="loading" color="white"
+                                                            :size="'25px'"></clip-loader>
+                                                    </v-btn>
+
+                                                </VCol>
+                                            </VRow>
+                                        </VForm>
+                                    </v-card-text>
+                                </v-card>
+                            </v-dialog>
+
+
+                            <v-dialog v-model="dialog" max-width="600">
+                                <v-card>
+                                    <v-card-text>
+                                        <div class="d-flex justify-space-between">
+                                            <h3 class="text-h3">Account Details</h3>
+                                            <v-btn icon @click="setDialog(false)" size="small" flat>
+                                                <XIcon size="16" />
+                                            </v-btn>
+                                        </div>
+                                    </v-card-text>
+                                    <v-divider></v-divider>
+
+                                    <v-card-text>
+
+                                        <VForm v-model="valid" ref="formContainer" fast-fail lazy-validation
+                                            @submit.prevent="save" class="py-1">
+                                            <VRow class="mt-5 mb-3">
+
+                                                <VCol cols="12" md="6">
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Last
+                                                        Name</v-label>
+                                                    <VTextField type="text" v-model="fields.lastName"
+                                                        :rules="fieldRules.lastName" required variant="outlined"
+                                                        label="Last Name"
+                                                        :color="fields.lastName.length > 2 ? 'success' : 'primary'">
+                                                    </VTextField>
+                                                </VCol>
+                                                <VCol cols="12" md="6">
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">First
+                                                        Name</v-label>
+                                                    <VTextField type="text" v-model="fields.firstName"
+                                                        :rules="fieldRules.firstName" required variant="outlined"
+                                                        label="First Name"
+                                                        :color="fields.firstName.length > 2 ? 'success' : 'primary'">
+                                                    </VTextField>
+                                                </VCol>
+
+                                                <VCol cols="12" md="6">
+                                                    <v-label
+                                                        class="text-subtitle-1 font-weight-medium pb-1">Email</v-label>
+                                                    <VTextField type="email" v-model="fields.email"
+                                                        :rules="fieldRules.email" required variant="outlined"
+                                                        label="Email"
+                                                        :color="fields.email.length > 2 ? 'success' : 'primary'">
+                                                    </VTextField>
+                                                </VCol>
+
+                                                <VCol cols="12" md="6">
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Phone
+                                                        Number</v-label>
+                                                    <VTextField type="number" v-model="fields.phone"
+                                                        :rules="fieldRules.phone" required variant="outlined"
+                                                        label="Phone Number"
+                                                        :color="fields.phone.length > 2 ? 'success' : 'primary'">
+                                                    </VTextField>
+                                                </VCol>
+
+
+
+                                                <VCol cols="12" lg="12" class="text-right">
+                                                    <v-btn color="error" @click="setDialog(false)"
+                                                        variant="text">Cancel</v-btn>
+
+                                                    <v-btn color="primary" type="submit" :loading="loading"
+                                                        :disabled="!valid" @click="save">
+                                                        <span v-if="!loading">
+                                                            Submit
+                                                        </span>
+                                                        <clip-loader v-else :loading="loading" color="white"
+                                                            :size="'25px'"></clip-loader>
+                                                    </v-btn>
+
+                                                </VCol>
+                                            </VRow>
+                                        </VForm>
+                                    </v-card-text>
+                                </v-card>
+                            </v-dialog>
+
+                        </v-sheet>
                     </v-card-text>
                     <v-card-text class="">
                         <VRow>

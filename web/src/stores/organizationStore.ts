@@ -15,7 +15,7 @@ export const useOrganizationStore = defineStore({
     }),
     getters: {
         loggedUserOrgs: (state) => {
-            return JSON.parse(atob(state.list))
+            return JSON.parse(atob(state.list as any))
         },
     },
     actions: {
@@ -51,6 +51,25 @@ export const useOrganizationStore = defineStore({
                     console.log(error)
                 });
            return data;
+        },
+        getActiveOrganization() {
+            try {
+                console.log('get active organization')
+                // let activeOrg;
+                // if (this.loggedUserOrgs.length < 1) return;
+                // if (this.active) {
+                //     activeOrg = this.loggedUserOrgs?.find((items: any) => items.uuid == this.active)
+
+                // } else {
+                //     activeOrg = this.loggedUserOrgs[0]
+                // }
+                // if (activeOrg) this.setActiveOrg(activeOrg?.uuid)
+                // return activeOrg;
+            } catch (error: any) {
+                console.log(error)
+                toastWrapper.error(error, error)
+                return false;
+            }
         },
         getActiveOrg() {
             try {

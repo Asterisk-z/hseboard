@@ -41,16 +41,18 @@ const mainAuditStore = useMainAuditStore();
 
 
 onMounted(() => {
-    mainAuditStore.getCompletedMainAudit(route.params.main_audit_id)
+    mainAuditStore.getCompletedMainAudit(route.params.main_audit_id as string)
 });
 
 
 
-const getAuthUser = computed(() => (authStore.loggedUser));
-const getCompletedMainAudit = computed(() => (mainAuditStore.completedMainAudit));
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const isAuditingOrg = computed(() => (getCompletedMainAudit.value?.main_audit?.organization_id == getActiveOrg.value?.id));
-const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const computedIndex = (index : any) => ++index;
+
+const getAuthUser : any  = computed(() => (authStore.loggedUser));
+const getCompletedMainAudit : any  = computed(() => (mainAuditStore.completedMainAudit));
+const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
+const isAuditingOrg : any  = computed(() => (getCompletedMainAudit.value?.main_audit?.organization_id == getActiveOrg.value?.id));
+const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 
@@ -65,17 +67,17 @@ const setLoading = (value: boolean) => {
 
 
 
-const getRepresentatives = computed(() => (getCompletedMainAudit.value?.main_audit?.all_representatives));
-const getAuditors = computed(() => (getCompletedMainAudit.value?.main_audit?.all_auditors));
+const getRepresentatives : any  = computed(() => (getCompletedMainAudit.value?.main_audit?.all_representatives));
+const getAuditors : any  = computed(() => (getCompletedMainAudit.value?.main_audit?.all_auditors));
 
 
 
 
-const getDocuments = computed(() => (getCompletedMainAudit.value?.main_audit?.documents));
+const getDocuments : any  = computed(() => (getCompletedMainAudit.value?.main_audit?.documents));
 
 
 
-const getSchedule = computed(() => (getCompletedMainAudit.value?.main_audit?.schedule));
+const getSchedule : any  = computed(() => (getCompletedMainAudit.value?.main_audit?.schedule));
 
 
 
@@ -86,10 +88,20 @@ function changeQuestionTab(e: string) {
     questionTab.value = e;
 }
 // console.log(questionTab.value)
-const getQuestions = computed(() => (getCompletedMainAudit.value?.main_audit?.questions));
+const getQuestions : any  = computed(() => (getCompletedMainAudit.value?.main_audit?.questions));
 
 const sendCommentDialog = ref(false);
-const setSendCommentDialog = (value: boolean, item_id: string = '', topic_id: string = '', question = {}) => {
+const setSendCommentDialog = (value: boolean, item_id: string = '', topic_id: string = '', question : { 
+    comment : string,  
+    response : {
+        comment : string
+        } 
+    }  =  { 
+    comment : '',  
+    response : {
+        comment : ''
+        } 
+    }) => {
     sendCommentDialog.value = value;
     stepFourFields.value.question_id = item_id
     stepFourFields.value.topic_id = topic_id
@@ -105,8 +117,8 @@ const stepFourFields = ref({
 
 
 
-const getFindings = computed(() => (getCompletedMainAudit.value?.main_audit?.findings));
-const getActions = computed(() => (getCompletedMainAudit.value?.main_audit?.actions));
+const getFindings : any  = computed(() => (getCompletedMainAudit.value?.main_audit?.findings));
+const getActions : any  = computed(() => (getCompletedMainAudit.value?.main_audit?.actions));
 
 
 
@@ -374,7 +386,7 @@ const blankFn = () => {
                                                 <tbody>
                                                     <tr v-for="(actions, index) in getActions"
                                                         :key="actions">
-                                                        <td>{{ ++index }}</td>
+                                                        <td>{{ computedIndex(index) }}</td>
                                                         <td>{{ `${actions?.title}` }}</td>
                                                         <td>{{ `${actions?.description}` }}</td>
                                                         <td>{{ `${actions?.assignee?.lastName}

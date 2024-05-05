@@ -38,13 +38,15 @@ onMounted(() => {
 });
 
 
-const getActions = computed(() => (actionStore.actions));
-const getTeamMembersExceptMe = computed(() => (teamMemberStore.membersExceptMe));
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser = computed(() => (authStore.loggedUser));
-const getObservationTypes = computed(() => (openLinks.observationTypes));
-const getPriorities = computed(() => (openLinks.priorities));
-const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const computedIndex = (index : any) => ++index;
+
+const getActions : any   = computed(() => (actionStore.actions));
+const getTeamMembersExceptMe : any   = computed(() => (teamMemberStore.membersExceptMe));
+const getActiveOrg : any   = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser : any   = computed(() => (authStore.loggedUser));
+const getObservationTypes : any   = computed(() => (openLinks.observationTypes));
+const getPriorities : any   = computed(() => (openLinks.priorities));
+const isLoggedInUserOwnsActionOrg : any   = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 const valid = ref(true);
@@ -85,7 +87,7 @@ const setDeleteDialog = (value: boolean) => {
     deleteDialog.value = value;
     if (value == false) selectItem({})
 }
-const selectedItem = ref({});
+const selectedItem = ref({} as any);
 const selectItem = (item: any, action: string = '') => {
     selectedItem.value = Object.assign({}, item.raw);
  
@@ -97,7 +99,7 @@ const selectItem = (item: any, action: string = '') => {
             editFields.value.actionId = selectedItem.value?.uuid
             editFields.value.title = selectedItem.value?.title
             editFields.value.description = selectedItem.value?.description
-            editFields.value.assigneeId = selectedItem.value?.assignee_id
+            // editFields.value.assigneeId = selectedItem.value?.assignee_id
             editFields.value.priorityId = selectedItem.value?.priority_id
             editFields.value.end_date = selectedItem.value?.end_datetime
             editFields.value.start_date = selectedItem.value?.start_datetime
@@ -113,7 +115,7 @@ const selectItem = (item: any, action: string = '') => {
     
 }
 
-const isAssignee = computed(() => (selectedItem?.value?.assignee_id == getAuthUser?.value?.id));
+const isAssignee : any  = computed(() => (selectedItem?.value?.assignee_id == getAuthUser?.value?.id));
 
 
 
@@ -129,32 +131,32 @@ const headers = ref([
         key: 'title',
         title: 'Title',
         sortable: false,
-        value: (item: any) => `${item.title} `,
+        value: (item: any): string => `${item.title} `,
     },
     {
         key: 'description',
         title: 'Description',
-        value: (item: any) => `${item.description}`
+        value: (item: any): string => `${item.description}`
     },
     {
         key: 'assignee_id',
         title: 'Assignee',
-        value: (item: any) => `${item.assignee.lastName} ${item.assignee.firstName}`
+        value: (item: any): string => `${item.assignee.lastName} ${item.assignee.firstName}`
     },
     {
         key: 'status',
         title: 'Status',
-        value: (item: any) => `${item.status}`
+        value: (item: any): string => `${item.status}`
     },
     {
         key: 'priority_id',
         title: 'Priority',
-        value: (item: any) => `${item.priority.description}`
+        value: (item: any): string => `${item.priority.description}`
     },
     {
         key: 'created_at',
         title: 'Date Created',
-        value: (item: any) => `${moment(item.created_at).format('MMMM Do YYYY, h:mm a')}`
+        value: (item: any): string => `${moment(item.created_at).format('MMMM Do YYYY, h:mm a')}`
     },
     {
         key: 'action',
@@ -411,7 +413,7 @@ const statusUpdate = async (action: any) => {
 
 const files = ref([])
 const images = ref([])
-const previewImage = ref([])
+const previewImage = ref([] as any)
 
 const selectImage = (image: any) => {
 
@@ -519,7 +521,7 @@ const selectImage = (image: any) => {
 
 
                                                 <VCol cols="12" lg="12" class="text-right">
-                                                    <v-btn color="error" @click="dialog = false"
+                                                    <v-btn color="error" @click="setDialog(false)"
                                                         variant="text">Cancel</v-btn>
 
                                                     <v-btn color="primary" type="submit" :loading="loading"
@@ -605,7 +607,7 @@ const selectImage = (image: any) => {
 
 
                                                 <VCol cols="12" lg="12" class="text-right">
-                                                    <v-btn color="error" @click="dialog = false"
+                                                    <v-btn color="error" @click="setEditDialog(false)"
                                                         variant="text">Cancel</v-btn>
 
                                                     <v-btn color="primary" type="submit" :loading="loading"
@@ -954,7 +956,7 @@ const selectImage = (image: any) => {
                         </template>
 
                         <template v-slot:item.sn="{ index }">
-                            {{ ++index }}
+                            {{ computedIndex(index) }}
                         </template>
 
 

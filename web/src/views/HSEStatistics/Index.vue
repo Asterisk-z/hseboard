@@ -41,12 +41,14 @@ onMounted(() => {
 });
 
 
-const getActions = computed(() => (actionStore.actions));
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser = computed(() => (authStore.loggedUser));
-const getPriorities = computed(() => (openLinks.priorities));
-const getReports = computed(() => (reportStore.reports));
-const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const computedIndex = (index : any) => ++index;
+
+const getActions : any  = computed(() => (actionStore.actions));
+const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser : any  = computed(() => (authStore.loggedUser));
+const getPriorities : any  = computed(() => (openLinks.priorities));
+const getReports : any  = computed(() => (reportStore.reports));
+const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 const valid = ref(true);
@@ -87,7 +89,7 @@ const setDeleteDialog = (value: boolean) => {
     deleteDialog.value = value;
     if (value == false) selectItem({})
 }
-const selectedItem = ref({});
+const selectedItem = ref({} as any);
 const selectItem = (item: any, action: string = '') => {
     selectedItem.value = Object.assign({}, item.raw);
 
@@ -115,7 +117,7 @@ const selectItem = (item: any, action: string = '') => {
 
 }
 
-const isAssignee = computed(() => (selectedItem?.value?.assignee_id == getAuthUser?.value?.id));
+const isAssignee : any  = computed(() => (selectedItem?.value?.assignee_id == getAuthUser?.value?.id));
 
 
 
@@ -130,32 +132,32 @@ const headers = ref([
     {
         key: 'start_date',
         title: 'Start Date',
-        value: (item: any) => `${moment(item.start_date).format('MMMM Do YYYY')} `,
+        value: (item: any): string => `${moment(item.start_date).format('MMMM Do YYYY')} `,
     },
     {
         key: 'end_date',
         title: 'End Date',
-        value: (item: any) => `${moment(item.end_date).format('MMMM Do YYYY')}`
+        value: (item: any): string => `${moment(item.end_date).format('MMMM Do YYYY')}`
     },
     {
         key: 'actual_man_hour',
         title: 'Actual Man Hour',
-        value: (item: any) => `${item.actual_man_hour}`
+        value: (item: any): string => `${item.actual_man_hour}`
     },
     {
         key: 'total_man_hours',
         title: 'Total Man Hours',
-        value: (item: any) => `${item.total_man_hours}`
+        value: (item: any): string => `${item.total_man_hours}`
     },
     {
         key: 'total_overtime',
         title: 'Total Overtime',
-        value: (item: any) => `${item.total_overtime}`
+        value: (item: any): string => `${item.total_overtime}`
     },
     {
         key: 'created_at',
         title: 'Date Created',
-        value: (item: any) => `${moment(item.created_at).format('MMMM Do YYYY, h:mm a')}`
+        value: (item: any): string => `${moment(item.created_at).format('MMMM Do YYYY, h:mm a')}`
     },
     {
         key: 'action',
@@ -185,6 +187,7 @@ const fields = ref({
 const editFields = ref({
     actionId: "",
     title: "",
+    assigneeId: "",
     description: "",
     priorityId: "",
     end_date: "",
@@ -266,7 +269,7 @@ const statusUpdate = async (action: any) => {
 
 const files = ref([])
 const images = ref([])
-const previewImage = ref([])
+const previewImage = ref([] as any)
 
 const selectImage = (image: any) => {
 
@@ -275,7 +278,7 @@ const selectImage = (image: any) => {
 
     for (let index = 0; index < images.value.length; index++) {
         const element = images.value[index];
-        previewImage.value.push(URL.createObjectURL(element))
+        previewImage.value.push(URL.createObjectURL(element) as string)
     }
 
 }
@@ -523,7 +526,7 @@ const goToRoute = () => {
                         </template>
 
                         <template v-slot:item.sn="{ index }">
-                            {{ ++index }}
+                            {{ computedIndex(index) }}
                         </template>
 
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {notifications} from '@/_mockApis/headerData';
+// import {notifications} from '@/_mockApis/headerData';
 </script>
 <template>
     <!-- ---------------------------------------------- -->
@@ -17,10 +17,10 @@ import {notifications} from '@/_mockApis/headerData';
             <div class="px-8 pb-4 pt-6">
                 <div class="d-flex align-center justify-space-between">
                     <h6 class="text-h5">Notifications</h6>
-                    <v-chip color="primary" variant="flat" size="small" class="text-white">5 New</v-chip>
+                    <!-- <v-chip color="primary" variant="flat" size="small" class="text-white">5 New</v-chip> -->
                 </div>
             </div>
-            <perfect-scrollbar style="height: 400px">
+            <!-- <perfect-scrollbar style="height: 400px">
                 <v-list class="py-0 theme-list" lines="two">
                     <v-list-item v-for="item in notifications" :key="item.title" :value="item" active-color="primary" class="py-4 px-8">
                         <template v-slot:prepend>
@@ -35,7 +35,7 @@ import {notifications} from '@/_mockApis/headerData';
                     </v-list-item>
                     <v-divider></v-divider>
                 </v-list>
-            </perfect-scrollbar>
+            </perfect-scrollbar> -->
             <div class="py-4 px-6 text-center">
                 <v-btn color="primary" variant="outlined" block>See all Notifications</v-btn>
             </div>

@@ -84,7 +84,7 @@ export const useInspectionStore = defineStore({
                 });
             this.inspectionTemplateTypes = data;
         },
-        async getInspectionTemplateForTypeId(type_id: number) {
+        async getInspectionTemplateForTypeId(type_id: string) {
             this.inspectionTypeTemplates = [];
             const organizationStore = useOrganizationStore();
             const data = await fetchWrapper
@@ -135,7 +135,7 @@ export const useInspectionStore = defineStore({
             this.ongoingInspection = data;
         },
         async getInspectingMembers(item: string) {
-            this.auditMembers = [];
+
             const data = await fetchWrapper
                 .get(`inspection/inspectors/${item}`)
                 .then((response: any) => {
@@ -147,7 +147,7 @@ export const useInspectionStore = defineStore({
         },
 
         async getInspecteeMembers(item: string) {
-            this.auditeeMembers = [];
+
             const data = await fetchWrapper
                 .get(`inspection/inspectees/${item}`)
                 .then((response: any) => {

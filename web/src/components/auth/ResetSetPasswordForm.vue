@@ -37,7 +37,7 @@ const validate = async (values: any, { setErrors }: any) => {
             setPassword = confirmPassword.value
         }
 
-        const request = await authStore.resetPasswordSet({ "email": username.value, "password": setPassword }).catch((error: any) => { throw error });
+        const request = await authStore.resetPasswordSet({ "email": username.value!, "password": setPassword }).catch((error: any) => { throw error });
         if (request?.message == 'success') {
             router.push('/auth/login');
         }

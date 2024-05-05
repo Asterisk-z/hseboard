@@ -38,15 +38,16 @@ const inspectionStore = useInspectionStore();
 
 
 onMounted(() => {
-    inspectionStore.getCompletedInspection(route.params.inspection_id)
+    inspectionStore.getCompletedInspection(route.params.inspection_id as string)
 });
 
 
+const computedIndex = (index : any) => ++index;
 
-const getAuthUser = computed(() => (authStore.loggedUser));
-const getCompletedInspection = computed(() => (inspectionStore.completedInspection));
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const getAuthUser : any  = computed(() => (authStore.loggedUser));
+const getCompletedInspection : any  = computed(() => (inspectionStore.completedInspection));
+const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
+const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 
@@ -61,17 +62,17 @@ const setLoading = (value: boolean) => {
 
 
 
-const getRepresentatives = computed(() => (getCompletedInspection.value?.inspection?.all_representatives));
-const getInspectors = computed(() => (getCompletedInspection.value?.inspection?.all_inspectors));
+const getRepresentatives : any  = computed(() => (getCompletedInspection.value?.inspection?.all_representatives));
+const getInspectors : any  = computed(() => (getCompletedInspection.value?.inspection?.all_inspectors));
 
 
 
 
-const getDocuments = computed(() => (getCompletedInspection.value?.inspection?.documents));
+const getDocuments : any  = computed(() => (getCompletedInspection.value?.inspection?.documents));
 
 
 
-const getSchedule = computed(() => (getCompletedInspection.value?.inspection?.schedule));
+const getSchedule : any  = computed(() => (getCompletedInspection.value?.inspection?.schedule));
 
 
 
@@ -82,10 +83,20 @@ function changeQuestionTab(e: string) {
     questionTab.value = e;
 }
 // console.log(questionTab.value)
-const getQuestions = computed(() => (getCompletedInspection.value?.inspection?.questions));
+const getQuestions : any  = computed(() => (getCompletedInspection.value?.inspection?.questions));
 
 const sendCommentDialog = ref(false);
-const setSendCommentDialog = (value: boolean, item_id: string = '', topic_id: string = '', question = {}) => {
+const setSendCommentDialog = (value: boolean, item_id: string = '', topic_id: string = '', question : { 
+    comment : string,  
+    response : {
+        comment : string
+        } 
+    }  =  { 
+    comment : '',  
+    response : {
+        comment : ''
+        } 
+    }) => {
     sendCommentDialog.value = value;
     stepFourFields.value.question_id = item_id
     stepFourFields.value.topic_id = topic_id
@@ -101,8 +112,8 @@ const stepFourFields = ref({
 
 
 
-const getFindings = computed(() => (getCompletedInspection.value?.inspection?.findings));
-const getActions = computed(() => (getCompletedInspection.value?.inspection?.actions));
+const getFindings : any  = computed(() => (getCompletedInspection.value?.inspection?.findings));
+const getActions : any  = computed(() => (getCompletedInspection.value?.inspection?.actions));
 
 
 
@@ -221,7 +232,7 @@ const blankFn = () => {
                                                 <tbody>
 
                                                     <tr v-for="(member, index) in getInspectors" :key="member">
-                                                        <td>{{ ++index }}</td>
+                                                        <td>{{ computedIndex(index) }}</td>
                                                         <td>{{ `${member?.member?.lastName}
                                                             ${member?.member?.firstName}` }}</td>
                                                         <td>{{ `${member?.member?.email}` }}</td>
@@ -229,7 +240,7 @@ const blankFn = () => {
 
                                                     </tr>
                                                     <tr v-for="(member, index) in getRepresentatives" :key="member">
-                                                        <td>{{ ++index }}</td>
+                                                        <td>{{ computedIndex(index) }}</td>
                                                         <td>{{ `${member?.member?.lastName}
                                                             ${member?.member?.firstName}` }}</td>
                                                         <td>{{ `${member?.member?.email}` }}</td>
@@ -464,7 +475,7 @@ const blankFn = () => {
                                                                             <!-- <template> -->
                                                                             <tr v-for="(question) in title_question.questions"
                                                                                 :key="question">
-                                                                                <!-- <td>{{ ++index }}</td> -->
+                                                                                <!-- <td>{{ computedIndex(index) }}</td> -->
                                                                                 <td>{{ `${question?.question}` }}</td>
                                                                                 <td>
                                                                                     <template
@@ -616,7 +627,7 @@ const blankFn = () => {
                                                 </thead>
                                                 <tbody>
                                                     <tr v-for="(actions, index) in getActions" :key="actions">
-                                                        <td>{{ ++index }}</td>
+                                                        <td>{{ computedIndex(index) }}</td>
                                                         <td>{{ `${actions?.title}` }}</td>
                                                         <td>{{ `${actions?.description}` }}</td>
                                                         <td>{{ `${actions?.assignee?.lastName}

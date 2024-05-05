@@ -7,7 +7,6 @@ import { useTeamMemberStore } from '@/stores/teamMemberStore';
 import { useAuthStore } from '@/stores/auth';
 import { useOpenLinksStore } from '@/stores/openLinks';
 import { useActionStore } from '@/stores/actionStore';
-import { useMainAuditStore } from '@/stores/mainAuditStore';
 import { useInspectionStore } from '@/stores/inspectionStore';
 
 import moment from 'moment'
@@ -33,8 +32,6 @@ const organizationStore = useOrganizationStore();
 const teamMemberStore = useTeamMemberStore();
 const openLinks = useOpenLinksStore();
 const actionStore = useActionStore();
-const reportStore = useMainAuditStore();
-const mainAuditStore = useMainAuditStore();
 const inspectionStore = useInspectionStore();
 
 onMounted(() => {
@@ -42,14 +39,15 @@ onMounted(() => {
     inspectionStore.getAllOrgInspections()
 });
 
-const getAllOrgInspections = computed(() => (inspectionStore.orgInspections));
+const getAllOrgInspections : any  = computed(() => (inspectionStore.orgInspections));
 
-const getActions = computed(() => (actionStore.actions));
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser = computed(() => (authStore.loggedUser));
-const getPriorities = computed(() => (openLinks.priorities));
-const getReports = computed(() => (reportStore.reports));
-const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const computedIndex = (index : any) => ++index;
+
+const getActions : any  = computed(() => (actionStore.actions));
+const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser : any  = computed(() => (authStore.loggedUser));
+const getPriorities : any  = computed(() => (openLinks.priorities));
+const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 const valid = ref(true);
@@ -90,7 +88,7 @@ const setDeleteDialog = (value: boolean) => {
     deleteDialog.value = value;
     if (value == false) selectItem({})
 }
-const selectedItem = ref({});
+const selectedItem = ref({} as any);
 const selectItem = (item: any, action: string = '') => {
     selectedItem.value = Object.assign({}, item.raw);
 
@@ -110,7 +108,7 @@ const selectItem = (item: any, action: string = '') => {
 
 }
 
-const isAssignee = computed(() => (selectedItem?.value?.assignee_id == getAuthUser?.value?.id));
+const isAssignee : any  = computed(() => (selectedItem?.value?.assignee_id == getAuthUser?.value?.id));
 
 
 
@@ -125,32 +123,32 @@ const headers = ref([
     {
         key: 'facility_name',
         title: 'Facility Name',
-        value: (item: any) => `${item.facility_name} `,
+        value: (item: any): string => `${item.facility_name} `,
     },
     // {
     //     key: 'audit_template_id',
     //     title: 'Audit Template',
-    //     value: (item: any) => `${item.audit_template?.title}`
+    //     value: (item: any): string => `${item.audit_template?.title}`
     // },
     {
         key: 'inspection_type_id',
         title: 'Inspection Type',
-        value: (item: any) => `${item?.inspection_template_type?.description}`
+        value: (item: any): string => `${item?.inspection_template_type?.description}`
     },
     {
         key: 'recipient_organization_id',
         title: 'Recipient Organization',
-        value: (item: any) => `${item.recipient_organization?.name}`
+        value: (item: any): string => `${item.recipient_organization?.name}`
     },
     {
         key: 'organization_id',
         title: 'Inspection Organization',
-        value: (item: any) => `${item.organization?.name}`
+        value: (item: any): string => `${item.organization?.name}`
     },
     {
         key: 'created_at',
         title: 'Date Created',
-        value: (item: any) => `${moment(item.created_at).format('MMMM Do YYYY, h:mm a')}`
+        value: (item: any): string => `${moment(item.created_at).format('MMMM Do YYYY, h:mm a')}`
     },
     {
         key: 'action',
@@ -173,7 +171,7 @@ const sFields = ref({
 
 const files = ref([])
 const images = ref([])
-const previewImage = ref([])
+const previewImage = ref([] as any)
 
 const selectImage = (image: any) => {
 
@@ -182,7 +180,7 @@ const selectImage = (image: any) => {
 
     for (let index = 0; index < images.value.length; index++) {
         const element = images.value[index];
-        previewImage.value.push(URL.createObjectURL(element))
+        previewImage.value.push(URL.createObjectURL(element) as string)
     }
 
 }
@@ -347,7 +345,7 @@ const goToRoute = (url: string) => {
                         </template> -->
 
                         <template v-slot:item.sn="{ index }">
-                            {{ ++index }}
+                            {{ computedIndex(index) }}
                         </template>
 
 

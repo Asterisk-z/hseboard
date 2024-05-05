@@ -17,9 +17,9 @@ const signature = ref<string>('');
 const type = ref<string>('');
 
 onMounted(() => {
-    email.value = route.query?.email || null
-    signature.value = route.query?.signature || null
-    type.value = route.query?.type || null
+    // email.value = route.query?.email || null
+    // signature.value = route.query?.signature || null
+    // type.value = route.query?.type || null
 });
 
 const otp = ref('');

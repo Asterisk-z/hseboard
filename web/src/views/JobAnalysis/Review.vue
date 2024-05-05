@@ -41,13 +41,14 @@ const jobHazardStore = useJobHazardStore();
 
 
 onMounted(() => {
-    jobHazardStore.getReviewJobHazardAnalysis(route.params.job_id)
+    jobHazardStore.getReviewJobHazardAnalysis(route.params.job_id as string)
 });
 
-const getAuthUser = computed(() => (authStore.loggedUser));
-const getReviewJobHazardAnalysis = computed(() => (jobHazardStore.reviewJobHazard));
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const computedIndex = (index : any) => ++index;
+const getAuthUser : any  = computed(() => (authStore.loggedUser));
+const getReviewJobHazardAnalysis : any  = computed(() => (jobHazardStore.reviewJobHazard));
+const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
+const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 
@@ -126,7 +127,7 @@ const completeJob = async (step = null) => {
         //     }
         // });
         if (resp) {
-            jobHazardStore.getReviewJobHazardAnalysis(route.params.job_id);
+            jobHazardStore.getReviewJobHazardAnalysis(route.params.job_id as string);
             setStepDialog(false)
         }
 
@@ -292,7 +293,7 @@ const blankFn = () => {
                                             <template v-if="getReviewJobHazardAnalysis.steps?.length > 0">
                                                 <tr v-for="(step, index) in getReviewJobHazardAnalysis.steps" :key="step">
                                                     <td colspan="1"   class="text-left border-lg">
-                                                        {{ ++index }}
+                                                        {{ computedIndex(index) }}
                                                     </td>
                                                     <td colspan="1"  class="text-left border-lg">
                                                         
@@ -304,7 +305,7 @@ const blankFn = () => {
                                                         
                                                         
                                                         <div class="pa-4 float-start" v-for="(item, index) in step?.top_events" :key="item">          
-                                                            <label class="text-subtitle-1">{{ `(${++index}) ${item?.code}` }}</label>
+                                                            <label class="text-subtitle-1">{{ `(${computedIndex(index)}) ${item?.code}` }}</label>
                                                             <p class="text-body-1"> {{ `${item?.description}` }}</p>
 
                                                         </div>
@@ -314,7 +315,7 @@ const blankFn = () => {
                                                          
                                                         
                                                         <div class="pa-4 float-start" v-for="(item, index) in step?.sources" :key="item">          
-                                                            <label class="text-subtitle-1">{{ `(${++index}) ${item?.code}` }}</label>
+                                                            <label class="text-subtitle-1">{{ `(${computedIndex(index)}) ${item?.code}` }}</label>
                                                             <p class="text-body-1"> {{ `${item?.description}` }}</p> 
 
                                                         </div>
@@ -324,7 +325,7 @@ const blankFn = () => {
                                                          
                                                         
                                                         <div class="pa-4 float-start" v-for="(item, index) in step?.targets" :key="item">          
-                                                            <label class="text-subtitle-1">{{ `(${++index}) ${item?.code}` }}</label>
+                                                            <label class="text-subtitle-1">{{ `(${computedIndex(index)}) ${item?.code}` }}</label>
                                                             <p class="text-body-1"> {{ `${item?.description}` }}</p> 
 
                                                         </div>
@@ -332,7 +333,7 @@ const blankFn = () => {
                                                     <td colspan="1"  class="text-left border-lg">
                                                          
                                                         <div class="pa-4 float-start" v-for="(item, index) in step?.consequences" :key="item">          
-                                                            <label class="text-subtitle-1">{{ `(${++index}) ${item?.code}` }}</label>
+                                                            <label class="text-subtitle-1">{{ `(${computedIndex(index)}) ${item?.code}` }}</label>
                                                             <p class="text-body-1"> {{ `${item?.description}` }}</p> 
                                                         </div>
                                                     </td>
@@ -340,7 +341,7 @@ const blankFn = () => {
                                                          
                                                         
                                                         <div class="pa-4 float-start" v-for="(item, index) in step?.preventives" :key="item">          
-                                                            <label class="text-subtitle-1">{{ `(${++index}) ${item?.code}` }}</label>
+                                                            <label class="text-subtitle-1">{{ `(${computedIndex(index)}) ${item?.code}` }}</label>
                                                             <p class="text-body-1"> {{ `${item?.description}` }}</p> 
 
                                                         </div>
@@ -348,7 +349,7 @@ const blankFn = () => {
                                                     <td colspan="1"  class="text-left border-lg">
                                                          
                                                         <div class="pa-4 float-start" v-for="(item, index) in step?.rcps" :key="item">          
-                                                            <label class="text-subtitle-1">{{ `(${++index}) ${item?.code}` }}</label>
+                                                            <label class="text-subtitle-1">{{ `(${computedIndex(index)}) ${item?.code}` }}</label>
                                                             <p class="text-body-1"> {{ `${item?.description}` }}</p> 
 
                                                         </div>
@@ -357,7 +358,7 @@ const blankFn = () => {
                                                          
                                                         
                                                         <div class="pa-4 float-start" v-for="(item, index) in step?.recoveries" :key="item">          
-                                                            <label class="text-subtitle-1">{{ `(${++index}) ${item?.code}` }}</label>
+                                                            <label class="text-subtitle-1">{{ `(${computedIndex(index)}) ${item?.code}` }}</label>
                                                             <p class="text-body-1"> {{ `${item?.description}` }}</p> 
 
                                                         </div>
@@ -366,7 +367,7 @@ const blankFn = () => {
                                                          
                                                         
                                                         <div class="pa-4 float-start" v-for="(item, index) in step?.parties" :key="item">          
-                                                            <label class="text-subtitle-1">{{ `(${++index}) ${item?.full_name}` }}</label>
+                                                            <label class="text-subtitle-1">{{ `(${computedIndex(index)}) ${item?.full_name}` }}</label>
                                                             <p class="text-body-1"> {{ `(${item?.designation})` }}</p> 
 
                                                         </div>

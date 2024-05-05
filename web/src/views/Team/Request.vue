@@ -21,11 +21,12 @@ onMounted(() => {
 
 });
 
-const getOffers = computed(() => (offerStore.offers));
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser = computed(() => (authStore.loggedUser));
-const getAllOrganizations = computed(() => (organizationStore.organizations));
-const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const computedIndex = (index : any) => ++index;
+const getOffers : any  = computed(() => (offerStore.offers));
+const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser : any  = computed(() => (authStore.loggedUser));
+const getAllOrganizations : any  = computed(() => (organizationStore.organizations));
+const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 const page = ref({ title: 'Request and Invites' });
@@ -68,7 +69,7 @@ const setDeleteDialog = (value: boolean) => {
     deleteDialog.value = value;
     if (value == false) selectItem({})
 }
-const selectedItem = ref({});
+const selectedItem = ref({} as any);
 const selectItem = (item: any, action: string = '') => {
     selectedItem.value = Object.assign({}, item.raw);
  
@@ -98,32 +99,32 @@ const headers = ref([
     {
         key: 'type',
         title: 'Type',
-        value: (item: any) => `${item.type}`,
+        value: (item: any): string => `${item.type}`,
     },
     {
         key: 'status',
         title: 'Status',
-        value: (item: any) => `${item.status}`
+        value: (item: any): string => `${item.status}`
     },
     {
         key: 'actionUserEmail',
         title: 'Action Email',
-        value: (item: any) => `${item.actionUserEmail}`
+        value: (item: any): string => `${item.actionUserEmail}`
     },
     {
         key: 'recipientEmail',
         title: 'Recipient Email',
-        value: (item: any) => `${item.recipientEmail}`
+        value: (item: any): string => `${item.recipientEmail}`
     },
     {
         key: 'typeMessage',
         title: 'Message',
-        value: (item: any) => `${item.typeMessage}`
+        value: (item: any): string => `${item.typeMessage}`
     },
     {
         key: 'created_at',
         title: 'Date Created',
-        value: (item: any) => `${moment(item.createdAt).format('MMMM Do YYYY, h:mm:ss a')}`
+        value: (item: any): string => `${moment(item.createdAt).format('MMMM Do YYYY, h:mm:ss a')}`
     },
     {
         key: 'action',
@@ -341,7 +342,7 @@ const getColor = (status: string) => {
                                                     <VTextarea variant="outlined"  outlined name="Note" label="Last Name" v-model="fields.message" :rules="fieldRules.message" required :color="fields.message.length > 10 ? 'success' : 'primary'"></VTextarea>
                                                 </VCol>
                                                 <VCol cols="12" lg="12" class="text-right">
-                                                    <v-btn color="error" @click="dialog = false"
+                                                    <v-btn color="error" @click="setInviteDialog(false)"
                                                         variant="text">Cancel</v-btn>
 
                                                     <v-btn color="primary" type="submit" :loading="loading"
@@ -393,7 +394,7 @@ const getColor = (status: string) => {
                                                     <VTextarea variant="outlined"  outlined name="Note" label="Last Name" v-model="fields.message" :rules="fieldRules.message" required :color="fields.message.length > 10 ? 'success' : 'primary'"></VTextarea>
                                                 </VCol>
                                                 <VCol cols="12" lg="12" class="text-right">
-                                                    <v-btn color="error" @click="dialog = false"
+                                                    <v-btn color="error" @click="setRequestDialog(false)"
                                                         variant="text">Cancel</v-btn>
 
                                                     <v-btn color="primary" type="submit" :loading="loading"
@@ -501,7 +502,7 @@ const getColor = (status: string) => {
                         </template>
 
                         <template v-slot:item.sn="{ index }">
-                            {{ ++index }}
+                            {{ computedIndex(index) }}
                         </template>
 
                         <template v-slot:item.status="{ item }">

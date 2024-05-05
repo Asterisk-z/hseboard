@@ -171,6 +171,16 @@ const MainRoutes = {
             component: () => import('@/views/WorkPermit/Index.vue')
         },
         {
+            name: 'Create Permit to Work System',
+            path: '/create-work-permit',
+            component: () => import('@/views/WorkPermit/Create.vue')
+        },
+        {
+            name: 'Ongoing Permit to Work System',
+            path: '/ongoing-work-permit/:permit_id',
+            component: () => import('@/views/WorkPermit/Ongoing.vue')
+        },
+        {
             name: 'Billing',
             path: '/billing',
             component: () => import('@/views/Billing/Index.vue')

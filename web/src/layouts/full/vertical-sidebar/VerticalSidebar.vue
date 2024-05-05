@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref, shallowRef } from 'vue';
 import { useCustomizerStore } from '@/stores/customizer';
+import { useAuthStore } from '@/stores/auth';
 import sidebarItems from './sidebarItem';
+import userSidebarItem from './userSidebarItem';
 
 import NavGroup from './NavGroup/index.vue';
 import NavItem from './NavItem/index.vue';
@@ -11,6 +13,7 @@ import Logo from '../logo/Logo.vue';
 
 const customizer = useCustomizerStore();
 const sidebarMenu = shallowRef(sidebarItems);
+const userSidebarMenu = shallowRef(userSidebarItem);
 </script>
 
 <template>
@@ -27,14 +30,27 @@ const sidebarMenu = shallowRef(sidebarItems);
         <perfect-scrollbar class="scrollnavbar">
             <v-list class="pa-6 v-theme--DARK_AQUA_THEME">
                 <!---Menu Loop -->
-                <template v-for="(item, i) in sidebarMenu" :key="i">
-                    <!---Item Sub Header -->
-                    <NavGroup :item="item" v-if="item.header" />
-                    <!---If Has Child -->
-                    <NavCollapse class="leftPadding" :item="item" :level="0" v-else-if="item.children" />
-                    <!---Single Item-->
-                    <NavItem :item="item" v-else class="leftPadding" />
-                    <!---End Single Item-->
+                <template v-if="true">
+                    <template v-for="(item, i) in userSidebarMenu" :key="i">
+                        <!---Item Sub Header -->
+                        <NavGroup :item="item" v-if="item.header" />
+                        <!---If Has Child -->
+                        <NavCollapse class="leftPadding" :item="item" :level="0" v-else-if="item.children" />
+                        <!---Single Item-->
+                        <NavItem :item="item" v-else class="leftPadding" />
+                        <!---End Single Item-->
+                    </template>
+                </template>
+                <template v-else>
+                    <template v-for="(item, i) in sidebarMenu" :key="i">
+                        <!---Item Sub Header -->
+                        <NavGroup :item="item" v-if="item.header" />
+                        <!---If Has Child -->
+                        <NavCollapse class="leftPadding" :item="item" :level="0" v-else-if="item.children" />
+                        <!---Single Item-->
+                        <NavItem :item="item" v-else class="leftPadding" />
+                        <!---End Single Item-->
+                    </template>
                 </template>
             </v-list>
             <!-- <div class="pa-6 userbottom">

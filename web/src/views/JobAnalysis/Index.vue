@@ -40,14 +40,16 @@ onMounted(() => {
 });
 
 
-const getAllJobHazardAnalysis = computed(() => (jobHazardStore.jobHazards));
+const getAllJobHazardAnalysis : any  = computed(() => (jobHazardStore.jobHazards));
 
-const getTeamMembersExceptMe = computed(() => (teamMemberStore.membersExceptMe));
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser = computed(() => (authStore.loggedUser));
-const getObservationTypes = computed(() => (openLinks.observationTypes));
-const getPriorities = computed(() => (openLinks.priorities));
-const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const computedIndex = (index : any) => ++index;
+
+const getTeamMembersExceptMe : any  = computed(() => (teamMemberStore.membersExceptMe));
+const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser : any  = computed(() => (authStore.loggedUser));
+const getObservationTypes : any  = computed(() => (openLinks.observationTypes));
+const getPriorities : any  = computed(() => (openLinks.priorities));
+const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 const valid = ref(true);
@@ -88,7 +90,7 @@ const setDeleteDialog = (value: boolean) => {
     deleteDialog.value = value;
     if (value == false) selectItem({})
 }
-const selectedItem = ref({});
+const selectedItem = ref({} as any);
 const selectItem = (item: any, action: string = '') => {
     selectedItem.value = Object.assign({}, item.raw);
 
@@ -110,7 +112,7 @@ const selectItem = (item: any, action: string = '') => {
 
 }
 
-const isAssignee = computed(() => (selectedItem?.value?.assignee_id == getAuthUser?.value?.id));
+const isAssignee : any  = computed(() => (selectedItem?.value?.assignee_id == getAuthUser?.value?.id));
 
 
 
@@ -126,32 +128,32 @@ const headers = ref([
         key: 'title',
         title: 'Title',
         sortable: false,
-        value: (item: any) => `${item.title} `,
+        value: (item: any): string => `${item.title} `,
     },
     // {
     //     key: 'description',
     //     title: 'Description',
-    //     value: (item: any) => `${item.description}`
+    //     value: (item: any): string => `${item.description}`
     // },
     {
         key: 'prepared_by',
         title: 'Prepared By',
-        value: (item: any) => `${item.prepared_user?.lastName} ${item.prepared_user?.firstName}`
+        value: (item: any): string => `${item.prepared_user?.lastName} ${item.prepared_user?.firstName}`
     },
     {
         key: 'status',
         title: 'Status',
-        value: (item: any) => `${item.status}`
+        value: (item: any): string => `${item.status}`
     },
     // {
     //     key: 'priority_id',
     //     title: 'Priority',
-    //     value: (item: any) => `${item.priority.description}`
+    //     value: (item: any): string => `${item.priority.description}`
     // },
     {
         key: 'created_at',
         title: 'Date Created',
-        value: (item: any) => `${moment(item.created_at).format('MMMM Do YYYY, h:mm a')}`
+        value: (item: any): string => `${moment(item.created_at).format('MMMM Do YYYY, h:mm a')}`
     },
     {
         key: 'action',
@@ -288,7 +290,7 @@ const goToRoute = (url: string) => {
                                                 </VCol>
 
                                                 <VCol cols="12" lg="12" class="text-right">
-                                                    <v-btn color="error" @click="dialog = false"
+                                                    <v-btn color="error" @click="setDialog(false)"
                                                         variant="text">Cancel</v-btn>
 
                                                     <v-btn color="primary" type="submit" :loading="loading"
@@ -352,7 +354,7 @@ const goToRoute = (url: string) => {
                         </template>
 
                         <template v-slot:item.sn="{ index }">
-                            {{ ++index }}
+                            {{ computedIndex(index) }}
                         </template>
 
 

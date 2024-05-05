@@ -40,30 +40,32 @@ const inspectionStore = useInspectionStore();
 
 
 onMounted(() => {
-    inspectionStore.getOngoingInspection(route.params.inspection_id)
+    inspectionStore.getOngoingInspection(route.params.inspection_id as string)
 
     openLinks.getPriorities();
 });
 
 
-const getPriorities = computed(() => (openLinks.priorities));
+const getPriorities : any  = computed(() => (openLinks.priorities));
 
-const getAuthUser = computed(() => (authStore.loggedUser));
-const getOngoingInspection = computed(() => (inspectionStore.ongoingInspection));
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
-const isInspecteeOrg = computed(() => (getOngoingInspection.value?.recipient_organization_id == getActiveOrg.value?.id));
-const isInspectingOrg = computed(() => (getOngoingInspection.value?.organization_id == getActiveOrg.value?.id));
-const isSameOrg = computed(() => (getOngoingInspection.value?.organization_id == getOngoingInspection.value?.recipient_organization_id));
+const computedIndex = (index : any) => ++index;
 
-const getInspectingMembers = computed(() => (inspectionStore.inspectingMembers));
-const getInspecteeMembers = computed(() => (inspectionStore.inspecteeMembers));
+const getAuthUser : any   = computed(() => (authStore.loggedUser));
+const getOngoingInspection : any   = computed(() => (inspectionStore.ongoingInspection));
+const getActiveOrg : any   = computed(() => (organizationStore.getActiveOrg()));
+const isLoggedInUserOwnsActionOrg : any   = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const isInspecteeOrg : any   = computed(() => (getOngoingInspection.value?.recipient_organization_id == getActiveOrg.value?.id));
+const isInspectingOrg : any   = computed(() => (getOngoingInspection.value?.organization_id == getActiveOrg.value?.id));
+const isSameOrg : any   = computed(() => (getOngoingInspection.value?.organization_id == getOngoingInspection.value?.recipient_organization_id));
+
+const getInspectingMembers : any   = computed(() => (inspectionStore.inspectingMembers));
+const getInspecteeMembers : any   = computed(() => (inspectionStore.inspecteeMembers));
 
 watch(
   () => isInspectingOrg.value,
   (value) => {
     if(value) {  
-        inspectionStore.getInspectingMembers(route.params.inspection_id)
+        inspectionStore.getInspectingMembers(route.params.inspection_id as string)
     }
     
       if (getOngoingInspection.value.is_pending) {
@@ -84,7 +86,7 @@ watch(
   () => isInspecteeOrg.value,
   (value) => {
       if (value) {
-        inspectionStore.getInspecteeMembers(route.params.inspection_id)
+        inspectionStore.getInspecteeMembers(route.params.inspection_id as string)
     }
       if (getOngoingInspection.value.is_pending) {
         Swal.fire({
@@ -111,7 +113,7 @@ watch(
                         throw error
                     })
                     .then((resp: any) => {
-                         inspectionStore.getOngoingInspection(route.params.inspection_id);
+                         inspectionStore.getOngoingInspection(route.params.inspection_id as string);
                         return resp
                     });
 
@@ -204,7 +206,7 @@ const setViewRecommendationDialog = (value: boolean, type: string = '') => {
     viewRecommendationDialog.value = value;
     if (value == false) selectItem({})
 }
-const selectedItem = ref({});
+const selectedItem = ref({} as any);
 const selectItem = (item: any, action: string = '', extra: any = '') => {
     selectedItem.value = Object.assign({}, item.raw);
 
@@ -294,12 +296,12 @@ const fields = ref({
 
 
 
-const filteredLeadInspector = computed(() => (getInspectingMembers.value?.filter((member: any) => (member.id != fields.value?.leadInspector))));
+const filteredLeadInspector : any  = computed(() => (getInspectingMembers.value?.filter((member: any) => (member.id != fields.value?.leadInspector))));
 
-const getRepresentatives = computed(() => (getOngoingInspection.value?.all_representatives));
-const getInspectors = computed(() => (getOngoingInspection.value?.all_inspectors));
+const getRepresentatives : any  = computed(() => (getOngoingInspection.value?.all_representatives));
+const getInspectors : any  = computed(() => (getOngoingInspection.value?.all_inspectors));
 
-const filteredgetInspecteeMembers = computed(() => (getInspecteeMembers.value?.filter((member: any) => (member.id != fields.value?.leadRepresentative  && member.id != getOngoingInspection.value?.lead_inspector?.user_id))));
+const filteredgetInspecteeMembers : any  = computed(() => (getInspecteeMembers.value?.filter((member: any) => (member.id != fields.value?.leadRepresentative  && member.id != getOngoingInspection.value?.lead_inspector?.user_id))));
 
 const isLoggedInUserIsleadInspector= computed(() => (getAuthUser.value?.id == getOngoingInspection.value?.lead_inspector?.member?.id));
 const isLoggedInUserIsLeadRepresentative= computed(() => (getAuthUser.value?.id == getOngoingInspection.value?.lead_representative?.member?.id));
@@ -358,7 +360,7 @@ const sendInspectors = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setAddInspectorsDialog(false)
-            inspectionStore.getOngoingInspection(route.params.inspection_id);
+            inspectionStore.getOngoingInspection(route.params.inspection_id as string);
         }
 
         setLoading(false)
@@ -403,7 +405,7 @@ const sendRepresentatives = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setAddRepresentativeDialog(false)
-            inspectionStore.getOngoingInspection(route.params.inspection_id);
+            inspectionStore.getOngoingInspection(route.params.inspection_id as string);
         }
 
         setLoading(false)
@@ -447,7 +449,7 @@ const removeMember = async (member: any) => {
                         throw error
                     })
                     .then((resp: any) => {
-                         inspectionStore.getOngoingInspection(route.params.inspection_id);
+                         inspectionStore.getOngoingInspection(route.params.inspection_id as string);
                         return resp
                     });
 
@@ -566,7 +568,7 @@ const updateInspectionDetails = async (e: any) => {
             setLoading(false)
 
             setUpdateInspectionDialog(false)
-            inspectionStore.getOngoingInspection(route.params.inspection_id);
+            inspectionStore.getOngoingInspection(route.params.inspection_id as string);
         }
 
         setLoading(false)
@@ -610,7 +612,7 @@ const proceedInspection = async (member: any) => {
                         throw error
                     })
                     .then((resp: any) => {
-                         inspectionStore.getOngoingInspection(route.params.inspection_id);
+                         inspectionStore.getOngoingInspection(route.params.inspection_id as string);
                         return resp
                     });
 
@@ -690,7 +692,7 @@ const stepTwoFields = ref({
 
 const files = ref([])
 const images = ref([])
-const previewImage = ref([])
+const previewImage = ref([] as any)
 
 const selectImage = (image: any) => {
     stepTwoFields.value.files =  image.target.files
@@ -699,7 +701,7 @@ const selectImage = (image: any) => {
 
     for (let index = 0; index < images.value.length; index++) {
         const element = images.value[index];
-        previewImage.value.push(URL.createObjectURL(element))
+        previewImage.value.push(URL.createObjectURL(element) as string)
     }
 
 }
@@ -765,7 +767,7 @@ const setScheduleActionDialog = (value: boolean, action: string = '') => {
     scheduleActionDialog.value = value;
     stepThreeFields.value.status = action
 }
-const getSchedule = computed(() => (getOngoingInspection.value?.schedule));
+const getSchedule : any  = computed(() => (getOngoingInspection.value?.schedule));
 
 const stepThreeFields = ref({
     date_time: "",
@@ -808,7 +810,7 @@ const proposeTime = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setSendScheduleDialog(false)
-            inspectionStore.getOngoingInspection(route.params.inspection_id);
+            inspectionStore.getOngoingInspection(route.params.inspection_id as string);
         }
 
         setLoading(false)
@@ -853,7 +855,7 @@ const actionTime = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setScheduleActionDialog(false)
-            inspectionStore.getOngoingInspection(route.params.inspection_id);
+            inspectionStore.getOngoingInspection(route.params.inspection_id as string);
         }
 
         setLoading(false)
@@ -869,52 +871,52 @@ const actionTime = async (e: any) => {
     }
 
 }
-const actionAcceptedTime = async (value: any) => {
+// const actionAcceptedTime = async (value: any) => {
 
 
-    try {
+//     try {
 
 
-        let objectValues = {
-            "organization_id": getActiveOrg.value?.uuid,
-            "inspection_id": getOngoingInspection.value?.uuid,
-            "action": value,
-        }
+//         let objectValues = {
+//             "organization_id": getActiveOrg.value?.uuid,
+//             "inspection_id": getOngoingInspection.value?.uuid,
+//             "action": value,
+//         }
 
         
-        Swal.fire({
-            title: 'Info!',
-            text: 'Are you sure?',
-            icon: 'info',
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No',
-            showCancelButton: true,
-            allowOutsideClick: false,
-        }).then((result) => {
-            if (result.isConfirmed) {
+//         Swal.fire({
+//             title: 'Info!',
+//             text: 'Are you sure?',
+//             icon: 'info',
+//             confirmButtonText: 'Yes',
+//             cancelButtonText: 'No',
+//             showCancelButton: true,
+//             allowOutsideClick: false,
+//         }).then((result) => {
+//             if (result.isConfirmed) {
 
                 
-                inspectionStore.actionAcceptedTime(objectValues)
-                    .catch((error: any) => {
-                        throw error
-                    })
-                    .then((resp: any) => {
-                         inspectionStore.getOngoingInspection(route.params.inspection_id);
-                        return resp
-                    });
+//                 inspectionStore.actionAcceptedTime(objectValues)
+//                     .catch((error: any) => {
+//                         throw error
+//                     })
+//                     .then((resp: any) => {
+//                          inspectionStore.getOngoingInspection(route.params.inspection_id as string);
+//                         return resp
+//                     });
 
 
-            }
-        });
+//             }
+//         });
         
 
 
 
-    } catch (error) {
-        console.log(error)
-    }
+//     } catch (error) {
+//         console.log(error)
+//     }
 
-}
+// }
 
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -976,10 +978,20 @@ function changeQuestionTab(e: string) {
     questionTab.value = e;
 }
 // console.log(questionTab.value)
-const getQuestions = computed(() => (getOngoingInspection.value?.questions));
+const getQuestions : any  = computed(() => (getOngoingInspection.value?.questions));
 
 const sendCommentDialog = ref(false);
-const setSendCommentDialog = (value: boolean, item_id: string = '', topic_id: string = '', question = {}) => {
+const setSendCommentDialog = (value: boolean, item_id: string = '', topic_id: string = '', question : { 
+    comment : string,  
+    response : {
+        comment : string
+        } 
+    }  =  { 
+    comment : '',  
+    response : {
+        comment : ''
+        } 
+    }) => {
     sendCommentDialog.value = value;
     stepFourFields.value.question_id = item_id
     stepFourFields.value.topic_id = topic_id
@@ -989,6 +1001,7 @@ const setSendCommentDialog = (value: boolean, item_id: string = '', topic_id: st
 const stepFourFields = ref({
     question_id: "",
     topic_id: "",
+    type: "",
     comments: "",
 });
 
@@ -1025,11 +1038,13 @@ const sendQuestionResponse = async (question_id: number, response: string, topic
             });
 
         if (resp?.message == 'success') {
-            inspectionStore.ongoingInspection.questions.forEach((question: any, index: number) => {
+            getOngoingInspection.questions.forEach((question: any, index: number) => {
+            // inspectionStore.ongoingInspection.questions.forEach((question: any, index: number) => {
                 if(question.id == topic) {
                      question.questions.forEach((main_question: any, subIndex: number) => {
                         if(main_question.id == question_id) {
-                            inspectionStore.ongoingInspection.questions[index].questions[subIndex].answer = response
+                            // inspectionStore.ongoingInspection.questions[index].questions[subIndex].answer = response
+                            getOngoingInspection.questions[index].questions[subIndex].answer = response
                         }
                      })
                 }
@@ -1072,11 +1087,13 @@ const sendQuestionComment = async (e: any) => {
 
         
         if (resp?.message == 'success') {
-            inspectionStore.ongoingInspection.questions.forEach((question: any, index: number) => {
+            getOngoingInspection.questions.forEach((question: any, index: number) => {
+            // inspectionStore.ongoingInspection.questions.forEach((question: any, index: number) => {
                 if(question.id == values?.topic_id) {
                      question.questions.forEach((main_question: any, subIndex: number) => {
                         if(main_question.id == values?.question_id) {
-                            inspectionStore.ongoingInspection.questions[index].questions[subIndex].comment = values?.comments
+                            // inspectionStore.ongoingInspection.questions[index].questions[subIndex].comment = values?.comments
+                            getOngoingInspection.questions[index].questions[subIndex].comment = values?.comments
                         }
                      })
                 }
@@ -1150,8 +1167,8 @@ const sendQuestionComment = async (e: any) => {
 //-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-const getFindings = computed(() => (getOngoingInspection.value?.findings));
-const getActions = computed(() => (getOngoingInspection.value?.actions));
+const getFindings : any  = computed(() => (getOngoingInspection.value?.findings));
+const getActions : any  = computed(() => (getOngoingInspection.value?.actions));
 
 
 const stepFiveFields = ref({
@@ -1220,7 +1237,7 @@ const sendFindings = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setViewFindingDialog(false)
-            inspectionStore.getOngoingInspection(route.params.inspection_id);
+            inspectionStore.getOngoingInspection(route.params.inspection_id as string);
         }
 
         setLoading(false)
@@ -1267,7 +1284,7 @@ const sendRecommendation = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setViewRecommendationDialog(false)
-            inspectionStore.getOngoingInspection(route.params.inspection_id);
+            inspectionStore.getOngoingInspection(route.params.inspection_id as string);
         }
 
         setLoading(false)
@@ -1311,7 +1328,7 @@ const completeInspection = async (member: any) => {
                         throw error
                     })
                     .then((resp: any) => {
-                        //  investigationStore.getInvestigation(route.params.observation_id);
+                        //  investigationStore.getInvestigation(route.params.observation_id as string);
                         // 
                         if(resp.message == 'success') {
                             router.push(`/inspections`)
@@ -1519,7 +1536,7 @@ const blankFn = () => {
                                                                             :rules="fieldRules.leadInspector"
                                                                             label="Select" item-title="lastName"
                                                                             item-value="id"
-                                                                            :item-props="(item) => ({ title: `${item?.lastName} ${item?.firstName}`, subtitle: `${item?.email}` })"
+                                                                            :item-props="(item: any) => ({ title: `${item?.lastName} ${item?.firstName}`, subtitle: `${item?.email}` })"
                                                                             single-line variant="outlined"
                                                                             class="text-capitalize">
                                                                         </VSelect>
@@ -1532,7 +1549,7 @@ const blankFn = () => {
                                                                             :items="filteredLeadInspector"
                                                                             label="Select" item-title="lastName"
                                                                             item-value="id"
-                                                                            :item-props="(item) => ({ title: `${item?.lastName} ${item?.firstName}`, subtitle: `${item?.email}` })"
+                                                                            :item-props="(item: any) => ({ title: `${item?.lastName} ${item?.firstName}`, subtitle: `${item?.email}` })"
                                                                             single-line variant="outlined"
                                                                             class="text-capitalize" multiple chips>
                                                                         </VSelect>
@@ -1594,7 +1611,7 @@ const blankFn = () => {
                                                                             :rules="fieldRules.leadRepresentative"
                                                                             label="Select" item-title="lastName"
                                                                             item-value="id"
-                                                                            :item-props="(item) => ({ title: `${item?.lastName} ${item?.firstName}`, subtitle: `${item?.email}` })"
+                                                                            :item-props="(item: any) => ({ title: `${item?.lastName} ${item?.firstName}`, subtitle: `${item?.email}` })"
                                                                             single-line variant="outlined"
                                                                             class="text-capitalize">
                                                                         </VSelect>
@@ -1611,7 +1628,7 @@ const blankFn = () => {
                                                                             item-value="id" single-line
                                                                             variant="outlined" class="text-capitalize"
                                                                             chips
-                                                                            :item-props="(item) => ({ title: `${item?.lastName} ${item?.firstName}`, subtitle: `${item?.email}` })"
+                                                                            :item-props="(item: any) => ({ title: `${item?.lastName} ${item?.firstName}`, subtitle: `${item?.email}` })"
                                                                             multiple>
 
                                                                         </VSelect>
@@ -1669,7 +1686,7 @@ const blankFn = () => {
 
                                                     <template v-if="isInspectingOrg">
                                                         <tr v-for="(member, index) in getInspectors" :key="member">
-                                                            <td>{{ ++index }}</td>
+                                                            <td>{{ computedIndex(index) }}</td>
                                                             <td>{{ `${member?.member?.lastName}
                                                                 ${member?.member?.firstName}` }}</td>
                                                             <td>{{ `${member?.member?.email}` }}</td>
@@ -1684,7 +1701,7 @@ const blankFn = () => {
                                                     </template>
                                                     <template v-if="isInspecteeOrg">
                                                         <tr v-for="(member, index) in getRepresentatives" :key="member">
-                                                            <td>{{ ++index }}</td>
+                                                            <td>{{ computedIndex(index) }}</td>
                                                             <td>{{ `${member?.member?.lastName}
                                                                 ${member?.member?.firstName}` }}</td>
                                                             <td>{{ `${member?.member?.email}` }}</td>
@@ -2272,7 +2289,7 @@ const blankFn = () => {
                                                                             <!-- <template> -->
                                                                             <tr v-for="(question) in title_question.questions"
                                                                                 :key="question">
-                                                                                <!-- <td>{{ ++index }}</td> -->
+                                                                                <!-- <td>{{ computedIndex(index) }}</td> -->
                                                                                 <td>{{ `${question?.question}` }}</td>
                                                                                 <td>
                                                                                     <!-- isInspectingOrg -->
@@ -2599,7 +2616,7 @@ const blankFn = () => {
                                                                             item-title='lastName' item-value="uuid"
                                                                             single-line variant="outlined"
                                                                             class="text-capitalize"
-                                                                            :item-props="(item) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})">
+                                                                            :item-props="(item: any) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})">
 
                                                                         </VSelect>
                                                                     </VCol>
@@ -2639,7 +2656,7 @@ const blankFn = () => {
                                                                     </VCol>
 
                                                                     <VCol cols="12" lg="12" class="text-right">
-                                                                        <v-btn color="error" @click="dialog = false"
+                                                                        <v-btn color="error" @click="setViewRecommendationDialog(false)"
                                                                             variant="text">Cancel</v-btn>
 
                                                                         <v-btn color="primary" type="submit"
@@ -2690,7 +2707,7 @@ const blankFn = () => {
                                                 </thead>
                                                 <tbody>
                                                     <tr v-for="(actions, index) in getActions" :key="actions">
-                                                        <td>{{ ++index }}</td>
+                                                        <td>{{ computedIndex(index) }}</td>
                                                         <td>{{ `${actions?.title}` }}</td>
                                                         <td>{{ `${actions?.description}` }}</td>
                                                         <td>{{ `${actions?.assignee?.lastName}

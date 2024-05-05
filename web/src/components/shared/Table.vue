@@ -169,7 +169,7 @@ const defaultItem = ref({
     carbs: 0,
     protein: 0,
 });
-const formTitle = computed(() => (editedIndex.value === -1 ? 'New Item' : 'Edit Item'));
+const formTitle : any  = computed(() => (editedIndex.value === -1 ? 'New Item' : 'Edit Item'));
 
 watch(dialogDelete, (val) => {
     console.log(`x is ${val}`)
@@ -193,7 +193,7 @@ const deleteItem = (item: any) => {
 };
 
 const $nextTick = () => {
-    editedItem.value = Object.assign({}, defaultItem)
+    // editedItem.value = Object.assign({}, defaultItem)
     editedIndex.value = -1
 }
 
@@ -214,7 +214,7 @@ const deleteItemConfirm = () => {
 
 const save = () => {
     if (editedIndex.value > -1) {
-        Object.assign(desserts[editedIndex.value], editedItem.value)
+        // Object.assign(desserts[editedIndex.value], editedItem.value)
     } else {
         desserts.value.push(editedItem.value)
     }
@@ -310,9 +310,9 @@ const save = () => {
                     </v-icon>
                 </template>
                 <template v-slot:no-data>
-                    <v-btn color="primary" @click="initialize">
+                    <!-- <v-btn color="primary" @click="initialize">
                         Reset
-                    </v-btn>
+                    </v-btn> -->
                 </template>
             </VDataTable>
 

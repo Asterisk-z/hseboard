@@ -38,7 +38,7 @@ class PermitRequestTypeSeeder extends Seeder
             ],
             [
                 'name' => 'general',
-                'description' => 'General Work  Permit',
+                'description' => 'General Work Permit',
             ],
         ];
 

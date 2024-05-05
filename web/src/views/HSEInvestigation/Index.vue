@@ -35,11 +35,12 @@ onMounted(() => {
     investigationStore.getInvestigations();
 });
 
+const computedIndex = (index : any) => ++index;
 
-const getInvestigations = computed(() => (investigationStore.investigations));
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser = computed(() => (authStore.loggedUser));
-const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const getInvestigations : any   = computed(() => (investigationStore.investigations));
+const getActiveOrg : any   = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser : any   = computed(() => (authStore.loggedUser));
+const isLoggedInUserOwnsActionOrg : any   = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 const valid = ref(true);
@@ -79,7 +80,7 @@ const setDeleteDialog = (value: boolean) => {
     deleteDialog.value = value;
     if (value == false) selectItem({})
 }
-const selectedItem = ref({});
+const selectedItem = ref({} as any);
 const selectItem = (item: any, action: string = '') => {
     selectedItem.value = Object.assign({}, item.raw);
 
@@ -112,30 +113,30 @@ const headers = ref([
         key: 'user',
         title: 'Lunched By',
         sortable: false,
-        value: (item: any) => `${item?.user?.lastName} ${item?.user?.firstName} `,
+        value: (item: any): string => `${item?.user?.lastName} ${item?.user?.firstName} `,
     },
     {
         key: 'observation',
         title: 'Observation',
         sortable: false,
-        value: (item: any) => `${item?.observation?.description} `,
+        value: (item: any): string => `${item?.observation?.description} `,
     },
     {
         key: 'observation_type',
         title: 'Observation Type',
         sortable: false,
-        value: (item: any) => `${item?.observation?.observation_type?.description} `,
+        value: (item: any): string => `${item?.observation?.observation_type?.description} `,
     },
     {
         key: 'status',
         title: 'Status',
         sortable: false,
-        value: (item: any) => `${item?.observation?.status} `,
+        value: (item: any): string => `${item?.observation?.status} `,
     },
     {
         key: 'created_at',
         title: 'Date Created',
-        value: (item: any) => `${moment(item.created_at).format('MMMM Do YYYY, h:mm a')}`
+        value: (item: any): string => `${moment(item.created_at).format('MMMM Do YYYY, h:mm a')}`
     },
     {
         key: 'action',
@@ -348,7 +349,7 @@ const gotoRoute = (link: string) => {
                         </template>
 
                         <template v-slot:item.sn="{ index }">
-                            {{ ++index }}
+                            {{ computedIndex(index) }}
                         </template>
 
 

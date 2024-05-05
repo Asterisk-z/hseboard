@@ -53,7 +53,7 @@ export const useAuditTemplateStore = defineStore({
                 });
             this.auditTemplates = data;
         },
-        async getAuditTypeTemplate(type_id: number) {
+        async getAuditTypeTemplate(type_id: string) {
 
             const organizationStore = useOrganizationStore();
             const data = await fetchWrapper

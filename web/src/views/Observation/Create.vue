@@ -41,8 +41,8 @@ const products = ref([
 },
 ])
 
-const subtotal = computed(() => (products.value.reduce((acc, product) => acc + product.quantity * product.price, 0)));
-const total = computed(() => (subtotal.value + Number(shipping.value ?? 0)));
+const subtotal : any  = computed(() => (products.value.reduce((acc, product) => acc + product.quantity * product.price, 0)));
+const total : any  = computed(() => (subtotal.value + Number(shipping.value ?? 0)));
 
 
 </script>

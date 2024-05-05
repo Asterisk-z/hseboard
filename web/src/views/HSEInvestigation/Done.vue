@@ -25,15 +25,16 @@ const investigationStore = useInvestigationStore();
 
 
 onMounted(() => {
-    investigationStore.getCompletedInvestigation(route.params.investigation_id);
+    investigationStore.getCompletedInvestigation(route.params.investigation_id as string);
     // teamMemberStore.getTeamMembers();
 });
 
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser = computed(() => (authStore.loggedUser));
-const getMembers = computed(() => (teamMemberStore.members));
-const getInvestigationQuestions = computed(() => (investigationStore.questions));
-const getInvestigation = computed(() => (investigationStore.investigation));
+const computedIndex = (index : any) => ++index;
+const getActiveOrg : any   = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser : any   = computed(() => (authStore.loggedUser));
+const getMembers : any   = computed(() => (teamMemberStore.members));
+const getInvestigationQuestions : any   = computed(() => (investigationStore.questions));
+const getInvestigation : any   = computed(() => (investigationStore.investigation));
 const isLoggedInUserIsLead= computed(() => (getAuthUser.value?.id == getInvestigation.value?.lead?.member?.id));
 
 
@@ -166,7 +167,7 @@ function changeTab(e: string) {
                                                 <tbody>
                                                     <tr v-for="(member, index) in getInvestigation?.all_members"
                                                         :key="member">
-                                                        <td>{{ ++index }}</td>
+                                                        <td>{{ computedIndex(index) }}</td>
                                                         <td>{{ `${member?.member?.lastName}
                                                             ${member?.member?.firstName}` }}</td>
                                                         <td>{{ `${member?.member?.email}` }}</td>
@@ -218,7 +219,7 @@ function changeTab(e: string) {
                                                 <tbody>
                                                     <tr v-for="(question, index) in getInvestigation?.questions"
                                                         :key="question">
-                                                        <td>{{ ++index }}</td>
+                                                        <td>{{ computedIndex(index) }}</td>
                                                         <td>{{ `${question?.responder?.lastName}
                                                             ${question?.responder?.firstName}` }}</td>
                                                         <td>{{ `${question?.user?.lastName}
@@ -274,7 +275,7 @@ function changeTab(e: string) {
                                                 <tbody>
                                                     <tr v-for="(interview, index) in getInvestigation?.interviews"
                                                         :key="interview">
-                                                        <td>{{ ++index }}</td>
+                                                        <td>{{ computedIndex(index) }}</td>
                                                         <td>{{ `${interview?.user?.lastName}
                                                             ${interview?.user?.firstName}` }}</td>
                                                         <td>{{ `${interview?.invitee?.lastName}
@@ -375,7 +376,7 @@ function changeTab(e: string) {
                                                 <tbody>
                                                     <tr v-for="(actions, index) in getInvestigation?.actions"
                                                         :key="actions">
-                                                        <td>{{ ++index }}</td>
+                                                        <td>{{ computedIndex(index) }}</td>
                                                         <td>{{ `${actions?.title}` }}</td>
                                                         <td>{{ `${actions?.description}` }}</td>
                                                         <td>{{ `${actions?.assignee?.lastName}

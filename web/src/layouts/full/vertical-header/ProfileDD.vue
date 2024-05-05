@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { ref, onMounted, computed, watch } from 'vue';
 import { MailIcon } from 'vue-tabler-icons';
 import { profileDD } from '@/_mockApis/headerData';
 
 import { useAuthStore } from '@/stores/auth';
 
 const authStore = useAuthStore();
+
+const getAuthUser: any = computed(() => (authStore.loggedUser));
 </script>
 
 <template>
@@ -21,23 +24,23 @@ const authStore = useAuthStore();
         </template>
         <v-sheet rounded="md" width="360" elevation="10">
             <div class="px-8 pt-6">
-                <h6 class="text-h5 font-weight-medium">User Profile</h6>
+                <h6 class="text-h5 font-weight-medium">Profile</h6>
                 <div class="d-flex align-center mt-4 pb-6">
                     <v-avatar size="80">
                         <img src="@/assets/images/profile/user-1.jpg" width="80" />
                     </v-avatar>
                     <div class="ml-3">
-                        <h6 class="text-h6 mb-n1">Mathew Anderson</h6>
-                        <span class="text-subtitle-1 font-weight-regular textSecondary">Designer</span>
+                        <h6 class="text-h6 mb-n1">{{ `${getAuthUser?.full_name}` }}</h6>
+                        <span class="text-subtitle-1 font-weight-regular textSecondary">{{ `${getAuthUser?.account_role?.description}` }}</span>
                         <div class="d-flex align-center mt-1">
                             <MailIcon size="18" stroke-width="1.5" />
-                            <span class="text-subtitle-1 font-weight-regular textSecondary ml-2">info@hse.com</span>
+                            <span class="text-subtitle-1 font-weight-regular textSecondary ml-2">{{ `${getAuthUser?.email}` }}</span>
                         </div>
                     </div>
                 </div>
                 <v-divider></v-divider>
             </div>
-            <perfect-scrollbar style="height: calc(100vh - 240px); max-height: 240px">
+            <!-- <perfect-scrollbar style="height: calc(100vh - 240px); max-height: 240px">
                 <v-list class="py-0 theme-list" lines="two">
                     <v-list-item v-for="item in profileDD" :key="item.title" class="py-4 px-8 custom-text-primary"
                         :to="item.href">
@@ -52,7 +55,7 @@ const authStore = useAuthStore();
                         <p class="text-subtitle-1 font-weight-regular textSecondary">{{ item.subtitle }}</p>
                     </v-list-item>
                 </v-list>
-            </perfect-scrollbar>
+            </perfect-scrollbar> -->
             <!-- <div class="px-8 py-3">
                 <div class="bg-lightprimary rounded-md pa-5 overflow-hidden position-relative">
                     <h5 class="text-h6">

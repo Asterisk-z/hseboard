@@ -40,29 +40,30 @@ const mainAuditStore = useMainAuditStore();
 
 
 onMounted(() => {
-    mainAuditStore.getOngoingMainAudit(route.params.main_audit_id)
+    mainAuditStore.getOngoingMainAudit(route.params.main_audit_id as string)
 
     openLinks.getPriorities();
 });
 
 
-const getPriorities = computed(() => (openLinks.priorities));
+const getPriorities : any  = computed(() => (openLinks.priorities));
+const computedIndex = (index : any) => ++index;
 
-const getAuthUser = computed(() => (authStore.loggedUser));
-const getOngoingMainAudit = computed(() => (mainAuditStore.mainAudit));
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const isAuditingOrg = computed(() => (getOngoingMainAudit.value?.organization_id == getActiveOrg.value?.id));
-const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
-const isAuditeeOrg = computed(() => (getOngoingMainAudit.value?.recipient_organization_id == getActiveOrg.value?.id));
+const getAuthUser : any   = computed(() => (authStore.loggedUser));
+const getOngoingMainAudit : any   = computed(() => (mainAuditStore.mainAudit));
+const getActiveOrg : any   = computed(() => (organizationStore.getActiveOrg()));
+const isAuditingOrg : any   = computed(() => (getOngoingMainAudit.value?.organization_id == getActiveOrg.value?.id));
+const isLoggedInUserOwnsActionOrg : any   = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const isAuditeeOrg : any   = computed(() => (getOngoingMainAudit.value?.recipient_organization_id == getActiveOrg.value?.id));
 
-const getAuditMembers = computed(() => (mainAuditStore.auditMembers));
-const getAuditeeMembers = computed(() => (mainAuditStore.auditeeMembers));
+const getAuditMembers : any  = computed(() => (mainAuditStore.auditMembers));
+const getAuditeeMembers : any  = computed(() => (mainAuditStore.auditeeMembers));
 
 watch(
   () => isAuditingOrg.value,
   (value) => {
     if(value) {  
-        mainAuditStore.getAuditMembers(route.params.main_audit_id)
+        mainAuditStore.getAuditMembers(route.params.main_audit_id as string)
     }
     
       if (getOngoingMainAudit.value.is_pending) {
@@ -83,7 +84,7 @@ watch(
   () => isAuditeeOrg.value,
   (value) => {
       if (value) {
-        mainAuditStore.getAuditeeMembers(route.params.main_audit_id)
+        mainAuditStore.getAuditeeMembers(route.params.main_audit_id as string)
     }
       if (getOngoingMainAudit.value.is_pending) {
         Swal.fire({
@@ -110,7 +111,7 @@ watch(
                         throw error
                     })
                     .then((resp: any) => {
-                         mainAuditStore.getOngoingMainAudit(route.params.main_audit_id);
+                         mainAuditStore.getOngoingMainAudit(route.params.main_audit_id as string);
                         return resp
                     });
 
@@ -203,7 +204,7 @@ const setViewRecommendationDialog = (value: boolean, type: string = '') => {
     viewRecommendationDialog.value = value;
     if (value == false) selectItem({})
 }
-const selectedItem = ref({});
+const selectedItem = ref({} as any);
 const selectItem = (item: any, action: string = '', extra: any = '') => {
     selectedItem.value = Object.assign({}, item.raw);
 
@@ -293,11 +294,11 @@ const fields = ref({
 
 
 
-const filteredLeadAuditMembers = computed(() => (getAuditMembers.value?.filter((member: any) => (member.id != fields.value?.leadAuditor))));
-const filteredSupportAuditMembers = computed(() => (getAuditMembers.value?.filter((member: any) => (member.id != fields.value?.supportAuditor && member.id != getOngoingMainAudit.value?.lead_representative?.user_id))));
-const getRepresentatives = computed(() => (getOngoingMainAudit.value?.all_representatives));
-const getAuditors = computed(() => (getOngoingMainAudit.value?.all_auditors));
-const filteredGetAuditeeMembers = computed(() => (getAuditeeMembers.value?.filter((member: any) => (member.id != fields.value?.leadRepresentative  && member.id != getOngoingMainAudit.value?.lead_auditor?.user_id))));
+const filteredLeadAuditMembers : any  = computed(() => (getAuditMembers.value?.filter((member: any) => (member.id != fields.value?.leadAuditor))));
+const filteredSupportAuditMembers : any  = computed(() => (getAuditMembers.value?.filter((member: any) => (member.id != fields.value?.supportAuditor && member.id != getOngoingMainAudit.value?.lead_representative?.user_id))));
+const getRepresentatives : any  = computed(() => (getOngoingMainAudit.value?.all_representatives));
+const getAuditors : any  = computed(() => (getOngoingMainAudit.value?.all_auditors));
+const filteredGetAuditeeMembers : any  = computed(() => (getAuditeeMembers.value?.filter((member: any) => (member.id != fields.value?.leadRepresentative  && member.id != getOngoingMainAudit.value?.lead_auditor?.user_id))));
 
 const isLoggedInUserIsLeadAuditor= computed(() => (getAuthUser.value?.id == getOngoingMainAudit.value?.lead_auditor?.member?.id));
 const isLoggedInUserIsLeadRepresentative= computed(() => (getAuthUser.value?.id == getOngoingMainAudit.value?.lead_representative?.member?.id));
@@ -356,7 +357,7 @@ const sendAuditors = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setAddAuditorsDialog(false)
-            mainAuditStore.getOngoingMainAudit(route.params.main_audit_id);
+            mainAuditStore.getOngoingMainAudit(route.params.main_audit_id as string);
         }
 
         setLoading(false)
@@ -401,7 +402,7 @@ const sendRepresentatives = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setAddRepresentativeDialog(false)
-            mainAuditStore.getOngoingMainAudit(route.params.main_audit_id);
+            mainAuditStore.getOngoingMainAudit(route.params.main_audit_id as string);
         }
 
         setLoading(false)
@@ -445,7 +446,7 @@ const removeMember = async (member: any) => {
                         throw error
                     })
                     .then((resp: any) => {
-                         mainAuditStore.getOngoingMainAudit(route.params.main_audit_id);
+                         mainAuditStore.getOngoingMainAudit(route.params.main_audit_id as string);
                         return resp
                     });
 
@@ -531,7 +532,7 @@ const setRejectReasonDialog = (value: boolean, item_id : any = '') => {
     stepTwoFields.value.document_id = item_id
 }
 
-const getDocuments = computed(() => (getOngoingMainAudit.value?.documents));
+const getDocuments : any  = computed(() => (getOngoingMainAudit.value?.documents));
 
 const stepTwoFields = ref({
     title: "",
@@ -591,7 +592,7 @@ const requestDocument = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setRequestDocumentDialog(false)
-            mainAuditStore.getOngoingMainAudit(route.params.main_audit_id);
+            mainAuditStore.getOngoingMainAudit(route.params.main_audit_id as string);
         }
 
         setLoading(false)
@@ -635,7 +636,7 @@ const sendDocument = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setSendDocumentDialog(false)
-            mainAuditStore.getOngoingMainAudit(route.params.main_audit_id);
+            mainAuditStore.getOngoingMainAudit(route.params.main_audit_id as string);
         }
 
         setLoading(false)
@@ -682,7 +683,7 @@ const removeDocument = async (document: any) => {
                         throw error
                     })
                     .then((resp: any) => {
-                         mainAuditStore.getOngoingMainAudit(route.params.main_audit_id);
+                         mainAuditStore.getOngoingMainAudit(route.params.main_audit_id as string);
                         return resp
                     });
 
@@ -727,7 +728,7 @@ const revertDocument = async (document: any) => {
                         throw error
                     })
                     .then((resp: any) => {
-                         mainAuditStore.getOngoingMainAudit(route.params.main_audit_id);
+                         mainAuditStore.getOngoingMainAudit(route.params.main_audit_id as string);
                         return resp
                     });
 
@@ -778,7 +779,7 @@ const actionDocument = async (document: any, action: string) => {
                         throw error
                     })
                     .then((resp: any) => {
-                         mainAuditStore.getOngoingMainAudit(route.params.main_audit_id);
+                         mainAuditStore.getOngoingMainAudit(route.params.main_audit_id as string);
                         return resp
                     });
 
@@ -797,7 +798,7 @@ const actionDocument = async (document: any, action: string) => {
 }
 const files = ref([])
 const images = ref([])
-const previewImage = ref([])
+const previewImage = ref([] as any)
 
 const selectImage = (image: any) => {
     stepTwoFields.value.files =  image.target.files
@@ -806,7 +807,7 @@ const selectImage = (image: any) => {
 
     for (let index = 0; index < images.value.length; index++) {
         const element = images.value[index];
-        previewImage.value.push(URL.createObjectURL(element))
+        previewImage.value.push(URL.createObjectURL(element) as string)
     }
 
 }
@@ -871,7 +872,7 @@ const confirmScheduleDialog = ref(false);
 const setConfirmScheduleDialog = (value: boolean) => {
     confirmScheduleDialog.value = value;
 }
-const getSchedule = computed(() => (getOngoingMainAudit.value?.schedule));
+const getSchedule : any  = computed(() => (getOngoingMainAudit.value?.schedule));
 
 const stepThreeFields = ref({
     date_time: "",
@@ -911,7 +912,7 @@ const actionAuditorTime = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setSendScheduleDialog(false)
-            mainAuditStore.getOngoingMainAudit(route.params.main_audit_id);
+            mainAuditStore.getOngoingMainAudit(route.params.main_audit_id as string);
         }
 
         setLoading(false)
@@ -954,7 +955,7 @@ const actionAuditeeTime = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setConfirmScheduleDialog(false)
-            mainAuditStore.getOngoingMainAudit(route.params.main_audit_id);
+            mainAuditStore.getOngoingMainAudit(route.params.main_audit_id as string);
         }
 
         setLoading(false)
@@ -1000,7 +1001,7 @@ const actionAcceptedTime = async (value: any) => {
                         throw error
                     })
                     .then((resp: any) => {
-                         mainAuditStore.getOngoingMainAudit(route.params.main_audit_id);
+                         mainAuditStore.getOngoingMainAudit(route.params.main_audit_id as string);
                         return resp
                     });
 
@@ -1077,10 +1078,20 @@ function changeQuestionTab(e: string) {
     questionTab.value = e;
 }
 // console.log(questionTab.value)
-const getQuestions = computed(() => (getOngoingMainAudit.value?.questions));
+const getQuestions : any  = computed(() => (getOngoingMainAudit.value?.questions));
 
 const sendCommentDialog = ref(false);
-const setSendCommentDialog = (value: boolean, item_id: string = '', topic_id: string = '', question = {}) => {
+const setSendCommentDialog = (value: boolean, item_id: string = '', topic_id: string = '', question : { 
+    comment : string,  
+    response : {
+        comment : string
+        } 
+    }  =  { 
+    comment : '',  
+    response : {
+        comment : ''
+        } 
+    }) => {
     sendCommentDialog.value = value;
     stepFourFields.value.question_id = item_id
     stepFourFields.value.topic_id = topic_id
@@ -1091,6 +1102,7 @@ const stepFourFields = ref({
     question_id: "",
     topic_id: "",
     comments: "",
+    type: "",
 });
 
 
@@ -1126,11 +1138,13 @@ const auditSendResponse = async (question_id: number, response: string, topic : 
             });
 
         if (resp?.message == 'success') {
-            mainAuditStore.mainAudit.questions.forEach((question: any, index: number) => {
+            getOngoingMainAudit.questions.forEach((question: any, index: number) => {
+            // mainAuditStore.mainAudit.questions.forEach((question: any, index: number) => {
                 if(question.id == topic) {
                      question.questions.forEach((main_question: any, subIndex: number) => {
                         if(main_question.id == question_id) {
-                            mainAuditStore.mainAudit.questions[index].questions[subIndex].answer = response
+                            // mainAuditStore.mainAudit.questions[index].questions[subIndex].answer = response
+                            getOngoingMainAudit.questions[index].questions[subIndex].answer = response
                         }
                      })
                 }
@@ -1173,11 +1187,13 @@ const auditSendComment = async (e: any) => {
 
         
         if (resp?.message == 'success') {
-            mainAuditStore.mainAudit.questions.forEach((question: any, index: number) => {
+            getOngoingMainAudit.questions.forEach((question: any, index: number) => {
+            // mainAuditStore.mainAudit.questions.forEach((question: any, index: number) => {
                 if(question.id == values?.topic_id) {
                      question.questions.forEach((main_question: any, subIndex: number) => {
                         if(main_question.id == values?.question_id) {
-                            mainAuditStore.mainAudit.questions[index].questions[subIndex].comment = values?.comments
+                            // mainAuditStore.mainAudit.questions[index].questions[subIndex].comment = values?.comments
+                            getOngoingMainAudit.questions[index].questions[subIndex].comment = values?.comments
                         }
                      })
                 }
@@ -1251,8 +1267,8 @@ const auditSendComment = async (e: any) => {
 //-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-const getFindings = computed(() => (getOngoingMainAudit.value?.findings));
-const getActions = computed(() => (getOngoingMainAudit.value?.actions));
+const getFindings : any  = computed(() => (getOngoingMainAudit.value?.findings));
+const getActions : any  = computed(() => (getOngoingMainAudit.value?.actions));
 
 
 const stepFiveFields = ref({
@@ -1321,7 +1337,7 @@ const sendFindings = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setViewFindingDialog(false)
-            mainAuditStore.getOngoingMainAudit(route.params.main_audit_id);
+            mainAuditStore.getOngoingMainAudit(route.params.main_audit_id as string);
         }
 
         setLoading(false)
@@ -1368,7 +1384,7 @@ const sendRecommendation = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setViewRecommendationDialog(false)
-            mainAuditStore.getOngoingMainAudit(route.params.main_audit_id);
+            mainAuditStore.getOngoingMainAudit(route.params.main_audit_id as string);
         }
 
         setLoading(false)
@@ -1412,7 +1428,7 @@ const completeAudit = async (member: any) => {
                         throw error
                     })
                     .then((resp: any) => {
-                        //  investigationStore.getInvestigation(route.params.observation_id);
+                        //  investigationStore.getInvestigation(route.params.observation_id as string);
                         // 
                         if(resp.message == 'success') {
                             router.push(`/hse-audit`)
@@ -1618,7 +1634,7 @@ const blankFn = () => {
                                                                             :rules="fieldRules.leadAuditor"
                                                                             label="Select" item-title="lastName"
                                                                             item-value="id"
-                                                                            :item-props="(item) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
+                                                                            :item-props="(item: any) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
                                                                             single-line variant="outlined"
                                                                             class="text-capitalize">
                                                                         </VSelect>
@@ -1632,7 +1648,7 @@ const blankFn = () => {
                                                                             :rules="fieldRules.supportAuditor"
                                                                             label="Select" item-title="lastName"
                                                                             item-value="id"
-                                                                            :item-props="(item) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
+                                                                            :item-props="(item: any) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
                                                                             single-line variant="outlined"
                                                                             class="text-capitalize">
                                                                         </VSelect>
@@ -1693,7 +1709,7 @@ const blankFn = () => {
                                                                             :rules="fieldRules.leadRepresentative"
                                                                             label="Select" item-title="lastName"
                                                                             item-value="id"
-                                                                            :item-props="(item) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
+                                                                            :item-props="(item: any) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
                                                                             single-line variant="outlined"
                                                                             class="text-capitalize">
                                                                         </VSelect>
@@ -1709,7 +1725,7 @@ const blankFn = () => {
                                                                             item-value="id" single-line
                                                                             variant="outlined" class="text-capitalize"
                                                                             chips
-                                                                            :item-props="(item) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
+                                                                            :item-props="(item: any) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
                                                                             multiple>
 
                                                                         </VSelect>
@@ -1768,7 +1784,7 @@ const blankFn = () => {
                                                     <template v-if="isAuditingOrg">
                                                         <tr v-for="(member, index) in getAuditors"
                                                             :key="member">
-                                                            <td>{{ ++index }}</td>
+                                                            <td>{{ computedIndex(index) }}</td>
                                                             <td>{{ `${member?.member?.lastName}
                                                                 ${member?.member?.firstName}` }}</td>
                                                             <td>{{ `${member?.member?.email}` }}</td>
@@ -1784,7 +1800,7 @@ const blankFn = () => {
                                                     <template v-if="isAuditeeOrg">
                                                         <tr v-for="(member, index) in getRepresentatives"
                                                             :key="member">
-                                                            <td>{{ ++index }}</td>
+                                                            <td>{{ computedIndex(index) }}</td>
                                                             <td>{{ `${member?.member?.lastName}
                                                                 ${member?.member?.firstName}` }}</td>
                                                             <td>{{ `${member?.member?.email}` }}</td>
@@ -2079,7 +2095,7 @@ const blankFn = () => {
 
                                                         <tr v-for="(document, index) in getDocuments"
                                                             :key="document">
-                                                            <td>{{ ++index }}</td>
+                                                            <td>{{ computedIndex(index) }}</td>
                                                             <td>{{ `${document?.title}` }}</td>
                                                             <td>{{ `${document?.description}` }}</td>
                                                             <td>{{ `${document?.recipient_user_id ? `${document?.uploaded_by?.lastName} ${document?.uploaded_by?.firstName}` : ''}` }}</td>
@@ -2428,7 +2444,7 @@ const blankFn = () => {
                                                                             <!-- {{ title_question.questions }} -->
                                                                             <!-- <template> -->
                                                                                 <tr v-for="(question) in title_question.questions" :key="question">
-                                                                                    <!-- <td>{{ ++index }}</td> -->
+                                                                                    <!-- <td>{{ computedIndex(index) }}</td> -->
                                                                                     <td>{{ `${question?.question}` }}</td>
                                                                                     <td>
                                                                                         <!-- isAuditingOrg -->
@@ -2676,7 +2692,7 @@ const blankFn = () => {
                                                                             item-title='lastName' item-value="uuid"
                                                                             single-line variant="outlined"
                                                                             class="text-capitalize"
-                                                                            :item-props="(item) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})">
+                                                                            :item-props="(item: any) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})">
 
                                                                         </VSelect>
                                                                     </VCol>
@@ -2716,8 +2732,8 @@ const blankFn = () => {
                                                                     </VCol>
 
                                                                     <VCol cols="12" lg="12" class="text-right">
-                                                                        <v-btn color="error" @click="dialog = false"
-                                                                            variant="text">Cancel</v-btn>
+                                                                        <!-- <v-btn color="error" @click="dialog = false"
+                                                                            variant="text">Cancel</v-btn> -->
 
                                                                         <v-btn color="primary" type="submit"
                                                                             :loading="loading" :disabled="!valid"
@@ -2768,7 +2784,7 @@ const blankFn = () => {
                                                 <tbody>
                                                     <tr v-for="(actions, index) in getActions"
                                                         :key="actions">
-                                                        <td>{{ ++index }}</td>
+                                                        <td>{{ computedIndex(index) }}</td>
                                                         <td>{{ `${actions?.title}` }}</td>
                                                         <td>{{ `${actions?.description}` }}</td>
                                                         <td>{{ `${actions?.assignee?.lastName}

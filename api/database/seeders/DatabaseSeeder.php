@@ -41,6 +41,8 @@ class DatabaseSeeder extends Seeder
         $this->call(InspectionTemplateSeeder::class);
         $this->call(InspectionTemplateTypeSeeder::class);
         $this->call(InspectionTemplateQuestionSeeder::class);
+        $this->call(PermitTypeSeeder::class);
+        $this->call(PermitRequestTypeSeeder::class);
 
     }
 }

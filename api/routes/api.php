@@ -25,11 +25,15 @@ use App\Http\Controllers\ObservationTypeController;
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\OrganizationFeatureController;
+use App\Http\Controllers\PermitRequestTypeController;
+use App\Http\Controllers\PermitToWorkController;
+use App\Http\Controllers\PermitTypeController;
 use App\Http\Controllers\PriorityController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UsersController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -246,6 +250,47 @@ Route::middleware('auth:api')->group(function ($router) {
 
         Route::post('/create', [InvestigationController::class, 'store']);
         Route::post('/delete', [InvestigationController::class, 'delete']);
+    });
+
+    Route::prefix('permit-to-work')->group(function ($router) {
+        Route::get('/types', [PermitTypeController::class, 'index']);
+        Route::get('/request-types', [PermitRequestTypeController::class, 'index']);
+        Route::get('/all/{organization_id?}', [PermitToWorkController::class, 'index']);
+        Route::get('/ongoing/{organization_id}/{permit_id?}', [PermitToWorkController::class, 'ongoing']);
+        Route::get('/holding-members/{permit_id}', [PermitToWorkController::class, 'holdings']);
+        Route::get('/active-jha', [PermitToWorkController::class, 'activeJHA']);
+
+        // Route::get('/review/{organization_id}/{job_id?}', [JobHazardAnalysisController::class, 'review']);
+        Route::post('/create-permit', [PermitToWorkController::class, 'createPermit']);
+        Route::post('/update-permit', [PermitToWorkController::class, 'updatePermit']);
+        Route::post('/set-members/{organization_id?}', [PermitToWorkController::class, 'setMembers']);
+        Route::post('/remove-member/{organization_id?}', [PermitToWorkController::class, 'removeMember']);
+        Route::post('/send-jha/{organization_id?}', [PermitToWorkController::class, 'sendJHA']);
+        Route::post('/action-jha/{organization_id?}', [PermitToWorkController::class, 'actionJHA']);
+        Route::post('/action-request-form/{organization_id?}', [PermitToWorkController::class, 'actionRequestForm']);
+        Route::post('/action-declaration/{organization_id?}', [PermitToWorkController::class, 'sendForDeclaration']);
+        Route::post('/send-declaration/{organization_id?}', [PermitToWorkController::class, 'sendDeclaration']);
+        Route::post('/send-issue-permit/{organization_id?}', [PermitToWorkController::class, 'issuePermit']);
+        Route::post('/suspend-permit/{organization_id?}', [PermitToWorkController::class, 'suspendPermit']);
+        Route::post('/reactivate-permit/{organization_id?}', [PermitToWorkController::class, 'reactivatePermit']);
+        Route::post('/send-permit-request/{organization_id?}', [PermitToWorkController::class, 'sendPermitRequest']);
+        Route::post('/action-permit-request/{organization_id?}', [PermitToWorkController::class, 'actionPermitRequest']);
+        // Route::post('/add-step', [JobHazardAnalysisStepController::class, 'addStep']);
+        // Route::post('/remove-step', [JobHazardAnalysisStepController::class, 'removeStep']);
+        // Route::post('/add-event', [JobHazardAnalysisStepController::class, 'topEvent']);
+        // Route::post('/add-source', [JobHazardAnalysisStepController::class, 'hazardSource']);
+        // Route::post('/add-target', [JobHazardAnalysisStepController::class, 'target']);
+        // Route::post('/add-consequence', [JobHazardAnalysisStepController::class, 'consequence']);
+        // Route::post('/add-action', [JobHazardAnalysisStepController::class, 'preventiveAction']);
+        // Route::post('/add-rcp', [JobHazardAnalysisStepController::class, 'rcp']);
+        // Route::post('/add-recovery', [JobHazardAnalysisStepController::class, 'recoveryMeasure']);
+        // Route::post('/add-party', [JobHazardAnalysisStepController::class, 'actionParty']);
+        // Route::post('/delete-item', [JobHazardAnalysisStepController::class, 'deleteItem']);
+        // Route::post('/complete', [JobHazardAnalysisController::class, 'complete']);
+        // Route::post('/action', [JobHazardAnalysisController::class, 'actionStatus']);
+
+        // Route::post('/create', [InvestigationController::class, 'store']);
+        // Route::post('/delete', [InvestigationController::class, 'delete']);
     });
 
 });

@@ -12,6 +12,7 @@ use App\Models\Observation;
 use App\Models\Offer;
 use App\Models\Organisation;
 use App\Models\OrganizationFeature;
+use App\Models\PermitToWork;
 use App\Models\Statistics;
 use App\Models\Subscription;
 use App\Models\User;
@@ -25,6 +26,7 @@ use App\Observers\ObservationObserver;
 use App\Observers\OfferObserver;
 use App\Observers\OrganisationObserver;
 use App\Observers\OrganizationFeatureObserver;
+use App\Observers\PermitToWorkObeserver;
 use App\Observers\StatisticObserver;
 use App\Observers\SubscriptionObserver;
 use App\Observers\UserObserver;
@@ -63,5 +65,6 @@ class AppServiceProvider extends ServiceProvider
         OrganizationFeature::observe(OrganizationFeatureObserver::class);
         Inspection::observe(InspectionObserver::class);
         JobHazardAnalysis::observe(JobHazardAnalysisObserver::class);
+        PermitToWork::observe(PermitToWorkObeserver::class);
     }
 }

@@ -43,10 +43,10 @@ onMounted(() => {
 
 
 
-const getAuthUser = computed(() => (authStore.loggedUser));
-const getOrganizations = computed(() => (organizationStore.organization));
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const getAuthUser : any  = computed(() => (authStore.loggedUser));
+const getOrganizations : any  = computed(() => (organizationStore.organization));
+const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
+const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 </script>

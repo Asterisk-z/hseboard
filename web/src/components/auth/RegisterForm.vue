@@ -16,9 +16,9 @@ onMounted(() => {
     openLinks.getCountries();
 });
 
-const getAccountTypes = computed(() => (openLinks.accountTypes));
-const getIndustries = computed(() => (openLinks.industries));
-const getCountries = computed(() => (openLinks.countries));
+const getAccountTypes : any  = computed(() => (openLinks.accountTypes));
+const getIndustries : any  = computed(() => (openLinks.industries));
+const getCountries : any  = computed(() => (openLinks.countries));
 
 
 const valid = ref(true);

@@ -26,23 +26,25 @@ const investigationStore = useInvestigationStore();
 
 
 onMounted(() => {
-    investigationStore.getInvestigation(route.params.observation_id);
+    investigationStore.getInvestigation(route.params.observation_id as string);
     teamMemberStore.getTeamMembers();
     openLinks.getPriorities();
-    investigationStore.getInvestigationQuestions(route.params.observation_id);
+    investigationStore.getInvestigationQuestions(route.params.observation_id as string);
 });
 
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser = computed(() => (authStore.loggedUser));
-const getMembers = computed(() => (teamMemberStore.members));
-const getInvestigationQuestions = computed(() => (investigationStore.questions));
-const getInvestigation = computed(() => (investigationStore.investigation));
-const getPriorities = computed(() => (openLinks.priorities));
-const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
-const isLoggedInUserIsLead= computed(() => (getAuthUser.value?.id == getInvestigation.value?.lead?.member?.id));
+const computedIndex = (index : any) => ++index;
+
+const getActiveOrg : any   = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser : any   = computed(() => (authStore.loggedUser));
+const getMembers : any   = computed(() => (teamMemberStore.members));
+const getInvestigationQuestions : any   = computed(() => (investigationStore.questions));
+const getInvestigation : any   = computed(() => (investigationStore.investigation));
+const getPriorities : any   = computed(() => (openLinks.priorities));
+const isLoggedInUserOwnsActionOrg : any   = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const isLoggedInUserIsLead : any   = computed(() => (getAuthUser.value?.id == getInvestigation.value?.lead?.member?.id));
 
 
-const page = ref({ title: 'Investigation' });
+const page  = ref({ title: 'Investigation' });
 const breadcrumbs = ref([
     {
         text: 'Dashboard',
@@ -108,7 +110,7 @@ const setViewRecommendationDialog = (value: boolean, type: string = '') => {
     viewRecommendationDialog.value = value;
     if (value == false) selectItem({})
 }
-const selectedItem = ref({});
+const selectedItem = ref({} as any);
 const selectItem = (item: any, action: string = '', extra: any = '') => {
     selectedItem.value = Object.assign({}, item.raw);
 
@@ -144,10 +146,10 @@ const fields = ref({
     organization_id: getActiveOrg.value?.uuid,
 });
 
-const filteredMember = computed(() => (getMembers.value?.filter((member: any) => (member.id != fields.value?.leadInvestigator))));
+const filteredMember : any  = computed(() => (getMembers.value?.filter((member: any) => (member.id != fields.value?.leadInvestigator))));
 
-const members_ids = computed(() => (getInvestigation.value?.all_members.map((member: any) => (member.member_id))));
-const filteredNonMember = computed(() => (getMembers.value?.filter((member: any) => (!members_ids.value?.includes(member.id)))));
+const members_ids : any  = computed(() => (getInvestigation.value?.all_members.map((member: any) => (member.member_id))));
+const filteredNonMember : any  = computed(() => (getMembers.value?.filter((member: any) => (!members_ids.value?.includes(member.id)))));
 
 
 const fieldRules: any = ref({
@@ -194,7 +196,7 @@ const save = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setAddMemberDialog(false)
-            investigationStore.getInvestigation(route.params.observation_id);
+            investigationStore.getInvestigation(route.params.observation_id as string);
         }
 
         setLoading(false)
@@ -241,7 +243,7 @@ const removeMember = async (member: any) => {
                         throw error
                     })
                     .then((resp: any) => {
-                         investigationStore.getInvestigation(route.params.observation_id);
+                         investigationStore.getInvestigation(route.params.observation_id as string);
                         return resp
                     });
 
@@ -304,7 +306,7 @@ const sendQuestion = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             
-            investigationStore.getInvestigation(route.params.observation_id);
+            investigationStore.getInvestigation(route.params.observation_id as string);
         }
 
         setLoading(false)
@@ -377,13 +379,13 @@ const sendInvites = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setAddInviteDialog(false)
-            investigationStore.getInvestigation(route.params.observation_id);
+            investigationStore.getInvestigation(route.params.observation_id as string);
         }
 
         setLoading(false)
         setAddInviteDialog(false)
 
-        stepThreeFields.value.members = "";
+        stepThreeFields.value.members = [];
             stepThreeFields.value.date_times = [];
             stepThreeFields.value.interview_type = "";
             stepThreeFields.value.interview_link = "";
@@ -440,7 +442,7 @@ const sendFindings = async (e: any) => {
             setLoading(false)
             setViewFindingDialog(false)
 
-            investigationStore.getInvestigation(route.params.observation_id);
+            investigationStore.getInvestigation(route.params.observation_id as string);
         }
 
         setLoading(false)
@@ -531,7 +533,7 @@ const sendRecommendation = async (e: any) => {
             stepFiveFields.value.end_date = "";
             stepFiveFields.value.priorityId = "";
 
-            investigationStore.getInvestigation(route.params.observation_id);
+            investigationStore.getInvestigation(route.params.observation_id as string);
         }
 
         setLoading(false)
@@ -620,7 +622,7 @@ const sendReport = async (e: any) => {
             stepSixFields.value.damages = "";
             stepSixFields.value.location = "";
             stepSixFields.value.incident_date_time = "";
-            investigationStore.getInvestigation(route.params.observation_id);
+            investigationStore.getInvestigation(route.params.observation_id as string);
         }
 
         setLoading(false)
@@ -661,7 +663,7 @@ const addQuestion = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             stepTwoFields.value.question = "";
-            investigationStore.getInvestigationQuestions(route.params.observation_id);
+            investigationStore.getInvestigationQuestions(route.params.observation_id as string);
         }
 
         setLoading(false)
@@ -703,7 +705,7 @@ const completeInvestigation = async (member: any) => {
                         throw error
                     })
                     .then((resp: any) => {
-                        //  investigationStore.getInvestigation(route.params.observation_id);
+                        //  investigationStore.getInvestigation(route.params.observation_id as string);
                         console.log(resp)
                         router.push(`/hse-investigation`)
                         return resp
@@ -742,7 +744,7 @@ const blankFn = () => {
 
 const files = ref([])
 const images = ref([])
-const previewImage = ref([])
+const previewImage = ref([] as any)
 
 const selectImage = (image: any) => {
 
@@ -751,7 +753,7 @@ const selectImage = (image: any) => {
 
     for (let index = 0; index < images.value.length; index++) {
         const element = images.value[index];
-        previewImage.value.push(URL.createObjectURL(element))
+        previewImage.value.push(URL.createObjectURL(element) as string)
     }
 
 }
@@ -875,7 +877,7 @@ const selectImage = (image: any) => {
                                                                             :rules="fieldRules.leadInvestigator"
                                                                             label="Select" item-title="lastName"
                                                                             item-value="id"
-                                                                            :item-props="(item) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
+                                                                            :item-props="(item: any) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
                                                                             single-line variant="outlined"
                                                                             class="text-capitalize">
                                                                         </VSelect>
@@ -892,7 +894,7 @@ const selectImage = (image: any) => {
                                                                             item-value="id" single-line
                                                                             variant="outlined" class="text-capitalize"
                                                                             chips
-                                                                            :item-props="(item) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
+                                                                            :item-props="(item: any) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
                                                                             multiple>
 
                                                                         </VSelect>
@@ -960,7 +962,7 @@ const selectImage = (image: any) => {
                                                 <tbody>
                                                     <tr v-for="(member, index) in getInvestigation?.all_members"
                                                         :key="member">
-                                                        <td>{{ ++index }}</td>
+                                                        <td>{{ computedIndex(index) }}</td>
                                                         <td>{{ `${member?.member?.lastName}
                                                             ${member?.member?.firstName}` }}</td>
                                                         <td>{{ `${member?.member?.email}` }}</td>
@@ -1014,7 +1016,7 @@ const selectImage = (image: any) => {
                                                 <tbody>
                                                     <tr v-for="(question, index) in getInvestigationQuestions"
                                                         :key="question">
-                                                        <td>{{ ++index }}</td>
+                                                        <td>{{ computedIndex(index) }}</td>
                                                         <td>{{ question?.question }}</td>
                                                         <td>{{ question?.type }}</td>
                                                         <td class=''>
@@ -1040,7 +1042,7 @@ const selectImage = (image: any) => {
                                                             :rules="stepTwoFieldRules.members" label="Select"
                                                             item-title="lastName" item-value="id" single-line
                                                             variant="outlined" class="text-capitalize" chips
-                                                            :item-props="(item) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
+                                                            :item-props="(item: any) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
                                                             multiple>
                                                         </VSelect>
                                                     </VCol>
@@ -1151,7 +1153,7 @@ const selectImage = (image: any) => {
                                                 <tbody>
                                                     <tr v-for="(question, index) in getInvestigation?.questions"
                                                         :key="question">
-                                                        <td>{{ ++index }}</td>
+                                                        <td>{{ computedIndex(index) }}</td>
                                                         <td>{{ `${question?.responder?.lastName}
                                                             ${question?.responder?.firstName}` }}</td>
                                                         <td>{{ `${question?.user?.lastName}
@@ -1216,7 +1218,7 @@ const selectImage = (image: any) => {
                                                                             item-value="id" single-line
                                                                             variant="outlined" class="text-capitalize"
                                                                             chips
-                                                                            :item-props="(item) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
+                                                                            :item-props="(item: any) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})"
                                                                             multiple>
 
                                                                         </VSelect>
@@ -1324,7 +1326,7 @@ const selectImage = (image: any) => {
                                                 <tbody>
                                                     <tr v-for="(interview, index) in getInvestigation?.interviews"
                                                         :key="interview">
-                                                        <td>{{ ++index }}</td>
+                                                        <td>{{ computedIndex(index) }}</td>
                                                         <td>{{ `${interview?.user?.lastName}
                                                             ${interview?.user?.firstName}` }}</td>
                                                         <td>{{ `${interview?.invitee?.lastName}
@@ -1572,7 +1574,7 @@ const selectImage = (image: any) => {
                                                                             item-title='lastName' item-value="uuid"
                                                                             single-line variant="outlined"
                                                                             class="text-capitalize"
-                                                                            :item-props="(item) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})">
+                                                                            :item-props="(item: any) => ({title:`${item?.lastName} ${item?.firstName}`, subtitle:`${item?.email}`})">
 
                                                                         </VSelect>
                                                                     </VCol>
@@ -1612,7 +1614,7 @@ const selectImage = (image: any) => {
                                                                     </VCol>
 
                                                                     <VCol cols="12" lg="12" class="text-right">
-                                                                        <v-btn color="error" @click="dialog = false"
+                                                                        <v-btn color="error" @click="setViewRecommendationDialog(false)"
                                                                             variant="text">Cancel</v-btn>
 
                                                                         <v-btn color="primary" type="submit"
@@ -1664,7 +1666,7 @@ const selectImage = (image: any) => {
                                                 <tbody>
                                                     <tr v-for="(actions, index) in getInvestigation?.actions"
                                                         :key="actions">
-                                                        <td>{{ ++index }}</td>
+                                                        <td>{{ computedIndex(index) }}</td>
                                                         <td>{{ `${actions?.title}` }}</td>
                                                         <td>{{ `${actions?.description}` }}</td>
                                                         <td>{{ `${actions?.assignee?.lastName}
@@ -1772,7 +1774,7 @@ const selectImage = (image: any) => {
 
 
                                                         <VCol cols="12" lg="12" class="text-right">
-                                                            <v-btn color="error" @click="dialog = false"
+                                                            <v-btn color="error" @click="setViewReportDialog(false)"
                                                                 variant="text">Cancel</v-btn>
 
                                                             <v-btn color="primary" type="submit" :loading="loading"
@@ -1820,7 +1822,7 @@ const selectImage = (image: any) => {
                                         </thead>
                                         <tbody>
                                             <tr :key="getInvestigation?.report" v-if="getInvestigation?.report">
-                                                <td>{{ '1' }}</td>
+                                                <td>{{ '' }}</td>
                                                 <td>{{ `${getInvestigation?.report?.title}` }}</td>
                                                 <td>{{ `${getInvestigation?.report?.description}` }}</td>
                                                 <td>{{ `${getInvestigation?.report?.location}` }}</td>

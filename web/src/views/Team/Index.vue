@@ -23,11 +23,12 @@ onMounted(() => {
     openLinks.getAccountRoles();
 });
 
-const getTeamMembers = computed(() => (teamMemberStore.members));
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser = computed(() => (authStore.loggedUser));
-const getAccountRoles = computed(() => (openLinks.accountRoles));
-const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const computedIndex = (index : any) => ++index;
+const getTeamMembers : any  = computed(() => (teamMemberStore.members));
+const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser : any  = computed(() => (authStore.loggedUser));
+const getAccountRoles : any  = computed(() => (openLinks.accountRoles));
+const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 const page = ref({ title: 'Team Member' });
@@ -71,7 +72,7 @@ const setDeleteDialog = (value: boolean) => {
     deleteDialog.value = value;
     if (value == false) selectItem({})
 }
-const selectedItem = ref({});
+const selectedItem = ref({} as any);
 const selectItem = (item: any, action: string = '') => {
     selectedItem.value = Object.assign({}, item.raw);
  
@@ -110,22 +111,22 @@ const headers = ref([
     {
         key: 'lastName',
         title: 'Full Name',
-        value: (item: any) => `${item.lastName} ${item.firstName}`,
+        value: (item: any): string => `${item.lastName} ${item.firstName}`,
     },
     {
         key: 'email',
         title: 'Email',
-        value: (item: any) => `${item.email}`
+        value: (item: any): string => `${item.email}`
     },
     {
         key: 'phone',
         title: 'Phone Number',
-        value: (item: any) => `${item.phone}`
+        value: (item: any): string => `${item.phone}`
     },
     {
         key: 'created_at',
         title: 'Date Created',
-        value: (item: any) => `${moment(item.created_at).format('MMMM Do YYYY, h:mm:ss a')}`
+        value: (item: any): string => `${moment(item.created_at).format('MMMM Do YYYY, h:mm:ss a')}`
     },
     {
         key: 'action',
@@ -339,12 +340,13 @@ const goToRequest = () => {
         <v-row>
             <v-col cols="12" md="12">
 
-                <v-card :title="`${getActiveOrg.name} Team Members`" flat>
+                <v-card :title="`${getActiveOrg ? getActiveOrg?.name : ''} Team Members`" flat>
 
 
                     <template v-slot:append>
                         <v-sheet>
-                            <v-btn color="primary" class="mr-2" @click="setDialog(true)">Add Team Member</v-btn>
+                            <v-btn color="primary" class="mr-2" @click="setDialog(true)"
+                                v-if="isLoggedInUserOwnsActionOrg">Add Team Member</v-btn>
                             <v-btn color="primary" class="mr-2" @click="goToRequest">Requests Team Member</v-btn>
 
                             <v-dialog v-model="dialog" max-width="800">
@@ -426,7 +428,7 @@ const goToRequest = () => {
                                                     </VTextField>
                                                 </VCol>
                                                 <VCol cols="12" lg="12" class="text-right">
-                                                    <v-btn color="error" @click="dialog = false"
+                                                    <v-btn color="error" @click="setDialog(false)"
                                                         variant="text">Cancel</v-btn>
 
                                                     <v-btn color="primary" type="submit" :loading="loading"
@@ -643,50 +645,49 @@ const goToRequest = () => {
 
                     <VDataTable :headers="headers" :items="getTeamMembers" :search="search" item-key="name"
                         items-per-page="5" item-value="fat" show-select>
-                       
 
-                            <template v-slot:item.action="{ item }">
 
-                                <v-menu>
-                                    <template v-slot:activator="{ props }">
-                                        <v-btn color="primary" dark v-bind="props" flat
-                                            v-if="isLoggedInUserOwnsActionOrg">
-                                            Action </v-btn>
-                                    </template>
+                        <template v-slot:item.action="{ item }">
 
-                                    <v-list>
-                                        <v-list-item @click="selectItem(item, 'view')">
-                                            <v-list-item-title>
-                                                <v-icon class="mr-2" size="small">
-                                                    mdi-eye
-                                                </v-icon>
-                                                View Member
-                                            </v-list-item-title>
-                                        </v-list-item>
+                            <v-menu>
+                                <template v-slot:activator="{ props }">
+                                    <v-btn color="primary" dark v-bind="props" flat v-if="isLoggedInUserOwnsActionOrg">
+                                        Action </v-btn>
+                                </template>
 
-                                        <v-list-item @click="selectItem(item, 'edit')">
-                                            <v-list-item-title>
-                                                <v-icon class="mr-2" size="small">
-                                                    mdi-pencil
-                                                </v-icon>
-                                                Edit Member
-                                            </v-list-item-title>
-                                        </v-list-item>
-                                        <v-list-item @click="selectItem(item, 'delete')">
-                                            <v-list-item-title>
-                                                <v-icon class="mr-2" size="small">
-                                                    mdi-delete
-                                                </v-icon>
-                                                Delete Member
-                                            </v-list-item-title>
-                                        </v-list-item>
+                                <v-list>
+                                    <v-list-item @click="selectItem(item, 'view')">
+                                        <v-list-item-title>
+                                            <v-icon class="mr-2" size="small">
+                                                mdi-eye
+                                            </v-icon>
+                                            View Member
+                                        </v-list-item-title>
+                                    </v-list-item>
 
-                                    </v-list>
-                                </v-menu>
-                            </template>
+                                    <v-list-item @click="selectItem(item, 'edit')">
+                                        <v-list-item-title>
+                                            <v-icon class="mr-2" size="small">
+                                                mdi-pencil
+                                            </v-icon>
+                                            Edit Member
+                                        </v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item @click="selectItem(item, 'delete')">
+                                        <v-list-item-title>
+                                            <v-icon class="mr-2" size="small">
+                                                mdi-delete
+                                            </v-icon>
+                                            Delete Member
+                                        </v-list-item-title>
+                                    </v-list-item>
+
+                                </v-list>
+                            </v-menu>
+                        </template>
 
                         <template v-slot:item.sn="{ index }">
-                            {{ ++index }}
+                            {{ computedIndex(index) }}
                         </template>
 
 

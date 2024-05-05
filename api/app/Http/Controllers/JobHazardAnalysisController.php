@@ -198,9 +198,9 @@ class JobHazardAnalysisController extends Controller
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Job");
             }
 
-            if ($job_hazard->prepared_by == auth()->user()->id || $job_hazard->organization_id != $organization->id) {
-                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find User");
-            }
+            // if ($job_hazard->prepared_by == auth()->user()->id || $job_hazard->organization_id != $organization->id) {
+            //     return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find User");
+            // }
 
             if (request('status') == 'declined') {
                 $request->validate([

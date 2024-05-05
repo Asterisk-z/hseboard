@@ -43,17 +43,18 @@ onMounted(() => {
 
 
 
+const computedIndex = (index : any) => ++index;
 
 
-const getAuthUser = computed(() => (authStore.loggedUser));
-const getAllTransaction = computed(() => (billingStore.all_transactions));
-const getAllOrganizationFeatures = computed(() => (billingStore.all_org_feature));
-const getAllPlans = computed(() => (billingStore.plans));
-const getAllFeatures = computed(() => (billingStore.all_features));
-const getAllCurrencies = computed(() => (billingStore.currencies));
+const getAuthUser : any   = computed(() => (authStore.loggedUser));
+const getAllTransaction : any   = computed(() => (billingStore.all_transactions));
+const getAllOrganizationFeatures : any   = computed(() => (billingStore.all_org_feature));
+const getAllPlans : any   = computed(() => (billingStore.plans));
+const getAllFeatures : any   = computed(() => (billingStore.all_features));
+const getAllCurrencies : any   = computed(() => (billingStore.currencies));
 
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const getActiveOrg : any   = computed(() => (organizationStore.getActiveOrg()));
+const isLoggedInUserOwnsActionOrg : any   = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 const selectedCategory = ref('all');
 const includeFiles = ref(true);
@@ -63,9 +64,9 @@ const delivery = ref('free');
 const selectedFeatures = ref([]);
 const selectedFeaturesTotal = ref(0);
 const total = () => {
-    let totalValue = 0;
-    selectedFeatures.value.forEach(feature => {
-        totalValue = parseFloat(feature.cost) + parseFloat(totalValue)
+    let totalValue : number = 0;
+    selectedFeatures.value.forEach((feature : any) => {
+        totalValue = parseFloat(feature?.cost) + totalValue
     });
     selectedFeaturesTotal.value =  totalValue;
 }
@@ -140,7 +141,7 @@ const initiatePayment = async (e: any) => {
             "plan_id": values.plan,
             "currency_id": values?.currency,
             "amount": convertedTotal.value,
-            "features": selectedFeatures.value.map(item => item?.uuid),
+            "features": selectedFeatures.value.map((item : any) => item?.uuid),
         }
 
         
@@ -190,28 +191,28 @@ const transaction_headers = ref([
     {
         key: 'id',
         title: 'Transaction',
-        value: (item: any) => `HSE-SUB-${item.id}12 `,
+        value: (item: any): string => `HSE-SUB-${item.id}12 `,
     },
     {
         key: 'status',
         title: 'Status',
-        value: (item: any) => `${item.status}`
+        value: (item: any): string => `${item.status}`
     },
     {
         key: 'amount',
         title: 'Amount',
-        value: (item: any) => `${item?.currency?.symbol} ${item.amount}`
+        value: (item: any): string => `${item?.currency?.symbol} ${item.amount}`
     },
     {
         key: 'features',
         title: 'Total Features',
         sortable: false,
-        value: (item: any) => `${item.features.length}`
+        value: (item: any): string => (`${item.features?.length}`)
     },
     {
         key: 'created_at',
         title: 'Date Created',
-        value: (item: any) => `${moment(item.created_at).format('MMMM Do YYYY, h:mm a')}`
+        value: (item: any): string => `${moment(item.created_at).format('MMMM Do YYYY, h:mm a')}`
     },
     {
         key: 'action',
@@ -222,7 +223,7 @@ const transaction_headers = ref([
 ]);
 
 
-const viewSelectedFeatures = ref([]);
+const viewSelectedFeatures : any = ref([]);
 const viewDialog = ref(false);
 const setViewDialog = (value: boolean, item = []) => {
     viewDialog.value = value;
@@ -246,22 +247,22 @@ const unlocked_headers = ref([
     {
         key: 'featureName',
         title: 'Feature Name',
-        value: (item: any) => `${item.featureName} `,
+        value: (item: any): string => `${item.featureName} `,
     },
     {
         key: 'isActive',
         title: 'Status',
-        value: (item: any) => `${item.isActive}`
+        value: (item: any): string => `${item.isActive}`
     },
     // {
     //     key: 'amount',
     //     title: 'Amount',
-    //     value: (item: any) => `${item?.currency?.symbol} ${item.amount}`
+    //     value: (item: any): string => `${item?.currency?.symbol} ${item.amount}`
     // },
     {
         key: 'created_at',
         title: 'Date Created',
-        value: (item: any) => `${moment(item.created_at).format('MMMM Do YYYY, h:mm a')}`
+        value: (item: any): string => `${moment(item.created_at).format('MMMM Do YYYY, h:mm a')}`
     }
 ]);
 
@@ -324,7 +325,7 @@ const unlocked_headers = ref([
 
 
                                                             <template v-slot:item.sn="{ index }">
-                                                                {{ ++index }}
+                                                                {{ computedIndex(index) }}
                                                             </template>
 
                                                             <template v-slot:item.status="{ item }">
@@ -383,7 +384,7 @@ const unlocked_headers = ref([
 
                                                                                         <tr v-for="(feat, index) in viewSelectedFeatures"
                                                                                             :key="feat">
-                                                                                            <td>{{ ++index }}</td>
+                                                                                            <td>{{ computedIndex(index) }}</td>
                                                                                             <td>{{
                                                                                                 `${feat?.org_feature?.feature_name}`
                                                                                                 }}</td>
@@ -444,7 +445,7 @@ const unlocked_headers = ref([
                                                                     <template v-slot:label>
                                                                         <div class="border rounded-md w-100">
                                                                             <div class="py-5 px-4 border rounded-md "
-                                                                                :class="{ 'bg-secondary text-black': sub_feature?.orgFeature?.isActive, 'bg-primary text-black': selectedFeatures.map(item => item?.uuid).includes(sub_feature.uuid), }">
+                                                                                :class="{ 'bg-secondary text-black': sub_feature?.orgFeature?.isActive, 'bg-primary text-black': selectedFeatures.map((item : any) => item?.uuid).includes(sub_feature.uuid), }">
                                                                                 <h6 class="text-h6 mb-1">{{
                                                                                     sub_feature.description }}</h6>
                                                                                 <span
@@ -595,7 +596,7 @@ const unlocked_headers = ref([
 
 
                                                             <template v-slot:item.sn="{ index }">
-                                                                {{ ++index }}
+                                                                {{ computedIndex(index) }}
                                                             </template>
 
 

@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('permit_types', function (Blueprint $table) {
             $table->id();
-$table->string('name');
-$table->text('description');
-$table->enum('is_del', ['yes', 'no'])->default('no');
+            $table->string('name');
+            $table->text('description');
+            $table->enum('is_del', ['yes', 'no'])->default('no');
 
             $table->timestamps();
         });

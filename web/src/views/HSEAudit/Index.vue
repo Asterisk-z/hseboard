@@ -42,14 +42,16 @@ onMounted(() => {
     mainAuditStore.getMainAudits()
 });
 
-const getMainAudits = computed(() => (reportStore.mainAudits));
+const computedIndex = (index : any) => ++index;
 
-const getActions = computed(() => (actionStore.actions));
-const getActiveOrg = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser = computed(() => (authStore.loggedUser));
-const getPriorities = computed(() => (openLinks.priorities));
-const getReports = computed(() => (reportStore.reports));
-const isLoggedInUserOwnsActionOrg = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const getMainAudits : any  = computed(() => (reportStore.mainAudits));
+
+const getActions : any  = computed(() => (actionStore.actions));
+const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser : any  = computed(() => (authStore.loggedUser));
+const getPriorities : any  = computed(() => (openLinks.priorities));
+// const getReports : any  = computed(() => (reportStore.reports));
+const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 const valid = ref(true);
@@ -90,7 +92,7 @@ const setDeleteDialog = (value: boolean) => {
     deleteDialog.value = value;
     if (value == false) selectItem({})
 }
-const selectedItem = ref({});
+const selectedItem = ref({} as any);
 const selectItem = (item: any, action: string = '') => {
     selectedItem.value = Object.assign({}, item.raw);
 
@@ -110,7 +112,7 @@ const selectItem = (item: any, action: string = '') => {
 
 }
 
-const isAssignee = computed(() => (selectedItem?.value?.assignee_id == getAuthUser?.value?.id));
+const isAssignee : any  = computed(() => (selectedItem?.value?.assignee_id == getAuthUser?.value?.id));
 
 
 
@@ -125,32 +127,32 @@ const headers = ref([
     {
         key: 'audit_title',
         title: 'Audit Title',
-        value: (item: any) => `${item.audit_title} `,
+        value: (item: any): string => `${item.audit_title} `,
     },
     // {
     //     key: 'audit_template_id',
     //     title: 'Audit Template',
-    //     value: (item: any) => `${item.audit_template?.title}`
+    //     value: (item: any): string => `${item.audit_template?.title}`
     // },
     {
         key: 'audit_type_id',
         title: 'Audit Type',
-        value: (item: any) => `${item.audit_type?.description}`
+        value: (item: any): string => `${item.audit_type?.description}`
     },
     {
         key: 'recipient_organization_id',
         title: 'Recipient Organization',
-        value: (item: any) => `${item.recipient_organization?.name}`
+        value: (item: any): string => `${item.recipient_organization?.name}`
     },
     {
         key: 'organization_id',
         title: 'Audit Organization',
-        value: (item: any) => `${item.organization?.name}`
+        value: (item: any): string => `${item.organization?.name}`
     },
     {
         key: 'created_at',
         title: 'Date Created',
-        value: (item: any) => `${moment(item.created_at).format('MMMM Do YYYY, h:mm a')}`
+        value: (item: any): string => `${moment(item.created_at).format('MMMM Do YYYY, h:mm a')}`
     },
     {
         key: 'action',
@@ -173,7 +175,7 @@ const sFields = ref({
 
 const files = ref([])
 const images = ref([])
-const previewImage = ref([])
+const previewImage = ref([] as any)
 
 const selectImage = (image: any) => {
 
@@ -182,7 +184,7 @@ const selectImage = (image: any) => {
 
     for (let index = 0; index < images.value.length; index++) {
         const element = images.value[index];
-        previewImage.value.push(URL.createObjectURL(element))
+        previewImage.value.push(URL.createObjectURL(element) as string)
     }
 
 }
@@ -364,7 +366,7 @@ const goToRoute = (url: string) => {
                         </template> -->
 
                         <template v-slot:item.sn="{ index }">
-                            {{ ++index }}
+                            {{ computedIndex(index) }}
                         </template>
 
 
