@@ -30,7 +30,7 @@ class RegisterRequest extends FormRequest
             "firstName" => "required|string",
             "lastName" => "required|string",
             "emailAddress" => "required|string|unique:users,email",
-            "phoneNumber" => "required|string",
+            "phoneNumber" => ["required", "string", "unique:users,phone"],
             'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->symbols()],
             "password_confirmation" => "required",
 

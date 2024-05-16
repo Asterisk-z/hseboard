@@ -20,9 +20,8 @@ export const useAuditDocumentStore = defineStore({
     actions: {
         async getAuditDocuments() {
             
-            const organizationStore = useOrganizationStore();
             const data = await fetchWrapper
-                .get(`audit-documents/all/${organizationStore.active}`)
+                .get(`audit-documents/all`)
                 .then((response: any) => {
                     return response.data
                 }).catch((error: any) => {

@@ -51,60 +51,10 @@ const userSidebarItem: menu[] = [
         to: '/observations'
     },
     {
-        title: 'Actions',
-        icon: StarIcon,
-        to: '/actions'
-    },
-    // {
-    //     title: 'HSE Statistics',
-    //     icon: AwardIcon,
-    //     to: '/hse-statistics'
-    // },
-    // {
-    //     title: 'HSE Investigation',
-    //     icon: MenuIcon,
-    //     to: '/hse-investigation'
-    // },
-    // {
-    //     title: 'Audit Management',
-    //     icon: CircleIcon,
-    //     to: '/hse-audit'
-    // },
-    // {
-    //     title: 'OSHA Compliance',
-    //     icon: CircleOffIcon,
-    //     to: '/osha-compliance'
-    // },
-    // {
-    //     title: 'Facility Inspection',
-    //     icon: MoodSmileIcon,
-    //     to: '/inspections'
-    // },
-    // {
-    //     title: 'Job Hazard Analysis',
-    //     icon: StarIcon,
-    //     to: '/hazard-analysis'
-    // },
-    // {
-    //     title: 'Permit to Work System',
-    //     icon: AwardIcon,
-    //     to: '/work-permit'
-    // },
-    // {
-    //     title: 'Billing',
-    //     icon: MenuIcon,
-    //     to: '/billing'
-    // },
-    {
         title: 'Account Setting',
         icon: CircleIcon,
         to: '/account-setting'
     },
-    // {
-    //     title: 'Business Setting',
-    //     icon: CircleOffIcon,
-    //     to: '/business-setting'
-    // },
 ];
 
 export default userSidebarItem;

@@ -158,9 +158,8 @@ export const usePermitToWorkStore = defineStore({
         },
         async getAllUserInvolvedPermit() {
 
-            const organizationStore = useOrganizationStore();
             const data = await fetchWrapper
-                .get(`permit-to-work/all/${organizationStore.active}`)
+                .get(`permit-to-work/all`)
                 .then((response: any) => {
                     return response.data
                 }).catch((error: any) => {

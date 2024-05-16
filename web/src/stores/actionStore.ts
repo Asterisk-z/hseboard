@@ -46,9 +46,8 @@ export const useActionStore = defineStore({
     actions: {
         async getActions() {
             
-            const organizationStore = useOrganizationStore();
             const data = await fetchWrapper
-                .get(`actions/all/${organizationStore.active}`)
+                .get(`actions/all`)
                 .then((response: any) => {
                     return response.data
                 }).catch((error: any) => {

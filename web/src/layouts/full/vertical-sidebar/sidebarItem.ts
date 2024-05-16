@@ -35,16 +35,16 @@ const sidebarItem: menu[] = [
         icon: MenuIcon,
         to: '/team-member'
     },
-    {
-        title: 'Inbox',
-        icon: CircleIcon,
-        to: '/inbox'
-    },
-    {
-        title: 'Notifications',
-        icon: CircleOffIcon,
-        to: '/notifications'
-    },
+    // {
+    //     title: 'Inbox',
+    //     icon: CircleIcon,
+    //     to: '/inbox'
+    // },
+    // {
+    //     title: 'Notifications',
+    //     icon: CircleOffIcon,
+    //     to: '/notifications'
+    // },
     {
         title: 'Observations',
         icon: MoodSmileIcon,

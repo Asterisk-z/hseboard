@@ -56,7 +56,7 @@ export const useInvestigationStore = defineStore({
 
             const organizationStore = useOrganizationStore();
             const data = await fetchWrapper
-                .get(`investigations/all/${organizationStore.active}`)
+                .get(`investigations/all`)
                 .then((response: any) => {
                     return response.data
                 }).catch((error: any) => {

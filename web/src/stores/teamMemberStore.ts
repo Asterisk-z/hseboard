@@ -44,9 +44,8 @@ export const useTeamMemberStore = defineStore({
     actions: {
         async getTeamMembers() {
 
-            const organizationStore = useOrganizationStore();
             const data = await fetchWrapper
-                .get(`users/all/${organizationStore.active}`)
+                .get(`users/all`)
                 .then((response: any) => {
                     return response.data
                 }).catch((error: any) => {
@@ -56,9 +55,8 @@ export const useTeamMemberStore = defineStore({
         },
         async getTeamMembersExcept() {
 
-            const organizationStore = useOrganizationStore();
             const data = await fetchWrapper
-                .get(`users/except/${organizationStore.active}`)
+                .get(`users/except`)
                 .then((response: any) => {
                     return response.data
                 }).catch((error: any) => {

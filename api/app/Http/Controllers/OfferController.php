@@ -231,6 +231,9 @@ class OfferController extends Controller
                 'organization_id' => $organization->id,
             ]);
 
+            $user->active_organization = $user->active_organization ? $user->active_organization : $organization->uuid;
+            $user->save();
+
             logAction($offer->action_user_email, 'Organization Accepted your request to join them', 'Action Request Accepted', request()->ip());
             // Notification::route('mail', $offer->action_user_email)->notify(new InfoNotification(MailContents::invitationRejectMail($organization->name, $recipientUserEmail), MailContents::invitationRejectSubject()));
 
@@ -273,6 +276,8 @@ class OfferController extends Controller
                 'user_id' => $user->id,
                 'organization_id' => $organization->id,
             ]);
+            $user->active_organization = $user->active_organization ? $user->active_organization : $organization->uuid;
+            $user->save();
 
             logAction($offer->recipient_email, 'User Accepted invite to join organization', 'Action Invite Accepted', request()->ip());
             // Notification::route('mail', $offer->action_user_email)->notify(new InfoNotification(MailContents::invitationRejectMail($organization->name, $recipientUserEmail), MailContents::invitationRejectSubject()));

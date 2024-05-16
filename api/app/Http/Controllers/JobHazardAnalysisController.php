@@ -17,11 +17,12 @@ class JobHazardAnalysisController extends Controller
      */
     public function index()
     {
+
         try {
 
             $stats = JobHazardAnalysis::where('is_del', 'no');
 
-            $organization = Organisation::where('uuid', request('organization_id'))->first();
+            $organization = Organisation::where('uuid', auth()->user()->active_organization)->first();
 
             $stats = $stats->where(function ($query) use ($organization) {
 

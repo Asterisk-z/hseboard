@@ -21,7 +21,7 @@ class AuditDocumentController extends Controller
 
             $stats = AuditDocument::where('is_del', 'no');
 
-            $organization = Organisation::where('uuid', request('organization_id'))->first();
+            $organization = Organisation::where('uuid', auth()->user()->active_organization)->first();
 
             $stats = $stats->where(function ($query) use ($organization) {
                 $query->orWhere('user_id', auth()->user()->id);
@@ -35,7 +35,7 @@ class AuditDocumentController extends Controller
             return successResponse('Audit Document Fetched Successfully', $converted_stats);
 
         } catch (Exception $error) {
-
+            logger($error);
             return successResponse('Audit Document Fetched Successfully', []);
 
         }

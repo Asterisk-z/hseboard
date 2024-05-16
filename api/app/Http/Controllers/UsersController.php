@@ -23,12 +23,20 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $organization = Organisation::where('uuid', request('organization_id'))->first();
-        $organization_users = Organisation::all_users($organization);
+        try {
+            $organization = Organisation::where('uuid', auth()->user()->active_organization)->first();
 
-        $converted_organization = arrayKeysToCamelCase($organization_users);
+            $organization_users = Organisation::all_users($organization);
 
-        return successResponse('Users Fetched Successfully', $converted_organization);
+            $converted_organization = arrayKeysToCamelCase($organization_users);
+
+            return successResponse('Users Fetched Successfully', $converted_organization);
+
+        } catch (\Throwable $th) {
+            logger($th);
+            return successResponse('Users Fetched Successfully', []);
+
+        }
 
     }
     /**
@@ -38,12 +46,20 @@ class UsersController extends Controller
      */
     public function indexExcept()
     {
-        $organization = Organisation::where('uuid', request('organization_id'))->first();
-        $organization_users = Organisation::all_users_except_active_user($organization);
+        try {
+            $organization = Organisation::where('uuid', auth()->user()->active_organization)->first();
+            $organization_users = Organisation::all_users_except_active_user($organization);
 
-        $converted_organization = arrayKeysToCamelCase($organization_users);
+            $converted_organization = arrayKeysToCamelCase($organization_users);
 
-        return successResponse('Users Fetched Successfully', $converted_organization);
+            return successResponse('Users Fetched Successfully', $converted_organization);
+        } catch (\Throwable $th) {
+
+            logger($th);
+
+            return successResponse('Users Fetched Successfully', []);
+
+        }
 
     }
 
@@ -56,7 +72,7 @@ class UsersController extends Controller
     {
         try {
 
-            $organization = Organisation::where('uuid', request('organization_id'))->first();
+            $organization = Organisation::where('uuid', auth()->user()->active_organization)->first();
             $user = User::where('uuid', request('user_id'))->first();
             $organization_user = Organisation::find_user($organization, $user->email);
 
@@ -116,6 +132,9 @@ class UsersController extends Controller
                 'user_id' => $createUser->id,
                 'organization_id' => $organization->id,
             ]);
+
+            $createUser->active_organization = $createUser->active_organization ? $createUser->active_organization : $organization->uuid;
+            $createUser->save();
 
             logAction($createUser->email, 'Your Account was created and added to organization ', 'Register User', $request->ip());
             logAction(auth()->user()->email, 'You create a user to your organization ', 'Add Team Member', $request->ip());

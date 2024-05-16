@@ -214,14 +214,14 @@ class FeatureSeeder extends Seeder
             ],
             [
                 'name' => 'internal_permit_to_Work',
-                'cost' => 0,
+                'cost' => 10,
                 'parent_id' => 27,
                 'default' => false,
                 'description' => 'Internal Permit to Work System',
             ],
             [
                 'name' => 'external_permit_to_Work',
-                'cost' => 0,
+                'cost' => 10,
                 'parent_id' => 27,
                 'default' => false,
                 'description' => 'External Permit to Work System',

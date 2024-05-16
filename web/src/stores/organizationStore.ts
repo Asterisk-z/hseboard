@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { router } from '@/router';
 import { fetchWrapper } from '@/utils/helpers/fetch-wrapper';
 import { toastWrapper } from '@/utils/helpers/toast-wrapper';
+import { useAuthStore } from '@/stores/auth';
 
 export const useOrganizationStore = defineStore({
     id: 'organization',
@@ -52,24 +53,32 @@ export const useOrganizationStore = defineStore({
                 });
            return data;
         },
-        getActiveOrganization() {
-            try {
-                console.log('get active organization')
-                // let activeOrg;
-                // if (this.loggedUserOrgs.length < 1) return;
-                // if (this.active) {
-                //     activeOrg = this.loggedUserOrgs?.find((items: any) => items.uuid == this.active)
 
-                // } else {
-                //     activeOrg = this.loggedUserOrgs[0]
-                // }
-                // if (activeOrg) this.setActiveOrg(activeOrg?.uuid)
-                // return activeOrg;
+        async getActiveOrganization(value: any) {
+            try {
+
+                if (this.active == value?.organization_id) return;
+
+                const authStore = useAuthStore();
+                const data = await fetchWrapper.post(`profile/set-organization`, value)
+                    .catch((error: any) => {
+                        throw error;
+                    }).then((response: any) => {
+                        authStore.refresh()
+                        return response
+                    })
+                
+                toastWrapper.success(data?.message, data)
+                this.setActiveOrg(value?.organization_id)
+                window.location.href = `${import.meta.env.VITE_API_WEB}dashboard`
+
+                // return toastWrapper.success(data?.message, data)
+
+
             } catch (error: any) {
-                console.log(error)
-                toastWrapper.error(error, error)
-                return false;
+                return toastWrapper.error(error, error)
             }
+
         },
         getActiveOrg() {
             try {

@@ -20,20 +20,25 @@ class ObservationController extends Controller
     public function index()
     {
 
-        $observations = Observation::where('is_del', 'no');
+        try {
+            $observations = Observation::where('is_del', 'no');
 
-        $organization = Organisation::where('uuid', request('organization_id'))->first();
+            $organization = Organisation::where('uuid', auth()->user()->active_organization)->first();
 
-        $observations = $observations->where(function ($query) use ($organization) {
-            $query->orWhere('user_id', auth()->user()->id);
-            if ($organization) {
-                $query->orWhere('organization_id', $organization->id);
-            }
-        })->orderBy('created_at', 'desc')->get();
-        $converted_observations = arrayKeysToCamelCase($observations);
+            $observations = $observations->where(function ($query) use ($organization) {
+                $query->orWhere('user_id', auth()->user()->id);
+                if ($organization) {
+                    $query->orWhere('organization_id', $organization->id);
+                }
+            })->orderBy('created_at', 'desc')->get();
+            $converted_observations = arrayKeysToCamelCase($observations);
 
-        return successResponse('Observation Fetched Successfully', $converted_observations);
+            return successResponse('Observation Fetched Successfully', $converted_observations);
+        } catch (\Throwable $th) {
+            logger($th);
+            return successResponse('Observation Fetched Successfully', []);
 
+        }
     }
 
     /**

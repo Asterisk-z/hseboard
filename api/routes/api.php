@@ -33,7 +33,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UsersController;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -95,22 +94,22 @@ Route::middleware('auth:api')->group(function ($router) {
     });
 
     Route::prefix('users')->group(function ($router) {
-        Route::get('/all/{organization_id}', [UsersController::class, 'index']);
-        Route::get('/except/{organization_id}', [UsersController::class, 'indexExcept']);
-        Route::get('/{organization_id}/{user_id}', [UsersController::class, 'show']);
+        Route::get('/all', [UsersController::class, 'index']);
+        Route::get('/except', [UsersController::class, 'indexExcept']);
+        Route::get('/show/{user_id}', [UsersController::class, 'show']);
         Route::post('/create', [UsersController::class, 'store']);
         Route::post('/update', [UsersController::class, 'update']);
     });
 
     Route::prefix('observations')->group(function ($router) {
-        Route::get('/all/{organization_id?}', [ObservationController::class, 'index']);
+        Route::get('/all', [ObservationController::class, 'index']);
         Route::post('/create', [ObservationController::class, 'store']);
         Route::post('/update', [ObservationController::class, 'update']);
         Route::post('/delete', [ObservationController::class, 'delete']);
     });
 
     Route::prefix('actions')->group(function ($router) {
-        Route::get('/all/{organization_id?}', [ActionController::class, 'index']);
+        Route::get('/all', [ActionController::class, 'index']);
         Route::post('/create', [ActionController::class, 'store']);
         Route::post('/update', [ActionController::class, 'update']);
         Route::post('/delete', [ActionController::class, 'delete']);
@@ -118,13 +117,13 @@ Route::middleware('auth:api')->group(function ($router) {
     });
 
     Route::prefix('statistic')->group(function ($router) {
-        Route::get('/all/{organization_id?}', [StatisticsController::class, 'index']);
+        Route::get('/all', [StatisticsController::class, 'index']);
         Route::post('/create', [StatisticsController::class, 'store']);
         Route::post('/delete', [StatisticsController::class, 'delete']);
     });
 
     Route::prefix('investigations')->group(function ($router) {
-        Route::get('/all/{organization_id?}', [InvestigationController::class, 'index']);
+        Route::get('/all', [InvestigationController::class, 'index']);
         Route::post('/start', [InvestigationController::class, 'start']);
         Route::post('/member/{organization_id?}', [InvestigationController::class, 'setTeamMembers']);
         Route::post('/remove-member/{organization_id?}', [InvestigationController::class, 'removeMember']);
@@ -144,13 +143,13 @@ Route::middleware('auth:api')->group(function ($router) {
     });
 
     Route::prefix('audit-documents')->group(function ($router) {
-        Route::get('/all/{organization_id?}', [AuditDocumentController::class, 'index']);
+        Route::get('/all', [AuditDocumentController::class, 'index']);
         Route::post('/upload', [AuditDocumentController::class, 'store']);
         Route::post('/delete', [AuditDocumentController::class, 'delete']);
     });
     Route::prefix('audit-templates')->group(function ($router) {
-        Route::get('/all/{organization_id?}/{type_id?}', [AuditTemplateController::class, 'index']);
-        Route::get('/single/{organization_id?}/{type_id?}', [AuditTemplateController::class, 'single']);
+        Route::get('/all/{type_id?}', [AuditTemplateController::class, 'index']);
+        Route::get('/single/{type_id?}', [AuditTemplateController::class, 'single']);
         Route::post('/upload', [AuditTemplateController::class, 'store']);
         Route::post('/delete', [AuditTemplateController::class, 'delete']);
     });
@@ -164,7 +163,7 @@ Route::middleware('auth:api')->group(function ($router) {
     });
 
     Route::prefix('main-audit')->group(function ($router) {
-        Route::get('/all/{organization_id?}', [MainAuditController::class, 'index']);
+        Route::get('/all', [MainAuditController::class, 'index']);
         Route::get('/ongoing/{main_audit_id}', [MainAuditController::class, 'ongoing']);
         Route::get('/completed/{main_audit_id}', [MainAuditController::class, 'completed']);
         Route::post('/start', [MainAuditController::class, 'store']);
@@ -193,7 +192,7 @@ Route::middleware('auth:api')->group(function ($router) {
     });
 
     Route::prefix('billing')->group(function ($router) {
-        Route::post('/initiate/{organization_id?}', [SubscriptionController::class, 'initiate']);
+        Route::post('/initiate', [SubscriptionController::class, 'initiate']);
         Route::get('/all-transactions/{organization_id?}', [SubscriptionController::class, 'index']);
         Route::get('/organization-features/{organization_id?}', [OrganizationFeatureController::class, 'index']);
         Route::get('/plans/{organization_id?}', [SubscriptionController::class, 'plans']);
@@ -230,9 +229,9 @@ Route::middleware('auth:api')->group(function ($router) {
     });
 
     Route::prefix('jha')->group(function ($router) {
-        Route::get('/all/{organization_id?}', [JobHazardAnalysisController::class, 'index']);
-        Route::get('/ongoing/{organization_id}/{job_id?}', [JobHazardAnalysisController::class, 'ongoing']);
-        Route::get('/review/{organization_id}/{job_id?}', [JobHazardAnalysisController::class, 'review']);
+        Route::get('/all', [JobHazardAnalysisController::class, 'index']);
+        Route::get('/ongoing/{job_id?}', [JobHazardAnalysisController::class, 'ongoing']);
+        Route::get('/review/{job_id?}', [JobHazardAnalysisController::class, 'review']);
         Route::post('/createJob', [JobHazardAnalysisController::class, 'createJob']);
         Route::post('/add-step', [JobHazardAnalysisStepController::class, 'addStep']);
         Route::post('/remove-step', [JobHazardAnalysisStepController::class, 'removeStep']);
@@ -255,7 +254,7 @@ Route::middleware('auth:api')->group(function ($router) {
     Route::prefix('permit-to-work')->group(function ($router) {
         Route::get('/types', [PermitTypeController::class, 'index']);
         Route::get('/request-types', [PermitRequestTypeController::class, 'index']);
-        Route::get('/all/{organization_id?}', [PermitToWorkController::class, 'index']);
+        Route::get('/all', [PermitToWorkController::class, 'index']);
         Route::get('/ongoing/{organization_id}/{permit_id?}', [PermitToWorkController::class, 'ongoing']);
         Route::get('/holding-members/{permit_id}', [PermitToWorkController::class, 'holdings']);
         Route::get('/active-jha', [PermitToWorkController::class, 'activeJHA']);
@@ -275,21 +274,7 @@ Route::middleware('auth:api')->group(function ($router) {
         Route::post('/reactivate-permit/{organization_id?}', [PermitToWorkController::class, 'reactivatePermit']);
         Route::post('/send-permit-request/{organization_id?}', [PermitToWorkController::class, 'sendPermitRequest']);
         Route::post('/action-permit-request/{organization_id?}', [PermitToWorkController::class, 'actionPermitRequest']);
-        // Route::post('/add-step', [JobHazardAnalysisStepController::class, 'addStep']);
-        // Route::post('/remove-step', [JobHazardAnalysisStepController::class, 'removeStep']);
-        // Route::post('/add-event', [JobHazardAnalysisStepController::class, 'topEvent']);
-        // Route::post('/add-source', [JobHazardAnalysisStepController::class, 'hazardSource']);
-        // Route::post('/add-target', [JobHazardAnalysisStepController::class, 'target']);
-        // Route::post('/add-consequence', [JobHazardAnalysisStepController::class, 'consequence']);
-        // Route::post('/add-action', [JobHazardAnalysisStepController::class, 'preventiveAction']);
-        // Route::post('/add-rcp', [JobHazardAnalysisStepController::class, 'rcp']);
-        // Route::post('/add-recovery', [JobHazardAnalysisStepController::class, 'recoveryMeasure']);
-        // Route::post('/add-party', [JobHazardAnalysisStepController::class, 'actionParty']);
-        // Route::post('/delete-item', [JobHazardAnalysisStepController::class, 'deleteItem']);
-        // Route::post('/complete', [JobHazardAnalysisController::class, 'complete']);
-        // Route::post('/action', [JobHazardAnalysisController::class, 'actionStatus']);
 
-        // Route::post('/create', [InvestigationController::class, 'store']);
         // Route::post('/delete', [InvestigationController::class, 'delete']);
     });
 

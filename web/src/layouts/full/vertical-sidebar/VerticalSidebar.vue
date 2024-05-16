@@ -2,6 +2,7 @@
 import { ref, shallowRef } from 'vue';
 import { useCustomizerStore } from '@/stores/customizer';
 import { useAuthStore } from '@/stores/auth';
+import { useOrganizationStore } from '@/stores/organizationStore';
 import sidebarItems from './sidebarItem';
 import userSidebarItem from './userSidebarItem';
 
@@ -12,6 +13,8 @@ import Profile from './profile/Profile.vue';
 import Logo from '../logo/Logo.vue';
 
 const customizer = useCustomizerStore();
+const organizationStore = useOrganizationStore();
+
 const sidebarMenu = shallowRef(sidebarItems);
 const userSidebarMenu = shallowRef(userSidebarItem);
 </script>
@@ -30,7 +33,9 @@ const userSidebarMenu = shallowRef(userSidebarItem);
         <perfect-scrollbar class="scrollnavbar">
             <v-list class="pa-6 v-theme--DARK_AQUA_THEME">
                 <!---Menu Loop -->
-                <template v-if="true">
+                <!-- {{ 'frfrfr' }}
+                {{ organizationStore?.active }} -->
+                <template v-if="[null, 'null'].includes(organizationStore?.active)">
                     <template v-for="(item, i) in userSidebarMenu" :key="i">
                         <!---Item Sub Header -->
                         <NavGroup :item="item" v-if="item.header" />

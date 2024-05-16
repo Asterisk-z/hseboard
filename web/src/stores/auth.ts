@@ -66,7 +66,7 @@ export const useAuthStore = defineStore({
                     localStorage.setItem("hse_tok_passer", data.access_token);
                     localStorage.setItem("logger", btoa(JSON.stringify(data.user)));
                     localStorage.setItem("loggerOrg", btoa(JSON.stringify(data.user.organizations)));
-                    // localStorage.setItem("role", data.data.user?.role?.name?.split(' ').join(''));
+                    localStorage.setItem("loggerActiveOrg", data.user.active_organization);
                     localStorage.setItem("user_mail", data.user.email);
                     localStorage.setItem("firstName", data.user.firstName);
                     localStorage.setItem("id", data.user.id);
@@ -100,6 +100,7 @@ export const useAuthStore = defineStore({
                     localStorage.setItem("id", data.user.id);
                     this.user = btoa(JSON.stringify(data.user))
                     this.hse_tok_passer = data.access_token
+                    // user.accessToken
                 }
 
                 // return toastWrapper.success(data?.message, data)
@@ -208,18 +209,19 @@ export const useAuthStore = defineStore({
         },
         clearSession() {
 
-                this.user = null;
-                this.hse_tok_passer = null;
-                localStorage.removeItem("hse_tok_passer");
-                localStorage.removeItem("logger");
-                localStorage.removeItem("user_mail");
-                localStorage.removeItem("firstName");
-                localStorage.removeItem('hse_reset_email')
-                localStorage.removeItem('hse_reset_tok_passer')
-                localStorage.removeItem('loggerOrg')
-                localStorage.removeItem('loggerActiveOrg')
-                localStorage.removeItem("id");
-                router.push('/auth/login');
+            this.user = null;
+            this.hse_tok_passer = null;
+            localStorage.removeItem("hse_tok_passer");
+            localStorage.removeItem("logger");
+            localStorage.removeItem("user_mail");
+            localStorage.removeItem("firstName");
+            localStorage.removeItem('hse_reset_email')
+            localStorage.removeItem('hse_reset_tok_passer')
+            localStorage.removeItem('loggerOrg')
+            localStorage.removeItem('loggerActiveOrg')
+            localStorage.removeItem("id");
+            router.push('/auth/login');
+            window.location.href = `${import.meta.env.VITE_API_WEB}auth/login`
                 
         }
     }

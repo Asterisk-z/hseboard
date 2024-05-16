@@ -24,7 +24,7 @@ class AuditTemplateController extends Controller
 
             $stats = AuditTemplate::where('is_del', 'no');
 
-            $organization = Organisation::where('uuid', request('organization_id'))->first();
+            $organization = Organisation::where('uuid', auth()->user()->active_organization)->first();
 
             $stats = $stats->where(function ($query) use ($organization) {
                 $query->orWhere('user_id', auth()->user()->id);
@@ -39,7 +39,7 @@ class AuditTemplateController extends Controller
             return successResponse('Audit Template Fetched Successfully', $converted_stats);
 
         } catch (Exception $error) {
-
+            logger($error);
             return successResponse('Audit Template Fetched Successfully', []);
 
         }
@@ -58,7 +58,7 @@ class AuditTemplateController extends Controller
 
             $stats = AuditTemplate::where('is_del', 'no')->where('audit_type_id', request('type_id'));
 
-            $organization = Organisation::where('uuid', request('organization_id'))->first();
+            $organization = Organisation::where('uuid', auth()->user()->active_organization)->first();
 
             $stats = $stats->where(function ($query) use ($organization) {
 
@@ -74,7 +74,7 @@ class AuditTemplateController extends Controller
             return successResponse('Audit Template Fetched Successfully', $converted_stats);
 
         } catch (Exception $error) {
-
+            logger($error);
             return successResponse('Audit Template Fetched Successfully', []);
 
         }

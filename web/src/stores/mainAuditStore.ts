@@ -97,9 +97,8 @@ export const useMainAuditStore = defineStore({
         },
         async getMainAudits() {
 
-            const organizationStore = useOrganizationStore();
             const data = await fetchWrapper
-                .get(`main-audit/all/${organizationStore.active}`)
+                .get(`main-audit/all`)
                 .then((response: any) => {
                     return response.data
                 }).catch((error: any) => {

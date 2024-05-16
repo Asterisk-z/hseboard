@@ -43,9 +43,8 @@ export const useAuditTemplateStore = defineStore({
         },
         async getAuditTemplates() {
 
-            const organizationStore = useOrganizationStore();
             const data = await fetchWrapper
-                .get(`audit-templates/all/${organizationStore.active}`)
+                .get(`audit-templates/all`)
                 .then((response: any) => {
                     return response.data
                 }).catch((error: any) => {
@@ -54,10 +53,9 @@ export const useAuditTemplateStore = defineStore({
             this.auditTemplates = data;
         },
         async getAuditTypeTemplate(type_id: string) {
-
-            const organizationStore = useOrganizationStore();
+            
             const data = await fetchWrapper
-                .get(`audit-templates/single/${organizationStore.active}/${type_id}`)
+                .get(`audit-templates/single/${type_id}`)
                 .then((response: any) => {
                     return response.data
                 }).catch((error: any) => {

@@ -479,7 +479,7 @@ class PermitToWorkController extends Controller
 
             $stats = PermitToWork::query();
 
-            $organization = Organisation::where('uuid', request('organization_id'))->first();
+            $organization = Organisation::where('uuid', auth()->user()->active_organization)->first();
 
             $stats = $stats->where(function ($query) use ($organization) {
                 $query->orWhere('holder_id', auth()->user()->id);

@@ -33,7 +33,7 @@ class MainAuditController extends Controller
 
             $stats = MainAudit::where('is_del', 'no');
 
-            $organization = Organisation::where('uuid', request('organization_id'))->first();
+            $organization = Organisation::where('uuid', auth()->user()->active_organization)->first();
 
             $stats = $stats->where(function ($query) use ($organization) {
                 $query->orWhere('user_id', auth()->user()->id);
@@ -48,7 +48,7 @@ class MainAuditController extends Controller
             return successResponse('Audit Fetched Successfully', $converted_stats);
 
         } catch (Exception $error) {
-
+            logger($error);
             return successResponse('Audit Fetched Successfully', []);
 
         }
@@ -240,17 +240,17 @@ class MainAuditController extends Controller
             $stats['stats']['number_of_na'] = $number_of_na;
             $stats['stats']['maximum_score'] = $number_of_yeses + $number_of_nc_minor + $number_of_nc_major;
             $stats['stats']['audit_score'] = round(((($number_of_yeses - ($number_of_nc_minor + $number_of_nc_major)) * 100) / ($number_of_yeses + $number_of_nc_minor + $number_of_nc_major)), 2);
-            if($stats['stats']['audit_score'] < 59) {
-                 $stats['stats']['audit_rate'] = 'Fail';
+            if ($stats['stats']['audit_score'] < 59) {
+                $stats['stats']['audit_rate'] = 'Fail';
             }
-            if($stats['stats']['audit_score'] < 69) {
-                 $stats['stats']['audit_rate'] = 'Poor';
+            if ($stats['stats']['audit_score'] < 69) {
+                $stats['stats']['audit_rate'] = 'Poor';
             }
-            if($stats['stats']['audit_score'] < 79) {
-                 $stats['stats']['audit_rate'] = 'Good';
+            if ($stats['stats']['audit_score'] < 79) {
+                $stats['stats']['audit_rate'] = 'Good';
             }
-            if($stats['stats']['audit_score'] > 79) {
-                 $stats['stats']['audit_rate'] = 'Excellent';
+            if ($stats['stats']['audit_score'] > 79) {
+                $stats['stats']['audit_rate'] = 'Excellent';
             }
 
             $stats['stats']['start_onsite'] = 32323;

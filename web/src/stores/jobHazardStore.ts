@@ -73,9 +73,8 @@ export const useJobHazardStore = defineStore({
         },
         async getAllJobHazardAnalysis() {
 
-            const organizationStore = useOrganizationStore();
             const data = await fetchWrapper
-                .get(`jha/all/${organizationStore.active}`)
+                .get(`jha/all`)
                 .then((response: any) => {
                     return response.data
                 }).catch((error: any) => {
@@ -85,9 +84,8 @@ export const useJobHazardStore = defineStore({
         },
         async getOngoingJobHazardAnalysis(job_id: string) {
             
-            const organizationStore = useOrganizationStore();
             const data = await fetchWrapper
-                .get(`jha/ongoing/${organizationStore.active}/${job_id}`)
+                .get(`jha/ongoing/${job_id}`)
                 .then((response: any) => {
                     return response.data
                 }).catch((error: any) => {
@@ -97,9 +95,8 @@ export const useJobHazardStore = defineStore({
         },
         async getReviewJobHazardAnalysis(job_id: string) {
 
-            const organizationStore = useOrganizationStore();
             const data = await fetchWrapper
-                .get(`jha/review/${organizationStore.active}/${job_id}`)
+                .get(`jha/review/${job_id}`)
                 .then((response: any) => {
                     return response.data
                 }).catch((error: any) => {

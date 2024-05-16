@@ -21,6 +21,8 @@ router.beforeEach(async (to, from, next) => {
     const authRequired = !publicPages.includes(to.path);
     const auth: any = useAuthStore();
 
+    document.title = `HSE Board - ${String(to?.name)}`
+
     // console.log(to, publicPages, authRequired, auth.user)
     if (to.matched.some((record) => record.meta.requiresAuth)) {
         if (authRequired && !auth.user && !auth.accessToken) {
@@ -38,10 +40,10 @@ router.afterEach((to, from, failure) => {
     const auth: any = useAuthStore();
 
     if (auth.user || auth.hse_tok_passer) {
-        const twentyMin = 1200000;
+        const tenMin = 600000;
         setInterval(() => {
             auth.refresh();
-        }, twentyMin)
+        }, tenMin)
     }
 
 

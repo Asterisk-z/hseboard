@@ -72,7 +72,7 @@ class AuthController extends Controller
         $createUser->notify(new InfoNotification(MailContents::signupMail($createUser->email, $createUser->created_at->format('Y-m-d'), Crypt::encrypt($signature)), MailContents::signupMailSubject()));
 
         $admins = getAdminUsers();
-        logger($admins);
+        // logger($admins);
         if (count($admins)) {
             Notification::send($admins, new InfoNotification(MailContents::newMembershipSignupMail($createUser->lastName . " " . $createUser->firstName, $request->accountType), MailContents::newMembershipSignupSubject()));
         }
@@ -86,6 +86,12 @@ class AuthController extends Controller
         // logger(auth()->attempt($credentials));
         if (!$token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Invalid Login details'], 401);
+        }
+
+        if (count(auth()->user()->organizations) > 0 && !auth()->user()->active_organization) {
+            $user = User::where('id', auth()->user()->id)->first();
+            $user->active_organization = auth()->user()->organizations[0]->uuid;
+            $user->save();
         }
 
         // if (!auth()->user()->checkAccountStatus()) {
@@ -150,7 +156,7 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         $user = auth()->user();
-        logger($user);
+        // logger($user);
         return response()->json([
             'user' => $user,
             'access_token' => $token,

@@ -113,9 +113,8 @@ export const useInspectionStore = defineStore({
         },
         async getAllOrgInspections() {
 
-            const organizationStore = useOrganizationStore();
             const data = await fetchWrapper
-                .get(`inspection/all/${organizationStore.active}`)
+                .get(`inspection/all`)
                 .then((response: any) => {
                     return response.data
                 }).catch((error: any) => {

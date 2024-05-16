@@ -45,9 +45,8 @@ export const useObservationStore = defineStore({
     actions: {
         async getObservations() {
             
-            const organizationStore = useOrganizationStore();
             const data = await fetchWrapper
-                .get(`observations/all/${organizationStore.active}`)
+                .get(`observations/all`)
                 .then((response: any) => {
                     return response.data
                 }).catch((error: any) => {

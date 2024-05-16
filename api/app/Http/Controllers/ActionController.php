@@ -20,21 +20,27 @@ class ActionController extends Controller
     public function index()
     {
 
-        $actions = Action::where('is_del', 'no');
+        try {
+            $actions = Action::where('is_del', 'no');
 
-        $organization = Organisation::where('uuid', request('organization_id'))->first();
+            $organization = Organisation::where('uuid', auth()->user()->active_organization)->first();
 
-        $actions = $actions->where(function ($query) use ($organization) {
-            $query->orWhere('user_id', auth()->user()->id);
-            if ($organization) {
-                $query->orWhere('organization_id', $organization->id);
-            }
-        })->orderBy('created_at', 'desc')->get();
+            $actions = $actions->where(function ($query) use ($organization) {
+                $query->orWhere('user_id', auth()->user()->id);
+                if ($organization) {
+                    $query->orWhere('organization_id', $organization->id);
+                }
+            })->orderBy('created_at', 'desc')->get();
 
-        $converted_actions = arrayKeysToCamelCase($actions);
+            $converted_actions = arrayKeysToCamelCase($actions);
 
-        return successResponse('Action Fetched Successfully', $converted_actions);
+            return successResponse('Action Fetched Successfully', $converted_actions);
 
+        } catch (\Throwable $th) {
+            logger($th);
+            return successResponse('Action Fetched Successfully', []);
+
+        }
     }
 
     /**

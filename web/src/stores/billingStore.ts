@@ -52,7 +52,6 @@ export const useBillingStore = defineStore({
         currencies: null as null || [],
 
         questions: null as null || [],
-        flutter_key: "FLWPUBK_TEST-3eac72af50a7cf59f8662492413f0f7e-X",
         
     }),
     getters: {

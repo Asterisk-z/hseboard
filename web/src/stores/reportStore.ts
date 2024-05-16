@@ -45,9 +45,8 @@ export const useReportStore = defineStore({
     actions: {
         async getReports() {
             
-            const organizationStore = useOrganizationStore();
             const data = await fetchWrapper
-                .get(`statistic/all/${organizationStore.active}`)
+                .get(`statistic/all`)
                 .then((response: any) => {
                     return response.data
                 }).catch((error: any) => {
