@@ -671,7 +671,7 @@ class InspectionTemplateQuestionSeeder extends Seeder
         $group = null;
         $header = null;
         $topic = null;
-        $template = InspectionTemplateType::where('id', '2')->first();
+        $template = InspectionTemplateType::where('id', '1')->first();
         foreach ($quantity as $audit_type) {
 
             if (strstr($audit_type, '[GROUP]')) {
@@ -1405,7 +1405,7 @@ class InspectionTemplateQuestionSeeder extends Seeder
         $group = null;
         $header = null;
         $topic = null;
-        $template = InspectionTemplateType::where('id', '3')->first();
+        $template = InspectionTemplateType::where('id', '1')->first();
         foreach ($environ as $audit_type) {
 
             if (strstr($audit_type, '[GROUP]')) {

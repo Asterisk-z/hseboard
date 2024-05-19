@@ -21,7 +21,7 @@ class Offer extends Model
         }
 
         if ($type == self::REQUEST) {
-            return "$recipient sent a request to join $organization_name";
+            return "$email sent a request to join $organization_name";
         }
 
         return '';

@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseStatusCodes;
 use App\Models\AccountRole;
 use App\Models\AccountType;
+use App\Models\ActionToken;
 use App\Models\Organisation;
 use App\Models\OrganisationUser;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 
 class UsersController extends Controller
@@ -133,6 +135,14 @@ class UsersController extends Controller
                 'organization_id' => $organization->id,
             ]);
 
+            $signature = Str::random(50);
+
+            ActionToken::create([
+                "email" => $createUser->email,
+                "signature" => $signature,
+                'type' => ActionToken::types['EV'],
+            ]);
+
             $createUser->active_organization = $createUser->active_organization ? $createUser->active_organization : $organization->uuid;
             $createUser->save();
 
@@ -194,6 +204,104 @@ class UsersController extends Controller
             logAction(auth()->user()->email, 'You edited a user in your organization ', 'Edit Team Member', $request->ip());
 
             return successResponse('Team Member Edit Successfully', []);
+
+        } catch (Exception $e) {
+
+            return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Something Went Wrong");
+
+        }
+
+    }
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function verify(Request $request)
+    {
+        $data = $request->validate([
+            'user_id' => ['required', 'string', 'exists:users,uuid'],
+        ]);
+
+        try {
+
+            if (!$user = User::where('uuid', $data['user_id'])->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find user");
+            }
+
+            if (!$organization = Organisation::where('uuid', auth()->user()->active_organization)->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Organization");
+            }
+
+            if ($organization->user_id != auth()->user()->id) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "User not authorized to perform action for organization");
+            }
+
+            $actionToken = ActionToken::where('email', $user->email)->where('type', ActionToken::types['EV'])->first();
+            // if ($actionToken) {
+            $actionToken->status = "completed";
+            $actionToken->save();
+
+            $user->email_verified_at = now();
+            $user->save();
+
+            logAction($user->email, 'Your Account was verified successfully ', 'Verify User', $request->ip());
+            logAction(auth()->user()->email, 'You verified a user in your organization ', 'Verify Member', $request->ip());
+
+            // }
+
+            return successResponse('Team Member Verify Successfully', []);
+
+        } catch (Exception $e) {
+
+            return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Something Went Wrong");
+
+        }
+
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function sendMessage(Request $request)
+    {
+        $data = $request->validate([
+            'user_id' => ['required', 'string', 'exists:users,uuid'],
+            'message' => ['required', 'string'],
+        ]);
+
+        try {
+
+            if (!$user = User::where('uuid', $data['user_id'])->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find user");
+            }
+
+            if (!$organization = Organisation::where('uuid', auth()->user()->active_organization)->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Organization");
+            }
+
+            if ($organization->user_id != auth()->user()->id) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "User not authorized to perform action for organization");
+            }
+
+            // $actionToken = ActionToken::where('email', $user->email)->where('type', ActionToken::types['EV'])->first();
+            // // if ($actionToken) {
+            // $actionToken->status = "completed";
+            // $actionToken->save();
+
+            // $user->email_verified_at = now();
+            // $user->save();
+
+            // logAction($user->email, 'Your Account was verified successfully ', 'Verify User', $request->ip());
+            // logAction(auth()->user()->email, 'You verified a user in your organization ', 'Verify Member', $request->ip());
+
+            // }
+
+            return successResponse('Message Sent Successfully', []);
 
         } catch (Exception $e) {
 

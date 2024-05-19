@@ -84,7 +84,7 @@ class AuthController extends Controller
     {
         $credentials = request(['email', 'password']);
         // logger(auth()->attempt($credentials));
-        if (!$token = auth()->attempt($credentials)) {
+        if (!$token = auth()->setTTL(30000)->attempt($credentials)) {
             return response()->json(['error' => 'Invalid Login details'], 401);
         }
 
@@ -94,7 +94,7 @@ class AuthController extends Controller
             $user->save();
         }
 
-        // if (!auth()->user()->checkAccountStatus()) {
+        // if (!auth()->user()->is_email_verity) {
         //     auth()->logout();
         //     return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Account Not Verified, Contact Admin info@hseboard.com.");
         // }
@@ -110,7 +110,7 @@ class AuthController extends Controller
 
     public function refresh()
     {
-        return $this->respondWithToken(auth()->refresh());
+        return $this->respondWithToken(auth()->setTTL(30000)->refresh());
     }
 
     public function logout()
@@ -266,69 +266,39 @@ class AuthController extends Controller
         return successResponse("Your password has been reset successfully.");
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function resetToken()
     {
-        //
+
+        if (!$organization = Organisation::where('uuid', auth()->user()->active_organization)->where('user_id', auth()->user()->id)->first()) {
+            return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Can not update organization token.");
+        }
+
+        $organization->token = $organization->refreshToken();
+
+        $organization->save();
+
+        logAction(auth()->user()->email, 'Organization Token Update successful', 'Organization Token update successful', request()->ip());
+        return successResponse('Organization Token Update successful');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function updateDetail(Request $request)
     {
-        //
+        $request->validate([
+            'firstName' => 'required|string',
+            'lastName' => 'required|string',
+            'email' => 'required|email|exists:users,email',
+            'phone' => 'required|string',
+        ]);
+
+        $user = User::where('id', auth()->user()->id)->first();
+        $user->firstName = $request->firstName;
+        $user->lastName = $request->lastName;
+        $user->email = $request->email;
+        $user->phone = $request->phone;
+        $user->save();
+
+        logAction($request->input('email'), 'Update User Details successful', 'Data successful', $request->ip());
+        return successResponse("Updated successfully.");
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }

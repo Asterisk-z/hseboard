@@ -11,7 +11,6 @@ use App\Models\InspectionQuestionResponse;
 use App\Models\InspectionSchedule;
 use App\Models\InspectionTemplate;
 use App\Models\InspectionTemplateQuestions;
-use App\Models\InspectionTemplateType;
 use App\Models\Organisation;
 use App\Models\User;
 use Carbon\Carbon;
@@ -104,7 +103,7 @@ class InspectionController extends Controller
             // 'selectedType' => ['required', 'string'],
             'templateId' => ['required', 'integer'],
             'name' => ['required', 'string'],
-            'inspectionTemplateTypeId' => ['required', 'integer'],
+            // 'inspectionTemplateTypeId' => ['required', 'integer'],
             'location' => ['required', 'string'],
             'description' => ['required', 'string'],
             'objective' => ['required', 'string'],
@@ -125,11 +124,7 @@ class InspectionController extends Controller
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Recipient Organization");
             }
 
-            if (!$inspection_template_type = InspectionTemplateType::where('id', $data['inspectionTemplateTypeId'])->first()) {
-                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Template Type");
-            }
-
-            if (!$inspection_template = InspectionTemplate::where('id', $data['templateId'])->where('inspection_template_type_id', $inspection_template_type->id)->first()) {
+            if (!$inspection_template = InspectionTemplate::where('id', $data['templateId'])->first()) {
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Inspection Template");
             }
 
@@ -137,7 +132,7 @@ class InspectionController extends Controller
                 'user_id' => auth()->user()->id,
                 'organization_id' => $organization->id,
                 'recipient_organization_id' => $recipient_organization->id,
-                'inspection_type_id' => $inspection_template_type->id,
+                'inspection_type_id' => 1,
                 'inspection_template_id' => $inspection_template->id,
                 'facility_name' => $data['name'],
                 'location' => $data['location'],
@@ -703,7 +698,7 @@ class InspectionController extends Controller
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unauthorized Action");
             }
 
-            if (!$inspection_template = InspectionTemplate::where('id', $inspection->inspection_template_id)->where('inspection_template_type_id', $inspection->inspection_type_id)->first()) {
+            if (!$inspection_template = InspectionTemplate::where('id', $inspection->inspection_template_id)->first()) {
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Template");
             }
 
@@ -757,7 +752,7 @@ class InspectionController extends Controller
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unauthorized Action");
             }
 
-            if (!$inspection_template = InspectionTemplate::where('id', $inspection->inspection_template_id)->where('inspection_template_type_id', $inspection->inspection_type_id)->first()) {
+            if (!$inspection_template = InspectionTemplate::where('id', $inspection->inspection_template_id)->first()) {
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Template");
             }
 

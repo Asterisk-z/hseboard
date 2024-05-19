@@ -55,6 +55,27 @@ class OrganisationController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Organisation  $organisation
+     * @return \Illuminate\Http\Response
+     */
+    public function users($uuid)
+    {
+        try {
+
+            $organizations = Organisation::where('uuid', request('uuid'))->first();
+            $users = Organisation::all_users($organizations);
+            return successResponse('Organizations Fetched Successfully', $users);
+
+        } catch (\Throwable $th) {
+
+            return successResponse('Organizations Fetched Successfully', []);
+
+        }
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -102,57 +123,39 @@ class OrganisationController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function updateDetails(Request $request)
     {
-        //
-    }
+        $request->validate([
+            'businessName' => ['required'],
+            'address' => ['required'],
+            'bio' => ['required'],
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Organisation  $organisation
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Organisation $organisation)
-    {
-        //
-    }
+        try {
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Organisation  $organisation
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Organisation $organisation)
-    {
-        //
-    }
+            if (!$organization = Organisation::where('uuid', auth()->user()->active_organization)->where('user_id', auth()->user()->id)->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "can not update organization detail.");
+            }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Organisation  $organisation
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Organisation $organisation)
-    {
-        //
+            $organization->name = $request->businessName;
+            $organization->address = $request->address;
+            $organization->bio = $request->bio;
+            $organization->save();
+
+            logAction(auth()->user()->email, 'Organization details updated successful ', 'Organization Detail', $request->ip());
+
+            return successResponse('Organization details updated successful ', []);
+
+        } catch (Exception $e) {
+
+            return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Something Went Wrong");
+
+        }
+
     }
 }

@@ -252,6 +252,88 @@ class InvestigationController extends Controller
         }
 
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function setExternalTeamMembers(Request $request)
+    {
+        $data = $request->validate([
+            'organization_id' => ['required', 'string'],
+            'investigation_id' => ['required', 'string'],
+            // 'lead_investigator' => ['required'],
+            'team_members' => ['required', 'array'],
+            'team_members.*' => ['required'],
+        ]);
+
+        try {
+
+            if (!$investigation = Investigation::where('uuid', $data['investigation_id'])->where('end_date', null)->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Investigation");
+            }
+
+            if (!$organization = Organisation::where('uuid', $data['organization_id'])->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Organization");
+            }
+
+            // if ($lead_investigator = User::where('id', $data['lead_investigator'])->first()) {
+            //     $lead = $investigation->lead ? $investigation->lead->id : null;
+
+            //     InvestigationMember::updateOrCreate(
+            //         ['investigation_id' => $investigation->id, 'position' => 'lead'],
+            //         [
+            //             'investigator_id' => auth()->user()->id,
+            //             'investigation_id' => $investigation->id,
+            //             'member_id' => $lead_investigator->id,
+            //             'position' => 'lead',
+            //         ]);
+
+            //     if ($lean_member = InvestigationMember::where('investigation_id', $investigation->id)->where('position', 'member')->where('member_id', $lead_investigator->id)->first()) {
+
+            //         $lean_member->delete();
+
+            //     }
+
+            // }
+
+            $team_members = request('team_members');
+
+            foreach ($team_members as $team_member) {
+
+                if ($member = User::where('id', $team_member)->first()) {
+                    if ($member = Organisation::find_user($organization, $member->email)) {
+
+                        InvestigationMember::updateOrCreate(
+                            ['investigation_id' => $investigation->id, 'member_id' => $member->id],
+                            [
+                                'investigator_id' => auth()->user()->id,
+                                'investigation_id' => $investigation->id,
+                                'member_id' => $member->id,
+                                'position' => 'member',
+                            ]);
+
+                    }
+                }
+
+            }
+
+            if (request('group_name')) {
+
+            }
+
+            // logAction(auth()->user()->email, 'You started an investigation ', 'Start Investigation', $request->ip());
+
+            return successResponse('Team Added Successfully', []);
+
+        } catch (Exception $e) {
+            logger($e);
+            return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Something Went Wrong");
+
+        }
+
+    }
     /**
      * Display a listing of the resource.
      *

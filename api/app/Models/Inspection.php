@@ -95,7 +95,8 @@ class Inspection extends Model
     public function getQuestionsAttribute()
     {
 
-        $template = InspectionTemplate::where('id', $this->inspection_template_id)->where('inspection_template_type_id', $this->inspection_type_id)->first();
+        $template = InspectionTemplate::where('id', $this->inspection_template_id)->first();
+        // $template = InspectionTemplate::where('id', $this->inspection_template_id)->where('inspection_template_type_id', $this->inspection_type_id)->first();
 
         $topic_ids = InspectionTemplateQuestions::where('inspection_template_id', $template->id)->where('topic_id', '!=', null)->pluck('topic_id');
         // logger($topic_ids);

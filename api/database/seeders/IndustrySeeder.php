@@ -70,6 +70,14 @@ class IndustrySeeder extends Seeder
                 'slug' => Str::slug('Health Care', '_'),
             ],
             [
+                'name' => 'Health & Safety',
+                'slug' => Str::slug('Health & Safety', '_'),
+            ],
+            [
+                'name' => 'Government',
+                'slug' => Str::slug('Government', '_'),
+            ],
+            [
                 'name' => 'Academic',
                 'slug' => Str::slug('Academic', '_'),
             ],

@@ -19,17 +19,7 @@ class InspectionTemplateTypeSeeder extends Seeder
             [
                 'name' => 'inspection_type_one',
                 'sample' => '/public/sample/one.xlsx',
-                'description' => 'Inspection Type One',
-            ],
-            [
-                'name' => 'inspection_type_two',
-                'sample' => '/public/sample/two.xlsx',
-                'description' => 'Inspection Type Two',
-            ],
-            [
-                'name' => 'inspection_type_three',
-                'sample' => '/public/sample/three.xlsx',
-                'description' => 'Inspection Type Three',
+                'description' => 'Standard Inspection',
             ],
         ];
 

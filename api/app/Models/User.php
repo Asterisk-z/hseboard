@@ -39,7 +39,7 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
-    protected $appends = ['organizations', 'privilege', 'full_name'];
+    protected $appends = ['organizations', 'privilege', 'full_name', 'is_email_verified'];
     protected $with = ['accountRole'];
 
     public function getJWTIdentifier()
@@ -69,7 +69,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->lastName . ' ' . $this->firstName;
     }
 
-    public function checkAccountStatus()
+    public function getIsEmailVerifiedAttribute()
     {
 
         if (!ActionToken::where('email', $this->email)->where('status', ActionToken::status['COM'])->where('type', ActionToken::types['EV'])->first()) {

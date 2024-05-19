@@ -67,6 +67,8 @@ Route::get('account-roles', [AccountRoleController::class, 'index']);
 Route::middleware('auth:api')->group(function ($router) {
 
     Route::prefix('auth')->group(function ($router) {
+        Route::post('reset-token', [AuthController::class, 'resetToken']);
+        Route::post('update-details', [AuthController::class, 'updateDetail']);
         Route::get('profile', [AuthController::class, 'profile']);
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('refresh', [AuthController::class, 'refresh']);
@@ -90,6 +92,8 @@ Route::middleware('auth:api')->group(function ($router) {
         Route::get('/', [OrganisationController::class, 'index']);
         Route::get('/{organization_id}', [OrganisationController::class, 'show']);
         Route::get('/org_token/{org_token}/{uuid}', [OrganisationController::class, 'show_token']);
+        Route::get('/users/{uuid}', [OrganisationController::class, 'users']);
+        Route::post('/update-details', [OrganisationController::class, 'updateDetails']);
         Route::post('/remove-user', [OrganisationController::class, 'removeUser']);
     });
 
@@ -98,6 +102,8 @@ Route::middleware('auth:api')->group(function ($router) {
         Route::get('/except', [UsersController::class, 'indexExcept']);
         Route::get('/show/{user_id}', [UsersController::class, 'show']);
         Route::post('/create', [UsersController::class, 'store']);
+        Route::post('/verify-email', [UsersController::class, 'verify']);
+        Route::post('/send-message', [UsersController::class, 'sendMessage']);
         Route::post('/update', [UsersController::class, 'update']);
     });
 
@@ -125,6 +131,7 @@ Route::middleware('auth:api')->group(function ($router) {
     Route::prefix('investigations')->group(function ($router) {
         Route::get('/all', [InvestigationController::class, 'index']);
         Route::post('/start', [InvestigationController::class, 'start']);
+        Route::post('/external-member', [InvestigationController::class, 'setExternalTeamMembers']);
         Route::post('/member/{organization_id?}', [InvestigationController::class, 'setTeamMembers']);
         Route::post('/remove-member/{organization_id?}', [InvestigationController::class, 'removeMember']);
         Route::post('/send-questions/{organization_id?}', [InvestigationController::class, 'sendQuestions']);
