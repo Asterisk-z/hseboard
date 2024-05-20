@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
 import UiParentCard from '@/components/shared/UiParentCard.vue';
+// import { getPrimary, getLight100 } from '@/utils/UpdateColors';
 
 const page = ref({ title: 'Home' });
 const breadcrumbs = ref([
@@ -17,15 +18,166 @@ const breadcrumbs = ref([
         href: '#'
     }
 ]);
+
+
+/* Chart */
+const chartOptions = computed(() => {
+    return {
+        chart: {
+            height: 275,
+            type: 'bar',
+            fontFamily: `inherit`,
+            toolbar: {
+                show: false
+            }
+        },
+        // colors: [getLight100.value, getLight100.value, getPrimary.value, getLight100.value, getLight100.value, getLight100.value],
+        plotOptions: {
+            bar: {
+                borderRadius: 4,
+                columnWidth: '45%',
+                distributed: true,
+                endingShape: 'rounded'
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        legend: {
+            show: false
+        },
+        grid: {
+            yaxis: {
+                lines: {
+                    show: false
+                }
+            }
+        },
+        xaxis: {
+            categories: [['Apr'], ['May'], ['June'], ['July'], ['Aug'], ['Sept']],
+            axisBorder: {
+                show: false
+            }
+        },
+        yaxis: {
+            labels: {
+                show: false
+            }
+        },
+        tooltip: {
+            theme: 'dark',
+            x: {
+                format: 'dd/MM/yy HH:mm'
+            }
+        }
+    };
+});
+const Chart = {
+    series: [
+        {
+            name: '',
+            data: [20, 15, 30, 25, 10, 15]
+        }
+    ]
+};
+
 </script>
 
 <template>
     <div>
-        <BaseBreadcrumb :title="page.title" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
-        <v-row>
-            <!-- <v-col cols="12" md="12">
+        <!-- <BaseBreadcrumb :title="page.title" :breadcrumbs="breadcrumbs"></BaseBreadcrumb> -->
+        <!-- <v-row> -->
+        <!-- <v-col cols="12" md="12">
                 <UiParentCard title="Simple Title"> Welcome </UiParentCard>
             </v-col> -->
+        <v-row class="mt-1">
+            <v-col cols="3">
+                <v-card elevation="10">
+                    <v-card-item>
+                        <div class="d-flex align-center mt-md-6 mt-1">
+                            <v-avatar class="rounded-md bg-lightprimary text-primary">
+                                <GridDotsIcon size="22" />
+                            </v-avatar>
+                            <div class="pl-4">
+                                <h6 class="text-subtitle-1 textSecondary">Total Actions</h6>
+                                <h3 class="text-h6">0</h3>
+                            </div>
+                        </div>
+                    </v-card-item>
+                </v-card>
+            </v-col>
+            <v-col cols="3" class="d-flex justify-lg-start justify-end">
+                <v-card elevation="10">
+                    <v-card-item>
+                        <div class="d-flex align-center mt-md-6 mt-1">
+                            <v-avatar class="rounded-md bg-grey100 textSecondary">
+                                <GridDotsIcon size="22" class="text-medium-emphasis" />
+                            </v-avatar>
+                            <div class="pl-4">
+                                <h6 class="text-subtitle-1 textSecondary">Total Inspections</h6>
+                                <h3 class="text-h6">0</h3>
+                            </div>
+                        </div>
+                    </v-card-item>
+                </v-card>
+            </v-col>
+            <v-col cols="3">
+                <v-card elevation="10">
+                    <v-card-item>
+                        <div class="d-flex align-center mt-md-6 mt-1">
+                            <v-avatar class="rounded-md bg-lightprimary text-primary">
+                                <GridDotsIcon size="22" />
+                            </v-avatar>
+                            <div class="pl-4">
+                                <h6 class="text-subtitle-1 textSecondary">Investigation</h6>
+                                <h3 class="text-h6">0</h3>
+                            </div>
+                        </div>
+                    </v-card-item>
+                </v-card>
+            </v-col>
+            <v-col cols="3" class="d-flex justify-lg-start justify-end">
+                <v-card elevation="10">
+                    <v-card-item>
+                        <div class="d-flex align-center mt-md-6 mt-1">
+                            <v-avatar class="rounded-md bg-grey100 textSecondary">
+                                <GridDotsIcon size="22" class="text-medium-emphasis" />
+                            </v-avatar>
+                            <div class="pl-4">
+                                <h6 class="text-subtitle-1 textSecondary">Total Report</h6>
+                                <h3 class="text-h6">0</h3>
+                            </div>
+                        </div>
+                    </v-card-item>
+                </v-card>
+            </v-col>
         </v-row>
+
+        <v-row>
+            <v-col cols="6">
+
+                <v-card elevation="10">
+                    <v-card-item>
+                        <v-card-title class="text-h5">Action</v-card-title>
+                        <v-card-subtitle class="text-subtitle-1 textSecondary">All</v-card-subtitle>
+                        <apexchart type="bar" height="275" :options="chartOptions" :series="Chart.series">
+                        </apexchart>
+                    </v-card-item>
+                </v-card>
+            </v-col>
+            <v-col cols="6">
+
+                <v-card elevation="10">
+                    <v-card-item>
+                        <v-card-title class="text-h5">Observation</v-card-title>
+                        <v-card-subtitle class="text-subtitle-1 textSecondary">All</v-card-subtitle>
+                        <apexchart type="bar" height="275" :options="chartOptions" :series="Chart.series">
+                        </apexchart>
+                    </v-card-item>
+                </v-card>
+            </v-col>
+        </v-row>
+
+        <!-- </v-row> -->
     </div>
 </template>

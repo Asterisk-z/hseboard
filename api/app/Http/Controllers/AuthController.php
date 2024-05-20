@@ -15,6 +15,7 @@ use App\Notifications\InfoNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
@@ -26,46 +27,58 @@ class AuthController extends Controller
 
         $data = $request->validated();
 
-        $createUser = User::create([
-            'firstName' => $data['firstName'],
-            'lastName' => $data['lastName'],
-            'email' => $data['emailAddress'],
-            'phone' => $data['phoneNumber'],
-            'account_type_id' => (AccountType::where('name', $data['accountType'])->first())->id,
-            'account_role_id' => (AccountRole::where('name', AccountRole::roles['MEM'])->first())->id,
-            'password' => Hash::make($data['password']),
-        ]);
+        DB::beginTransaction();
 
-        if (AccountType::isCorporate($data['accountType'])) {
-
-            $organization = Organisation::create([
-                'name' => $data['orgName'],
-                'bio' => $data['orgBio'],
-                'address' => $data['orgAddress'],
-                'country_id' => $data['country'],
-                'industry_id' => $data['industry'],
-                'user_id' => $createUser->id,
+        try {
+            $createUser = User::create([
+                'firstName' => $data['firstName'],
+                'lastName' => $data['lastName'],
+                'email' => $data['emailAddress'],
+                'phone' => $data['phoneNumber'],
+                'account_type_id' => (AccountType::where('name', $data['accountType'])->first())->id,
+                'account_role_id' => (AccountRole::where('name', AccountRole::roles['MEM'])->first())->id,
+                'password' => Hash::make($data['password']),
             ]);
 
-            $createUser->account_role_id = (AccountRole::where('name', AccountRole::roles['MAN'])->first())->id;
-            $createUser->save();
+            if (AccountType::isCorporate($data['accountType'])) {
 
-            OrganisationUser::create([
-                'user_id' => $createUser->id,
-                'organization_id' => $organization->id,
+                $organization = Organisation::create([
+                    'name' => strtolower($data['orgName']),
+                    'rc_number' => $data['rcNumber'],
+                    'bio' => $data['orgBio'],
+                    'address' => $data['orgAddress'],
+                    'country_id' => $data['country'],
+                    'industry_id' => $data['industry'],
+                    'user_id' => $createUser->id,
+                ]);
+
+                $createUser->account_role_id = (AccountRole::where('name', AccountRole::roles['MAN'])->first())->id;
+                $createUser->save();
+
+                OrganisationUser::create([
+                    'user_id' => $createUser->id,
+                    'organization_id' => $organization->id,
+                ]);
+
+                $createUser->active_organization = $organization->uuid;
+                $createUser->save();
+            }
+
+            $signature = Str::random(50);
+
+            ActionToken::create([
+                "email" => $createUser->email,
+                "signature" => $signature,
+                'type' => ActionToken::types['EV'],
             ]);
 
-            $createUser->active_organization = $organization->uuid;
-            $createUser->save();
+            DB::commit();
+
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+
         }
-
-        $signature = Str::random(50);
-
-        ActionToken::create([
-            "email" => $createUser->email,
-            "signature" => $signature,
-            'type' => ActionToken::types['EV'],
-        ]);
 
         logAction($createUser->email, 'Successful User Registration', 'Registration Successful', $request->ip());
 

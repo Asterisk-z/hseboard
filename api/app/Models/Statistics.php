@@ -9,4 +9,14 @@ class Statistics extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $with = ['organization', 'user'];
+
+    public function organization()
+    {
+        return $this->hasOne(Organisation::class, 'id', 'organization_id');
+    }
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
 }

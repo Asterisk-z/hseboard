@@ -18,10 +18,10 @@ const reportStore = useReportStore();
 //     reportStore.getReports()
 // });
 
-const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
+const getActiveOrg: any = computed(() => (organizationStore.getActiveOrg()));
 // const getReports : any  = computed(() => (reportStore.reports));
-const getAuthUser : any  = computed(() => (authStore.loggedUser));
-const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const getAuthUser: any = computed(() => (authStore.loggedUser));
+const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 const page = ref({ title: 'Create Statistics' });
 const breadcrumbs = ref([
@@ -79,12 +79,12 @@ const fields = ref({
     organization_id: getActiveOrg.value?.uuid,
 });
 
-const daysInterval : any  = computed(() => (1 + moment.duration(moment(fields.value?.end_date).diff(moment(fields.value?.start_date, 'days'))).days()));
-const totalManHour : any  = computed(() => (daysInterval.value * Number(fields.value?.workers) * Number(fields.value?.workingHoursPerDay)));
-const lostWorkingHours : any  = computed(() => (Number(fields.value?.offWorkingDays) * Number(fields.value?.sickWorkers) * Number(fields.value?.workingHoursPerDay)));
-const leaveHours : any  = computed(() => (Number(fields.value?.workersOnLeave) * Number(fields.value?.leaveDays) * Number(fields.value?.workingHoursPerDay)));
-const totalOverTime : any  = computed(() => (Number(fields.value?.overTimeHoursParDay) * Number(fields.value?.overTimeDays) * Number(fields.value?.overTimeWorkers)));
-const actualManHour : any  = computed(() => (parseFloat(totalManHour.value -lostWorkingHours.value - leaveHours.value + totalOverTime.value)));
+const daysInterval: any = computed(() => (1 + moment.duration(moment(fields.value?.end_date).diff(moment(fields.value?.start_date, 'days'))).days()));
+const totalManHour: any = computed(() => (daysInterval.value * Number(fields.value?.workers) * Number(fields.value?.workingHoursPerDay)));
+const lostWorkingHours: any = computed(() => (Number(fields.value?.offWorkingDays) * Number(fields.value?.sickWorkers) * Number(fields.value?.workingHoursPerDay)));
+const leaveHours: any = computed(() => (Number(fields.value?.workersOnLeave) * Number(fields.value?.leaveDays) * Number(fields.value?.workingHoursPerDay)));
+const totalOverTime: any = computed(() => (Number(fields.value?.overTimeHoursParDay) * Number(fields.value?.overTimeDays) * Number(fields.value?.overTimeWorkers)));
+const actualManHour: any = computed(() => (parseFloat(totalManHour.value - lostWorkingHours.value - leaveHours.value + totalOverTime.value)));
 
 
 const fieldRules: any = ref({
@@ -107,7 +107,7 @@ const fieldRules: any = ref({
     ],
     offWorkingDays: [
         (v: number) => !!v || 'Number of working hours is required',
-        (v: number) => v <= daysInterval.value || 'Days off worker can not be more than report days'
+        (v: number) => v <= daysInterval.value || 'Days off work cannot be more than report days'
     ],
     workersOnLeave: [
         (v: number) => !!v || 'Number of worker on leave is required',
@@ -115,11 +115,11 @@ const fieldRules: any = ref({
     ],
     leaveDays: [
         (v: number) => !!v || 'Number of working hours is required',
-        (v: number) => v <= daysInterval.value || 'Days off worker can not be more than report days'
+        (v: number) => v <= daysInterval.value || 'Days off work cannot be more than report days'
     ],
     overTimeHoursParDay: [
         (v: number) => !!v || 'Number of working hours is required',
-        (v: number) => (v && v <= Number(fields.value.workingHoursPerDay)) || 'Over time hours per day can not be more that hours per day'
+        (v: number) => (v && v <= Number(fields.value.workingHoursPerDay)) || 'Over time hours per day can not be more than hours per day'
     ],
     overTimeDays: [
         (v: number) => !!v || 'Number of worker on leave is required',
@@ -127,7 +127,7 @@ const fieldRules: any = ref({
     ],
     overTimeWorkers: [
         (v: number) => !!v || 'Number of working hours is required',
-        (v: number) => (v && v <= Number(fields.value.workers)) || 'Days off worker can not be more than report days'
+        (v: number) => (v && v <= Number(fields.value.workers)) || 'Worker on overtime cannot be more than workers on duty'
     ],
     meetingTarget: [],
     meetingActual: [],
@@ -148,9 +148,9 @@ const save = async (e: any) => {
         setLoading(true)
 
         const values = { ...fields.value }
-        
-        
-        
+
+
+
         let objectValues = {
             "organization_id": values?.organization_id,
             // "organization_id": values.sendToOrg == 'No' ? null : values?.organization_id,
@@ -251,7 +251,7 @@ const save = async (e: any) => {
                                         Date</v-label>
                                     <VueDatePicker input-class-name="dp-custom-input" :disabled='!fields.start_date'
                                         v-model="fields.end_date" :enable-time-picker="false" :max-date="new Date()"
-                                        :min-date="fields.start_date ? new Date(fields.start_date) : new Date() "
+                                        :min-date="fields.start_date ? new Date(fields.start_date) : new Date()"
                                         required>
                                     </VueDatePicker>
                                 </VCol>

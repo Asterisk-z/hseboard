@@ -5,6 +5,7 @@ import { GridDotsIcon, LanguageIcon, SearchIcon, Menu2Icon, BellRingingIcon, Sho
 import LanguageDD from './LanguageDD.vue';
 import NotificationDD from './NotificationDD.vue';
 import themeDD from './themeDD.vue';
+import RefreshApp from './RefreshApp.vue';
 import ProfileDD from './ProfileDD.vue';
 import Searchbar from './Searchbar.vue';
 import RightMobileSidebar from './RightMobileSidebar.vue';
@@ -25,13 +26,8 @@ watch(priority, (newPriority) => {
 
 <template>
     <v-app-bar elevation="0" :priority="priority" height="70" class="">
-        <v-btn
-            class="hidden-md-and-down"
-            icon
-            color="primary"
-            variant="text"
-            @click.stop="customizer.SET_MINI_SIDEBAR(!customizer.mini_sidebar)"
-        >
+        <v-btn class="hidden-md-and-down" icon color="primary" variant="text"
+            @click.stop="customizer.SET_MINI_SIDEBAR(!customizer.mini_sidebar)">
             <Menu2Icon size="20" stroke-width="1.5" />
         </v-btn>
         <v-btn class="hidden-lg-and-up" icon variant="flat" @click.stop="customizer.SET_SIDEBAR_DRAWER" size="small">
@@ -55,7 +51,7 @@ watch(priority, (newPriority) => {
         <!-- ---------------------------------------------- -->
         <!-- <LanguageDD /> -->
 
-        
+
 
         <!-- ---------------------------------------------- -->
         <!-- ShoppingCart -->
@@ -69,18 +65,13 @@ watch(priority, (newPriority) => {
         <!-- ---------------------------------------------- -->
         <!-- Notification -->
         <!-- ---------------------------------------------- -->
+        <RefreshApp />
         <themeDD />
 
         <NotificationDD />
 
         <!-- right sidebar -->
-        <v-btn
-            variant="text"
-            color="primary"
-            class="hidden-lg-and-up"
-            icon
-            @click.stop="appsdrawer = !appsdrawer"
-        >
+        <v-btn variant="text" color="primary" class="hidden-lg-and-up" icon @click.stop="appsdrawer = !appsdrawer">
             <GridDotsIcon size="17" stroke-width="1.5" />
         </v-btn>
 

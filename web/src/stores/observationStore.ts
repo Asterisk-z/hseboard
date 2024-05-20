@@ -3,6 +3,8 @@ import { router } from '@/router';
 import { fetchWrapper } from '@/utils/helpers/fetch-wrapper';
 import { toastWrapper } from '@/utils/helpers/toast-wrapper';
 import { useOrganizationStore } from './organizationStore';
+import { useAuthStore } from '@/stores/auth';
+import axios from 'axios';
 
 
 type observationType  = {
@@ -56,12 +58,34 @@ export const useObservationStore = defineStore({
         },
         async addObservation(values: any) {
             try {
-                const data = await fetchWrapper.post(`observations/create`, values)
-                    .catch((error: any) => {
-                        throw error;
-                    }).then((response: any) => {
-                        return response
-                    })
+                // const data = await fetchWrapper.post(`observations/create`, values)
+                //     .catch((error: any) => {
+                //         throw error;
+                //     }).then((response: any) => {
+                //         return response
+                //     })
+
+                const user = useAuthStore();
+                const data = await axios({
+                    method: 'post',
+                    url: `${import.meta.env.VITE_API_LINK}observations/create`,
+                    data: values,
+                    headers: {
+                        'Content-Type': "multipart/form-data; charset=utf-8; boundary=" + Math.random().toString().substr(2),
+                        "Authorization": `Bearer ${user.accessToken}`,
+                        "Accept": "Application/json",
+                    },
+                }).catch((error: any) => {
+                    throw error;
+                }).then((response: any) => {
+                    return response
+                })
+                // const data = await fetchWrapper.post(`audit-documents/upload`, values)
+                //     .catch((error: any) => {
+                //         throw error;
+                //     }).then((response: any) => {
+                //         return response
+                //     })
 
                 return toastWrapper.success(data?.message, data)
             } catch (error: any) {

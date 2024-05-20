@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Observation extends Model
 {
@@ -17,8 +18,13 @@ class Observation extends Model
         'DOI' => 'done investigation',
     ];
 
-    protected $with = ['observer', 'observation_type'];
+    protected $with = ['observer', 'observation_type', 'media'];
     protected $appends = ['is_pending_investigation', 'is_being_investigated', 'is_done_investigation'];
+
+    public function media(): MorphMany
+    {
+        return $this->morphMany(Media::class, 'model');
+    }
 
     public function observer()
     {

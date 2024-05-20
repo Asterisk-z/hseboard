@@ -44,11 +44,11 @@ onMounted(() => {
     auditDocumentStore.getAuditDocuments()
 });
 
-const computedIndex = (index : any) => ++index;
-const getActiveOrg : any   = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser : any   = computed(() => (authStore.loggedUser));
-const getAuditDocuments : any   = computed(() => (auditDocumentStore.auditDocuments));
-const isLoggedInUserOwnsActionOrg : any   = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const computedIndex = (index: any) => ++index;
+const getActiveOrg: any = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser: any = computed(() => (authStore.loggedUser));
+const getAuditDocuments: any = computed(() => (auditDocumentStore.auditDocuments));
+const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 const valid = ref(true);
@@ -109,18 +109,24 @@ const headers = ref([
     {
         key: 'title',
         title: 'Title',
-        value: (item: any): string => `${item.title}`,
+        value: (item: any): string => `${item.title.substring(0, 15)} ${item.title.length > 15 ? '...' : ''}`,
     },
     {
         key: 'description',
         title: 'Description',
-        value: (item: any): string => `${item.description}`
+        value: (item: any): string => `${item.description.substring(0, 20)} ${item.description.length > 20 ? '...' : ''}`,
     },
     {
         key: 'file',
         title: 'File',
         sortable: false,
         value: (item: any): string => `${item.file_id}`
+    },
+    {
+        key: 'document',
+        title: 'Document Owner',
+        sortable: false,
+        value: (item: any): string => `${item.user?.full_name}`
     },
     {
         key: 'created_at',

@@ -42,16 +42,16 @@ onMounted(() => {
     mainAuditStore.getMainAudits()
 });
 
-const computedIndex = (index : any) => ++index;
+const computedIndex = (index: any) => ++index;
 
-const getMainAudits : any  = computed(() => (reportStore.mainAudits));
+const getMainAudits: any = computed(() => (reportStore.mainAudits));
 
-const getActions : any  = computed(() => (actionStore.actions));
-const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser : any  = computed(() => (authStore.loggedUser));
-const getPriorities : any  = computed(() => (openLinks.priorities));
+const getActions: any = computed(() => (actionStore.actions));
+const getActiveOrg: any = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser: any = computed(() => (authStore.loggedUser));
+const getPriorities: any = computed(() => (openLinks.priorities));
 // const getReports : any  = computed(() => (reportStore.reports));
-const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 const valid = ref(true);
@@ -112,7 +112,7 @@ const selectItem = (item: any, action: string = '') => {
 
 }
 
-const isAssignee : any  = computed(() => (selectedItem?.value?.assignee_id == getAuthUser?.value?.id));
+const isAssignee: any = computed(() => (selectedItem?.value?.assignee_id == getAuthUser?.value?.id));
 
 
 
@@ -127,7 +127,7 @@ const headers = ref([
     {
         key: 'audit_title',
         title: 'Audit Title',
-        value: (item: any): string => `${item.audit_title} `,
+        value: (item: any): string => `${item.audit_title.substring(0, 15)} ${item.audit_title.length > 15 ? '...' : ''}`
     },
     // {
     //     key: 'audit_template_id',
@@ -137,7 +137,7 @@ const headers = ref([
     {
         key: 'audit_type_id',
         title: 'Audit Type',
-        value: (item: any): string => `${item.audit_type?.description}`
+        value: (item: any): string => `${item.audit_type?.description.substring(0, 15)} ${item.audit_type?.description.length > 15 ? '...' : ''}`
     },
     {
         key: 'recipient_organization_id',
@@ -203,7 +203,7 @@ const goToRoute = (url: string) => {
         <v-row>
             <v-col cols="12" md="12">
 
-                <v-card :title="`HSE Statistics`" flat>
+                <v-card :title="`Audit Management`" flat>
 
 
                     <template v-slot:append>
@@ -263,21 +263,24 @@ const goToRoute = (url: string) => {
                                                 </v-list>
                                             </VCol>
 
-                                            <VCol cols="12" lg="12"  class="text-right">
-                                                
-                                                <v-btn color="primary" class="mr-3" v-if="selectedItem?.is_ongoing || selectedItem?.is_pending || selectedItem?.is_accepted"
+                                            <VCol cols="12" lg="12" class="text-right">
+
+                                                <v-btn color="primary" class="mr-3"
+                                                    v-if="selectedItem?.is_ongoing || selectedItem?.is_pending || selectedItem?.is_accepted"
                                                     @click="goToRoute(`/ongoing-hse-audit-report/${selectedItem?.uuid}`)">Continue
                                                     Audit</v-btn>
-                                                <template  v-if="selectedItem?.is_completed">
-                                                    <v-btn color="primary" class="mr-3" 
+                                                <template v-if="selectedItem?.is_completed">
+                                                    <v-btn color="primary" class="mr-3"
                                                         @click="goToRoute(`/view-hse-audit-report/${selectedItem?.uuid}`)">View
                                                         Audit</v-btn>
-                                                    <v-btn color="primary" class="mr-3" 
-                                                        @click="goToRoute(`/full-report-hse-audit-report/${selectedItem?.uuid}`)">Full Audit Report</v-btn>
-                                                    <v-btn color="primary" class="mr-3" 
-                                                        @click="goToRoute(`/report-hse-audit-report/${selectedItem?.uuid}`)">Audit Summary</v-btn>
+                                                    <v-btn color="primary" class="mr-3"
+                                                        @click="goToRoute(`/full-report-hse-audit-report/${selectedItem?.uuid}`)">Full
+                                                        Audit Report</v-btn>
+                                                    <v-btn color="primary" class="mr-3"
+                                                        @click="goToRoute(`/report-hse-audit-report/${selectedItem?.uuid}`)">Audit
+                                                        Summary</v-btn>
                                                 </template>
-                                                
+
                                             </VCol>
                                             <VCol cols="12" lg="12" class="text-right" v-if="!subViewDialog">
 

@@ -38,6 +38,7 @@ export const useReportStore = defineStore({
         // initialize state from local storage to enable user to stay logged in
         // @ts-ignore
         reports: null as null || [],
+        report: null as null || [],
     }),
     getters: {
         
@@ -53,6 +54,17 @@ export const useReportStore = defineStore({
                     console.log(error)
                 });
             this.reports = data;
+        },
+        async getCompletedReport(value : string) {
+
+            const data = await fetchWrapper
+                .get(`statistic/show/${value}`)
+                .then((response: any) => {
+                    return response.data
+                }).catch((error: any) => {
+                    console.log(error)
+                });
+            this.report = data;
         },
         async addReport(values: any) {
             try {

@@ -34,7 +34,8 @@ class RegisterRequest extends FormRequest
             'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->symbols()],
             "password_confirmation" => "required",
 
-            "orgName" => "required_if:accountType,corporate|string",
+            "orgName" => "required_if:accountType,corporate|string|unique:organisations,name",
+            "rcNumber" => "required_if:accountType,corporate|string|unique:organisations,rc_number",
             "orgBio" => "required_if:accountType,corporate|string",
             "orgAddress" => "required_if:accountType,corporate|string",
             "country" => "required_if:accountType,corporate|integer",

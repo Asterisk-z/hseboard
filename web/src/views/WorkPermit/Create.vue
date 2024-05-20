@@ -184,7 +184,7 @@ const sendInitiatePermit = async (e: any) => {
         
         let objectValues = {
             "organization_id": getActiveOrg.value?.uuid,
-            "recipient_organization_id": values?.organization ? values?.organization?.uuid : getActiveOrg.value?.uuid,
+            "recipient_organization_id": Object.keys(values?.organization).length === 0 ? getActiveOrg.value?.uuid : values.organization?.uuid,
             "permit_request_id" : values?.selectedRequestType,
             "job_code": values?.jobCode,
             "job_title": values?.jobName,

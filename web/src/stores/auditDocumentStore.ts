@@ -31,7 +31,6 @@ export const useAuditDocumentStore = defineStore({
         },
         async addAuditDocument(values: any) {
             try {
-                console.log(values)
                 const user = useAuthStore();
                 const data = await axios({
                     method: 'post',

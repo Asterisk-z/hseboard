@@ -9,6 +9,7 @@ import { useTeamMemberStore } from '@/stores/teamMemberStore';
 import { useAuthStore } from '@/stores/auth';
 import { useOpenLinksStore } from '@/stores/openLinks';
 import moment from 'moment'
+import Swal from 'sweetalert2'
 
 import { router } from '@/router';
 
@@ -23,12 +24,12 @@ onMounted(() => {
     openLinks.getAccountRoles();
 });
 
-const computedIndex = (index : any) => ++index;
-const getTeamMembers : any  = computed(() => (teamMemberStore.members));
-const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser : any  = computed(() => (authStore.loggedUser));
-const getAccountRoles : any  = computed(() => (openLinks.accountRoles));
-const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const computedIndex = (index: any) => ++index;
+const getTeamMembers: any = computed(() => (teamMemberStore.members));
+const getActiveOrg: any = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser: any = computed(() => (authStore.loggedUser));
+const getAccountRoles: any = computed(() => (openLinks.accountRoles));
+const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 const page = ref({ title: 'Team Member' });
@@ -67,6 +68,10 @@ const setViewDialog = (value: boolean) => {
     viewDialog.value = value;
     if (value == false) selectItem({})
 }
+const sendMessageDialog = ref(false);
+const setSendMessageDialog = (value: boolean) => {
+    sendMessageDialog.value = value;
+}
 const deleteDialog = ref(false);
 const setDeleteDialog = (value: boolean) => {
     deleteDialog.value = value;
@@ -75,7 +80,7 @@ const setDeleteDialog = (value: boolean) => {
 const selectedItem = ref({} as any);
 const selectItem = (item: any, action: string = '') => {
     selectedItem.value = Object.assign({}, item.raw);
- 
+
     switch (action) {
         case 'view':
             setViewDialog(true)
@@ -95,7 +100,7 @@ const selectItem = (item: any, action: string = '') => {
         default:
             break;
     }
-    
+
 }
 
 
@@ -148,6 +153,7 @@ const fields = ref({
     password: "",
     confirmPassword: "",
     accountRole: "",
+    message: "",
     organization_id: getActiveOrg.value?.uuid
 });
 const editFields = ref({
@@ -160,7 +166,11 @@ const editFields = ref({
     user_id: ""
 });
 
-const fieldRules : any = ref({
+const fieldRules: any = ref({
+    message: [
+        (v: string) => !!v || 'Message is required',
+        (v: string) => v.length > 10 || 'More than 10 letters required'
+    ],
     firstName: [
         (v: string) => !!v || 'First Name is required',
         (v: string) => v.length > 2 || 'More than two letters required'
@@ -206,7 +216,7 @@ const save = async (e: any) => {
             "password": values?.password,
             "password_confirmation": values?.confirmPassword
         }
-        
+
         const resp = await teamMemberStore.addMember(objectValues)
             .catch((error: any) => {
                 console.log(error)
@@ -215,11 +225,11 @@ const save = async (e: any) => {
             .then((resp: any) => {
                 return resp
             });
-            
+
         if (resp?.message == 'success') {
             setLoading(false)
             setDialog(false)
-            
+
             fields.value.firstName = "";
             fields.value.lastName = "";
             fields.value.phoneNumber = "";
@@ -272,9 +282,9 @@ const update = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setEditDialog(false)
-            setTimeout(() => {
-                formContainer.value.reset()
-            }, 2000)
+            // setTimeout(() => {
+            //     formContainer.value.reset()
+            // }, 2000)
             teamMemberStore.getTeamMembers();
         }
 
@@ -328,6 +338,93 @@ const removeUser = async (team: any) => {
     }
 
 }
+
+const verifyEmail = async (team: any) => {
+
+    try {
+        setLoading(true)
+
+
+        setViewDialog(false)
+
+        Swal.fire({
+            title: 'Info!',
+            text: 'Do you want to verity user?',
+            icon: 'info',
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+            showCancelButton: true,
+            allowOutsideClick: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                let objectValues = {
+                    "user_id": team?.uuid,
+                }
+
+                teamMemberStore.verifyMember(objectValues)
+                    .catch((error: any) => {
+                        throw error
+                    })
+                    .then((resp: any) => {
+                        teamMemberStore.getTeamMembers();
+                        return resp
+                    });
+
+
+            }
+        });
+
+
+        setLoading(false)
+
+    } catch (error) {
+        console.log(error)
+        setLoading(false)
+    }
+
+}
+
+const sendMessage = async (e: any) => {
+    e.preventDefault();
+
+    try {
+        setLoading(true)
+
+        const values = { ...fields.value }
+        let objectValues = {
+            "message": values?.message,
+            "user_id": selectedItem.value?.uuid
+        }
+
+        const resp = await teamMemberStore.sendMessage(objectValues)
+            .catch((error: any) => {
+                console.log(error)
+                throw error
+            })
+            .then((resp: any) => {
+                return resp
+            });
+
+        if (resp?.message == 'success') {
+            setLoading(false)
+            setSendMessageDialog(false)
+            teamMemberStore.getTeamMembers();
+        }
+
+        setLoading(false)
+        setSendMessageDialog(false)
+
+
+
+    } catch (error) {
+        console.log(error)
+        setLoading(false)
+        setSendMessageDialog(false)
+    }
+
+}
+
 const goToRequest = () => {
     router.push('/organization-requests')
 }
@@ -567,18 +664,84 @@ const goToRequest = () => {
                                                 </v-list>
                                             </VCol>
 
-                                            <VCol cols="12" lg="12" class="text-right">
-                                                <v-btn color="primary" class="mr-3" @click="setViewDialog(false)">Remove
+                                            <VCol cols="12" lg="12" class="text-right"
+                                                v-if="isLoggedInUserOwnsActionOrg">
+                                                <!-- <v-btn color="primary" class="mr-3" @click="setViewDialog(false)">Remove
                                                     From
-                                                    Organization</v-btn>
-                                                <v-btn color="primary" class="mr-3" @click="setViewDialog(false)">Verify
+                                                    Organization</v-btn> -->
+                                                <v-btn color="primary" class="mr-3"
+                                                    v-if="!selectedItem?.is_email_verified"
+                                                    @click="verifyEmail(selectedItem)">Verify
                                                     Email</v-btn>
-                                                <v-btn color="primary" class="mr-3" @click="setViewDialog(false)">Send a
+                                                <v-btn color="primary" class="mr-3"
+                                                    v-if="selectedItem?.is_email_verified"
+                                                    @click="setSendMessageDialog(true)">Send a
                                                     message</v-btn>
 
                                             </VCol>
                                             <VCol cols="12" lg="12" class="text-right">
                                                 <v-btn color="primary" @click="setViewDialog(false)"
+                                                    variant="text">Close</v-btn>
+                                            </VCol>
+                                        </VRow>
+
+                                    </v-card-text>
+                                </v-card>
+                            </v-dialog>
+
+                            <v-dialog v-model="sendMessageDialog" max-width="800">
+                                <v-card>
+                                    <v-card-text>
+                                        <div class="d-flex justify-space-between">
+                                            <h3 class="text-h3">Send Message</h3>
+                                            <v-btn icon @click="setSendMessageDialog(false)" size="small" flat>
+                                                <XIcon size="16" />
+                                            </v-btn>
+                                        </div>
+                                    </v-card-text>
+                                    <v-divider></v-divider>
+
+                                    <v-card-text>
+
+                                        <VRow class="mt-5 mb-3">
+
+                                            <!-- {{ selectedItem }} -->
+
+                                            <VCol cols="12" lg="12">
+
+                                                <VForm v-model="valid" ref="formContainer" fast-fail lazy-validation
+                                                    @submit.prevent="sendMessage" class="py-1">
+                                                    <VRow class="mt-5 mb-3">
+
+                                                        <VCol cols="12" md="12">
+                                                            <v-label
+                                                                class="text-subtitle-1 font-weight-medium pb-1">Messages</v-label>
+                                                            <VTextarea variant="outlined" outlined name="Note"
+                                                                label="Message" v-model="fields.message"
+                                                                :rules="fieldRules.message" required
+                                                                :color="fields.message.length > 10 ? 'success' : 'primary'">
+                                                            </VTextarea>
+                                                        </VCol>
+                                                        <VCol cols="12" lg="12" class="text-right">
+                                                            <v-btn color="error" @click="setSendMessageDialog(false)"
+                                                                variant="text">Cancel</v-btn>
+
+                                                            <v-btn color="primary" type="submit" :loading="loading"
+                                                                :disabled="!valid" @click="sendMessage">
+                                                                <span v-if="!loading">
+                                                                    Send Message
+                                                                </span>
+                                                                <clip-loader v-else :loading="loading" color="white"
+                                                                    :size="'25px'"></clip-loader>
+                                                            </v-btn>
+
+                                                        </VCol>
+                                                    </VRow>
+                                                </VForm>
+
+                                            </VCol>
+                                            <VCol cols="12" lg="12" class="text-right">
+                                                <v-btn color="primary" @click="setSendMessageDialog(false)"
                                                     variant="text">Close</v-btn>
                                             </VCol>
                                         </VRow>

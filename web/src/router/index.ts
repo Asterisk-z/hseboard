@@ -41,9 +41,9 @@ router.afterEach((to, from, failure) => {
 
     if (auth.user || auth.hse_tok_passer) {
         const tenMin = 600000;
-        setInterval(() => {
-            auth.refresh();
-        }, tenMin)
+        // setInterval(() => {
+        //     auth.refresh();
+        // }, tenMin)
     }
 
 

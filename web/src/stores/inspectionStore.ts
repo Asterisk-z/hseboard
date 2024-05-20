@@ -84,11 +84,11 @@ export const useInspectionStore = defineStore({
                 });
             this.inspectionTemplateTypes = data;
         },
-        async getInspectionTemplateForTypeId(type_id: string) {
+        async getInspectionTemplateForTypeId() {
             this.inspectionTypeTemplates = [];
             const organizationStore = useOrganizationStore();
             const data = await fetchWrapper
-                .get(`inspection/templates-type/${organizationStore.active}/${type_id}`)
+                .get(`inspection/templates-type/${organizationStore.active}`)
                 .then((response: any) => {
                     return response.data
                 }).catch((error: any) => {

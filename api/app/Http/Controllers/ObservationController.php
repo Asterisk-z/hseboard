@@ -51,7 +51,7 @@ class ObservationController extends Controller
     {
         // logger("request");
         // logger($request);
-        // logger(request()->all());
+        logger(request()->all());
         $data = $request->validate([
             'organization_id' => ['nullable', 'string'],
             'observation_type' => ['required'],
@@ -61,6 +61,7 @@ class ObservationController extends Controller
             'affected_workers' => ['nullable', 'string'],
             'date_time' => ['required', 'date_format:Y-m-d H:i:s'],
             'severity' => ['required'],
+            'files' => ['sometimes', 'array'],
         ]);
 
         try {
@@ -69,7 +70,7 @@ class ObservationController extends Controller
                 $organization_id = $organization->id;
             }
 
-            Observation::create([
+            $observation = Observation::create([
                 'user_id' => auth()->user()->id,
                 'affected_workers' => $request->affected_workers ? $request->affected_workers : null,
                 'description' => $request->description,
@@ -80,6 +81,15 @@ class ObservationController extends Controller
                 'observation_type_id' => $request->observation_type,
                 'organization_id' => $organization_id,
             ]);
+            // logger($request->file('files'));
+            if (request('files')) {
+                $files = request('files');
+                foreach ($files as $file) {
+                    logger($file);
+                    storeMedia($file, Observation::class, $observation->id, 'observations');
+
+                }
+            }
 
             logAction(auth()->user()->email, 'You created an observation ', 'Observation Create', $request->ip());
             // SENDMAIL

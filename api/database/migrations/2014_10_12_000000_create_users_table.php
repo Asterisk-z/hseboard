@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('lastName');
             $table->string('email')->unique();
             $table->string('phone')->unique();
+            $table->string('ispon')->unique()->nullable();
             $table->integer('account_type_id');
             $table->integer('account_role_id')->default(1);
             $table->string('password');

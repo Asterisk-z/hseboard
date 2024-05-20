@@ -18,6 +18,8 @@ return new class extends Migration
             $table->uuid('uuid')->unique();
             $table->string('name')->unique();
             $table->string('token')->unique();
+            $table->string('ispon')->unique()->nullable();
+            $table->string('rc_number')->unique();
             $table->string('bio');
             $table->string('address');
             $table->integer('country_id');

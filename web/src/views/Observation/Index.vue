@@ -39,14 +39,14 @@ onMounted(() => {
     openLinks.getObservationTypes();
 });
 
-const computedIndex = (index : any) => ++index;
+const computedIndex = (index: any) => ++index;
 
-const getObservations : any  = computed(() => (observationStore.observations));
-const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser : any  = computed(() => (authStore.loggedUser));
-const getObservationTypes : any  = computed(() => (openLinks.observationTypes));
-const getPriorities : any  = computed(() => (openLinks.priorities));
-const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const getObservations: any = computed(() => (observationStore.observations));
+const getActiveOrg: any = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser: any = computed(() => (authStore.loggedUser));
+const getObservationTypes: any = computed(() => (openLinks.observationTypes));
+const getPriorities: any = computed(() => (openLinks.priorities));
+const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 const valid = ref(true);
@@ -78,7 +78,7 @@ const setDeleteDialog = (value: boolean) => {
 const selectedItem = ref({} as any);
 const selectItem = (item: any, action: string = '') => {
     selectedItem.value = Object.assign({}, item.raw);
- 
+
     switch (action) {
         case 'view':
             setViewDialog(true)
@@ -100,7 +100,7 @@ const selectItem = (item: any, action: string = '') => {
         default:
             break;
     }
-    
+
 }
 
 
@@ -121,27 +121,27 @@ const headers = ref([
     {
         key: 'description',
         title: 'Description',
-        value: (item: any): string => `${item.description}`
+        value: (item: any): string => `${item.description.substring(0, 15)} ${item.description.length > 15 ? '...' : ''}`
     },
     {
         key: 'observation_type_id',
         title: 'Observation Type',
-        value: (item: any): string => `${item.observation_type.description}`
+        value: (item: any): string => `${item.observation_type.description} `
     },
     {
         key: 'status',
         title: 'Status',
-        value: (item: any): string => `${item.status}`
+        value: (item: any): string => `${item.status} `
     },
     {
         key: 'incident_datetime',
         title: 'Incident Date/Time',
-        value: (item: any): string => `${moment(item.incident_datetime).format('MMMM Do YYYY, h:mm:ss a')}`
+        value: (item: any): string => `${moment(item.incident_datetime).format('MMMM Do YYYY, h:mm:ss a')} `
     },
     {
         key: 'created_at',
         title: 'Date Created',
-        value: (item: any): string => `${moment(item.created_at).format('MMMM Do YYYY, h:mm:ss a')}`
+        value: (item: any): string => `${moment(item.created_at).format('MMMM Do YYYY, h:mm:ss a')} `
     },
     {
         key: 'action',
@@ -161,8 +161,9 @@ const fields = ref({
     address: "",
     location_detail: "",
     sendToOrg: "No",
+    images: [],
     organization_id: getActiveOrg.value?.uuid,
-    
+
 });
 
 const editFields = ref({
@@ -175,10 +176,10 @@ const editFields = ref({
     address: "",
     location_detail: "",
     organization_id: getActiveOrg.value?.uuid,
-    
+
 });
 
-const fieldRules : any = ref({
+const fieldRules: any = ref({
     observationTypeId: [
         (v: string) => !!v || 'Observation Type is required',
     ],
@@ -208,6 +209,7 @@ const fieldRules : any = ref({
     ],
 })
 
+const images = ref([])
 
 const save = async (e: any) => {
     e.preventDefault();
@@ -216,23 +218,28 @@ const save = async (e: any) => {
         setLoading(true)
 
         const values = { ...fields.value }
-        
-        let objectValues = {
-            "observation_type": values?.observationTypeId,
-            "description": values?.description,
-            "location_details": values?.location_detail,
-            "address": values?.address,
-            "affected_workers": values?.affectedWorkers,
-            "organization_id": values.sendToOrg == 'No' ? null :values?.organization_id,
-            "date_time": moment(fields.value.date_time).format('YYYY-MM-DD hh:mm:ss'),
-            "severity": values?.priorityId,
-            "images": images.value
-        }
-        
+        const formData = new FormData();
+
+        formData.append('observation_type', values?.observationTypeId);
+        formData.append('description', values?.description);
+        formData.append('location_details', values?.location_detail);
+        formData.append('address', values?.address);
+        formData.append('affected_workers', values?.affectedWorkers);
+        formData.append('organization_id', values.sendToOrg == 'No' ? null : values?.organization_id);
+        formData.append('date_time', moment(fields.value.date_time).format('YYYY-MM-DD hh:mm:ss'));
+        formData.append('severity', values?.priorityId);
+        // formData.append('images', images.value);
+        // formData.append('files[]', fields.value.images?.map((item: any) => (item[0])))
+        // formData.append('files[]', files.value)
+        files.value.forEach(file => {
+            formData.append('files[]', file);
+        });
+        // formData.append('files[]', values?.images[0])
 
 
-        
-        const resp = await observationStore.addObservation(objectValues)
+
+
+        const resp = await observationStore.addObservation(formData)
             .catch((error: any) => {
                 console.log(error)
                 throw error
@@ -240,13 +247,24 @@ const save = async (e: any) => {
             .then((resp: any) => {
                 return resp
             });
-            
+
         if (resp?.message == 'success') {
             setLoading(false)
             setDialog(false)
-            setTimeout(() => {
-                formContainer.value.reset()
-            }, 2000)
+            // setTimeout(() => {
+            //     formContainer.value.reset()
+            // }, 2000)
+            fields.value.observationTypeId = '';
+            fields.value.description = '';
+            fields.value.location_detail = '';
+            fields.value.address = '';
+            fields.value.affectedWorkers = '';
+            fields.value.sendToOrg = 'No';
+            fields.value.date_time = '';
+            fields.value.priorityId = '';
+            fields.value.images = [];
+            files.value = []
+            previewImage.value = []
             observationStore.getObservations();
         }
 
@@ -293,9 +311,9 @@ const update = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setEditDialog(false)
-            setTimeout(() => {
-                formContainer.value.reset()
-            }, 2000)
+            // setTimeout(() => {
+            //     formContainer.value.reset()
+            // }, 2000)
             observationStore.getObservations();
         }
 
@@ -354,11 +372,13 @@ const datetime = ref('')
 
 
 const files = ref([])
-const images = ref([])
+// const images = ref([])
 const previewImage = ref([] as any)
 
 const selectImage = (image: any) => {
-    
+
+    fields.value.images = image.target.files;
+    console.log(image.target.files)
     images.value = image.target.files;
     previewImage.value = [];
 
@@ -389,7 +409,7 @@ const startInvestigation = async (item: any) => {
             allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
-                
+
                 startInvestigationAction(objectValues)
             }
         });
@@ -420,15 +440,15 @@ const startInvestigationAction = async (item: any) => {
             });
 
         if (resp?.message == 'success') {
-            
-            router.push(`/hse-investigating/${item.observation_id}`)
+
+            router.push(`/hse-investigating/${item.observation_id} `)
         }
 
 
 
 
     } catch (error) {
-        
+
     }
 
 }
@@ -736,49 +756,75 @@ const startInvestigationAction = async (item: any) => {
                                                         <template v-if="selectedItem">
                                                             <tr>
                                                                 <td></td>
-                                                                <td>Observation Type </td>
+                                                                <td class="text-subtitle-1 font-weight-medium pb-1">
+                                                                    Observation Type </td>
                                                                 <td>{{ `${selectedItem?.observation_type?.description}`
                                                                     }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td></td>
-                                                                <td>Observer </td>
+                                                                <td class="text-subtitle-1 font-weight-medium pb-1">
+                                                                    Observer </td>
                                                                 <td>{{ `${selectedItem?.observer?.firstName}
                                                                     ${selectedItem?.observer?.lastName}` }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td></td>
-                                                                <td>Description </td>
+                                                                <td class="text-subtitle-1 font-weight-medium pb-1">
+                                                                    Description </td>
                                                                 <td>{{ `${selectedItem?.description}` }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td></td>
-                                                                <td>Address </td>
+                                                                <td class="text-subtitle-1 font-weight-medium pb-1">
+                                                                    Address </td>
                                                                 <td>{{ `${selectedItem?.address}` }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td></td>
-                                                                <td>Location Details </td>
+                                                                <td class="text-subtitle-1 font-weight-medium pb-1">
+                                                                    Location Details </td>
                                                                 <td>{{ `${selectedItem?.location_details}` }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td></td>
-                                                                <td>Affected Workers </td>
+                                                                <td class="text-subtitle-1 font-weight-medium pb-1">
+                                                                    Affected Workers </td>
                                                                 <td>{{ `${selectedItem?.affected_workers}` }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td></td>
-                                                                <td>Incident Date </td>
+                                                                <td class="text-subtitle-1 font-weight-medium pb-1">
+                                                                    Incident Date </td>
                                                                 <td>{{ `${selectedItem?.incident_datetime}` }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td></td>
-                                                                <td>Status </td>
+                                                                <td class="text-subtitle-1 font-weight-medium pb-1">
+                                                                    Status </td>
                                                                 <td>{{ `${selectedItem?.status}` }}</td>
                                                             </tr>
                                                         </template>
                                                     </tbody>
                                                 </v-table>
+
+                                                <template v-if="selectedItem">
+                                                    <div v-if="selectedItem?.media?.length > 0">
+                                                        <VRow>
+                                                            <VCol cols="4" v-for="image in selectedItem?.media"
+                                                                :key="image">
+
+                                                                <div>
+                                                                    <a :href="image?.full_url" target="_blank">
+                                                                        <img class="preview my-3" :src="image?.full_url"
+                                                                            alt="" style="max-width: 200px;" />
+                                                                    </a>
+
+                                                                </div>
+                                                            </VCol>
+                                                        </VRow>
+                                                    </div>
+                                                </template>
                                             </VCol>
 
                                             <VCol cols="12" lg="12" class="text-right"
@@ -895,7 +941,7 @@ const startInvestigationAction = async (item: any) => {
                                             View Observation
                                         </v-list-item-title>
                                     </v-list-item>
-                                    
+
                                     <v-list-item @click="selectItem(item, 'edit')">
                                         <v-list-item-title>
                                             <v-icon class="mr-2" size="small">
@@ -912,7 +958,7 @@ const startInvestigationAction = async (item: any) => {
                                             Delete Observation
                                         </v-list-item-title>
                                     </v-list-item>
-                                        
+
                                 </v-list>
                             </v-menu>
                         </template>
@@ -924,7 +970,7 @@ const startInvestigationAction = async (item: any) => {
 
                         <template v-slot:item.status="{ item }">
                             <div class="">
-                                <v-chip :color="item.selectable.status=='invite' ? 'green' : 'orange'"
+                                <v-chip :color="item.selectable.status == 'invite' ? 'green' : 'orange'"
                                     :text="item.selectable.status" class="text-uppercase" size="small" label></v-chip>
                             </div>
                         </template>

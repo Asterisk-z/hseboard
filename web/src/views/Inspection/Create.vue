@@ -32,20 +32,21 @@ const inspectionStore = useInspectionStore();
 onMounted(() => {
     inspectionStore.getInspectionTypes();
     inspectionStore.getInvestigationTemplateTypes();
-    
+    inspectionStore.getInspectionTemplateForTypeId()
+
     // teamMemberStore.getTeamMembers();
     // openLinks.getPriorities();
     // investigationStore.getInvestigationQuestions(route.params.observation_id as string);
 });
 
-const getInspectionTypes : any  = computed(() => (inspectionStore.inspectionTypes));
-const getInvestigationTemplateTypes : any  = computed(() => (inspectionStore.inspectionTemplateTypes));
-const getInspectionTemplateForTypeId : any  = computed(() => (inspectionStore.inspectionTypeTemplates));
+const getInspectionTypes: any = computed(() => (inspectionStore.inspectionTypes));
+const getInvestigationTemplateTypes: any = computed(() => (inspectionStore.inspectionTemplateTypes));
+const getInspectionTemplateForTypeId: any = computed(() => (inspectionStore.inspectionTypeTemplates));
 
-const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser : any  = computed(() => (authStore.loggedUser));
-const getInvestigation : any  = computed(() => (investigationStore.investigation));
-const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const getActiveOrg: any = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser: any = computed(() => (authStore.loggedUser));
+const getInvestigation: any = computed(() => (investigationStore.investigation));
+const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 const page = ref({ title: 'Create Inspection' });
 const breadcrumbs = ref([
@@ -128,26 +129,26 @@ const stepOneFieldRules: any = ref({
 
 
 
-const fetchInspectionTemplate = async () => {
+// const fetchInspectionTemplate = async () => {
 
-    try {
-
-
-    const resp = await inspectionStore.getInspectionTemplateForTypeId(stepOneFields.value.inspectionTemplateTypeId as string)
-        .catch((error: any) => {
-            console.log(error)
-            throw error
-        })
-        .then((resp: any) => {
-            return resp
-        });
+//     try {
 
 
+//         const resp = await inspectionStore.getInspectionTemplateForTypeId(stepOneFields.value.inspectionTemplateTypeId as string)
+//             .catch((error: any) => {
+//                 console.log(error)
+//                 throw error
+//             })
+//             .then((resp: any) => {
+//                 return resp
+//             });
 
-    } catch (error) {
 
-    }
-}
+
+//     } catch (error) {
+
+//     }
+// }
 
 const fetchOrganization = async (token: string) => {
 
@@ -168,10 +169,10 @@ const fetchOrganization = async (token: string) => {
         } else {
 
             stepOneFields.value.organization = {
-                        uuid: '',
-                        name: '',
-                        token: '',
-                    }
+                uuid: '',
+                name: '',
+                token: '',
+            }
         }
 
 
@@ -193,20 +194,21 @@ const sendInitiateInspection = async (e: any) => {
 
         const values = { ...stepOneFields.value }
 
-
+        console.log(getActiveOrg.value?.uuid);
+        console.log(values?.organization);
         let objectValues = {
             "organization_id": getActiveOrg.value?.uuid,
-            "recipient_organization_id": values?.organization ? values?.organization?.uuid : getActiveOrg.value?.uuid,
-            "selectedType" : values?.selectedType,
-            "templateId" : values?.templateId,
-            "name" : values?.name,
-            "inspectionTemplateTypeId" : values?.inspectionTemplateTypeId,
-            "location" : values?.location,
-            "description" : values?.description,
-            "objective" : values?.objective,
-            "ppe" : values?.ppe,
+            "recipient_organization_id": Object.keys(values?.organization).length === 0 ? getActiveOrg.value?.uuid : values.organization?.uuid,
+            "selectedType": values?.selectedType,
+            "templateId": values?.templateId,
+            "name": values?.name,
+            // "inspectionTemplateTypeId": values?.inspectionTemplateTypeId,
+            "location": values?.location,
+            "description": values?.description,
+            "objective": values?.objective,
+            "ppe": values?.ppe,
         }
-
+        console.log(objectValues);
         const resp = await inspectionStore.initiateInspection(objectValues)
             .catch((error: any) => {
                 console.log(error)
@@ -220,13 +222,13 @@ const sendInitiateInspection = async (e: any) => {
             setLoading(false)
 
             stepOneFields.value.selectedType = '';
-            stepOneFields.value.inspectionTemplateTypeId = '';
+            // stepOneFields.value.inspectionTemplateTypeId = '';
             stepOneFields.value.orgToken = '';
-            stepOneFields.value.organization =   {
-                        uuid: '',
-                        name: '',
-                        token: '',
-                    };
+            stepOneFields.value.organization = {
+                uuid: '',
+                name: '',
+                token: '',
+            };
             stepOneFields.value.templateId = '';
             stepOneFields.value.name = '';
             stepOneFields.value.location = '';
@@ -305,11 +307,11 @@ const sendInitiateInspection = async (e: any) => {
                                                 <div class="d-flex align-center">
                                                     <div class="pl-4 mt-n1">
                                                         <h5 class="text-h6">{{
-                                                            stepOneFields.organization?.name
-                                                            }}</h5>
+            stepOneFields.organization?.name
+        }}</h5>
                                                         <h5 class="text-h6">{{
-                                                            stepOneFields.organization?.token
-                                                            }}</h5>
+                stepOneFields.organization?.token
+            }}</h5>
                                                     </div>
                                                 </div>
                                             </v-card-item>
@@ -334,8 +336,8 @@ const sendInitiateInspection = async (e: any) => {
 
                                 <template v-if="stepOneFields.selectedType">
 
-                                    <VCol cols="12" md="12">
-                                        <v-label class="font-weight-medium pb-1">investigation Template Type</v-label>
+                                    <!-- <VCol cols="12" md="12">
+                                        <v-label class="font-weight-medium pb-1">Inspection Template Type</v-label>
                                         <VSelect v-model="stepOneFields.inspectionTemplateTypeId"
                                             :items="getInvestigationTemplateTypes" label="Select" single-line
                                             variant="outlined" @update:modelValue="fetchInspectionTemplate"
@@ -343,12 +345,12 @@ const sendInitiateInspection = async (e: any) => {
                                             :rules="[(v: any) => !!v || 'You must select to continue!']"
                                             item-title='description' item-value="id" required>
                                         </VSelect>
-                                    </VCol>
+                                    </VCol> -->
 
                                     <template v-if="getInspectionTemplateForTypeId.length > 0">
 
                                         <VCol cols="12" md="12">
-                                            <v-label class="font-weight-medium pb-1">Template</v-label>
+                                            <v-label class="font-weight-medium pb-1">Select Checklist Template</v-label>
                                             <VSelect v-model="stepOneFields.templateId"
                                                 :items="getInspectionTemplateForTypeId" label="Select" single-line
                                                 variant="outlined" class="text-capitalize"
@@ -440,4 +442,3 @@ const sendInitiateInspection = async (e: any) => {
     min-height: 68px;
 }
 </style>
-

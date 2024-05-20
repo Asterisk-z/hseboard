@@ -21,12 +21,12 @@ onMounted(() => {
 
 });
 
-const computedIndex = (index : any) => ++index;
-const getOffers : any  = computed(() => (offerStore.offers));
-const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser : any  = computed(() => (authStore.loggedUser));
-const getAllOrganizations : any  = computed(() => (organizationStore.organizations));
-const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const computedIndex = (index: any) => ++index;
+const getOffers: any = computed(() => (offerStore.offers));
+const getActiveOrg: any = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser: any = computed(() => (authStore.loggedUser));
+const getAllOrganizations: any = computed(() => (organizationStore.organizations));
+const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 const page = ref({ title: 'Request and Invites' });
@@ -72,7 +72,7 @@ const setDeleteDialog = (value: boolean) => {
 const selectedItem = ref({} as any);
 const selectItem = (item: any, action: string = '') => {
     selectedItem.value = Object.assign({}, item.raw);
- 
+
     switch (action) {
         case 'request':
             setRequestDialog(true)
@@ -83,7 +83,7 @@ const selectItem = (item: any, action: string = '') => {
         default:
             break;
     }
-    
+
 }
 
 
@@ -134,28 +134,72 @@ const headers = ref([
     },
 ]);
 
+type OrganizationType = {
+    uuid: string
+    name: string,
+    token: string,
+};
+
 
 const fields = ref({
     email: "",
     message: "",
+    orgToken: '',
+    organization: null as null || {} as OrganizationType,
     organization_id: getActiveOrg.value?.uuid
 });
 
-const fieldRules : any = ref({
+const fieldRules: any = ref({
     message: [
         (v: string) => !!v || 'Message is required',
         (v: string) => v.length > 10 || 'More than 10 letters required'
     ],
+    orgToken: [
+        (v: string) => !!v || 'Token is required',
+    ],
     email: [(v: string) => !!v || 'E-mail is required', (v: string) => /.+@.+\..+/.test(v) || 'E-mail must be valid'],
 })
 
+
+
+const fetchOrganization = async (token: string) => {
+
+    try {
+
+        const resp = await organizationStore.getTokenOrganizations(fields.value.orgToken)
+            .catch((error: any) => {
+                console.log(error)
+                throw error
+            })
+            .then((resp: any) => {
+                return resp
+            });
+
+        if (resp) {
+
+            fields.value.organization = resp
+
+        } else {
+
+            fields.value.organization = {
+                uuid: '',
+                name: '',
+                token: '',
+            }
+        }
+
+
+    } catch (error) {
+
+    }
+}
 
 const sendInvite = async (e: any) => {
     e.preventDefault();
 
     try {
         setLoading(true)
-        
+
         if (!isLoggedInUserOwnsActionOrg) {
             throw "You cant perform this action";
             return;
@@ -169,7 +213,7 @@ const sendInvite = async (e: any) => {
             "organization_id": values?.organization_id,
             "recipient_email": values?.email
         }
-        
+
         const resp = await offerStore.sendOffer(objectValues)
             .catch((error: any) => {
                 console.log(error)
@@ -178,13 +222,15 @@ const sendInvite = async (e: any) => {
             .then((resp: any) => {
                 return resp
             });
-            
+
         if (resp?.message == 'success') {
             setLoading(false)
             setInviteDialog(false)
-            setTimeout(() => {
-                formContainer.value.reset()
-            }, 2000)
+            // setTimeout(() => {
+            //     formContainer.value.reset()
+            // }, 2000)
+            fields.value.message = ''
+            fields.value.email = ''
             offerStore.getOffers();
         }
 
@@ -212,9 +258,9 @@ const sendRequest = async (e: any) => {
         let objectValues = {
             "type": 'request',
             "message": values?.message,
-            "organization_id": values?.organization_id
+            "organization_id": values?.organization?.uuid
         }
-        
+
         const resp = await offerStore.sendOffer(objectValues)
             .catch((error: any) => {
                 console.log(error)
@@ -223,14 +269,14 @@ const sendRequest = async (e: any) => {
             .then((resp: any) => {
                 return resp
             });
-            
+
         if (resp?.message == 'success') {
             setLoading(false)
             setRequestDialog(false)
-            setTimeout(() => {
-                formContainer.value.reset()
-            }, 2000)
+
             offerStore.getOffers();
+            fields.value.message = ''
+            fields.value.orgToken = ''
         }
 
         setLoading(false)
@@ -309,7 +355,8 @@ const getColor = (status: string) => {
 
                     <template v-slot:append>
                         <v-sheet>
-                            <v-btn color="primary" class="mr-2" @click="setInviteDialog(true)" v-if="isLoggedInUserOwnsActionOrg">Send Invite</v-btn>
+                            <v-btn color="primary" class="mr-2" @click="setInviteDialog(true)"
+                                v-if="isLoggedInUserOwnsActionOrg">Send Invite</v-btn>
                             <v-btn color="primary" class="mr-2" @click="setRequestDialog(true)">Send Request</v-btn>
 
                             <v-dialog v-model="dialog" max-width="800">
@@ -331,15 +378,21 @@ const getColor = (status: string) => {
                                             <VRow class="mt-5 mb-3">
 
                                                 <VCol cols="12" md="12">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Email</v-label>
+                                                    <v-label
+                                                        class="text-subtitle-1 font-weight-medium pb-1">Email</v-label>
                                                     <VTextField v-model="fields.email" :rules="fieldRules.email"
                                                         required variant="outlined" label="Email Address"
                                                         :color="fields.email.length > 2 ? 'success' : 'primary'">
                                                     </VTextField>
                                                 </VCol>
                                                 <VCol cols="12" md="12">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Messages</v-label>
-                                                    <VTextarea variant="outlined"  outlined name="Note" label="Last Name" v-model="fields.message" :rules="fieldRules.message" required :color="fields.message.length > 10 ? 'success' : 'primary'"></VTextarea>
+                                                    <v-label
+                                                        class="text-subtitle-1 font-weight-medium pb-1">Messages</v-label>
+                                                    <VTextarea variant="outlined" outlined name="Note"
+                                                        label="Message..." v-model="fields.message"
+                                                        :rules="fieldRules.message" required
+                                                        :color="fields.message.length > 10 ? 'success' : 'primary'">
+                                                    </VTextarea>
                                                 </VCol>
                                                 <VCol cols="12" lg="12" class="text-right">
                                                     <v-btn color="error" @click="setInviteDialog(false)"
@@ -359,9 +412,9 @@ const getColor = (status: string) => {
                                         </VForm>
                                     </v-card-text>
                                 </v-card>
-                                
+
                             </v-dialog>
-                            
+
                             <v-dialog v-model="requestDialog" max-width="800">
 
                                 <v-card>
@@ -382,31 +435,79 @@ const getColor = (status: string) => {
                                             <VRow class="mt-5 mb-3">
 
                                                 <VCol cols="12" md="12">
-                                                    <v-label class="font-weight-medium pb-2">Organizations</v-label>
-                                                    <VSelect v-model="fields.organization_id" :items="getAllOrganizations"
-                                                        :rules="fieldRules.organization_id" label="Select"
-                                                        :selected="'member'" item-title="name" item-value="uuid"
-                                                        single-line variant="outlined" class="text-capitalize">
-                                                    </VSelect>
+                                                    <v-label
+                                                        class="text-subtitle-1 font-weight-medium pb-1">Organization
+                                                        Invite Token</v-label>
+                                                    <VTextField type="text" v-model="fields.orgToken"
+                                                        :rules="fieldRules.orgToken" required variant="outlined"
+                                                        label="" @change="fetchOrganization"
+                                                        :color="fields.orgToken.length > 2 ? 'success' : 'primary'">
+                                                        <template v-slot:append>
+                                                            <v-btn color="primary" @click="fetchOrganization"
+                                                                :disabled="fields.orgToken?.length < 12">Search</v-btn>
+                                                        </template>
+                                                    </VTextField>
                                                 </VCol>
-                                                <VCol cols="12" md="12">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Messages</v-label>
-                                                    <VTextarea variant="outlined"  outlined name="Note" label="Last Name" v-model="fields.message" :rules="fieldRules.message" required :color="fields.message.length > 10 ? 'success' : 'primary'"></VTextarea>
-                                                </VCol>
-                                                <VCol cols="12" lg="12" class="text-right">
-                                                    <v-btn color="error" @click="setRequestDialog(false)"
-                                                        variant="text">Cancel</v-btn>
 
-                                                    <v-btn color="primary" type="submit" :loading="loading"
-                                                        :disabled="!valid" @click="sendRequest">
-                                                        <span v-if="!loading">
-                                                            Send Request
-                                                        </span>
-                                                        <clip-loader v-else :loading="loading" color="white"
-                                                            :size="'25px'"></clip-loader>
-                                                    </v-btn>
+                                                <VCol cols="12" md="12" v-if="fields.orgToken?.length > 12">
 
+                                                    <div v-if="Object.keys(fields.organization).length > 1">
+                                                        <v-card elevation="10" rounded="md">
+                                                            <v-card-item>
+                                                                <div class="d-flex align-center">
+                                                                    <div class="pl-4 mt-n1">
+                                                                        <h5 class="text-h6">{{
+            fields.organization?.name
+        }}</h5>
+                                                                        <h5 class="text-h6">{{
+                fields.organization?.token
+            }}</h5>
+                                                                    </div>
+                                                                </div>
+                                                            </v-card-item>
+                                                        </v-card>
+                                                    </div>
+                                                    <div v-else>
+                                                        <v-card elevation="10" rounded="md">
+                                                            <v-card-item>
+                                                                <div class="d-flex align-center">
+                                                                    <div class="pl-4 mt-n1">
+                                                                        <h5 class="text-h6">
+                                                                            Organization Not Found
+                                                                        </h5>
+                                                                    </div>
+                                                                </div>
+                                                            </v-card-item>
+                                                        </v-card>
+                                                    </div>
                                                 </VCol>
+
+                                                <template v-if="Object.keys(fields.organization).length > 1">
+
+                                                    <VCol cols="12" md="12">
+                                                        <v-label
+                                                            class="text-subtitle-1 font-weight-medium pb-1">Messages</v-label>
+                                                        <VTextarea variant="outlined" outlined name="Note"
+                                                            label="Custom Message" v-model="fields.message"
+                                                            :rules="fieldRules.message" required
+                                                            :color="fields.message.length > 10 ? 'success' : 'primary'">
+                                                        </VTextarea>
+                                                    </VCol>
+                                                    <VCol cols="12" lg="12" class="text-right">
+                                                        <v-btn color="error" @click="setRequestDialog(false)"
+                                                            variant="text">Cancel</v-btn>
+
+                                                        <v-btn color="primary" type="submit" :loading="loading"
+                                                            :disabled="!valid" @click="sendRequest">
+                                                            <span v-if="!loading">
+                                                                Send Request
+                                                            </span>
+                                                            <clip-loader v-else :loading="loading" color="white"
+                                                                :size="'25px'"></clip-loader>
+                                                        </v-btn>
+
+                                                    </VCol>
+                                                </template>
                                             </VRow>
                                         </VForm>
                                     </v-card-text>
@@ -451,9 +552,9 @@ const getColor = (status: string) => {
                                                     <clip-loader v-else :loading="loading" color="white"
                                                         :size="'25px'"></clip-loader>
                                                 </v-btn>
-                                                
-                                                <v-btn color="error" class="mr-3" :loading="loading"
-                                                    :disabled="loading" @click="actionOffer(selectedItem, 'reject')">
+
+                                                <v-btn color="error" class="mr-3" :loading="loading" :disabled="loading"
+                                                    @click="actionOffer(selectedItem, 'reject')">
                                                     <span v-if="!loading">
                                                         Reject
                                                     </span>
@@ -485,11 +586,12 @@ const getColor = (status: string) => {
                         items-per-page="5" item-value="fat" show-select>
                         <template v-slot:item.action="{ item }">
                             <!-- <div v-if="item.selectable.type == 'invite'"> -->
-                                <v-btn size="small" @click="selectItem(item, 'invite')" v-if="item.selectable.recipientEmail == getAuthUser.email && item.selectable.status == 'pending'">
-                                    <v-icon class="" size="small">
-                                        mdi-gesture-double-tap
-                                    </v-icon>
-                                </v-btn>
+                            <v-btn size="small" @click="selectItem(item, 'invite')"
+                                v-if="item.selectable.recipientEmail == getAuthUser.email && item.selectable.status == 'pending'">
+                                <v-icon class="" size="small">
+                                    mdi-gesture-double-tap
+                                </v-icon>
+                            </v-btn>
                             <!-- </div>
                             <div v-else>
                                 <v-btn size="small" @click="selectItem(item, 'delete')" v-if="item.selectable.recipientEmail == getAuthUser.email &&  item.selectable.status == 'pending'">
@@ -498,7 +600,7 @@ const getColor = (status: string) => {
                                     </v-icon>
                                 </v-btn>
                             </div> -->
-                            
+
                         </template>
 
                         <template v-slot:item.sn="{ index }">
@@ -506,23 +608,15 @@ const getColor = (status: string) => {
                         </template>
 
                         <template v-slot:item.status="{ item }">
-                            <v-chip :color="getColor(item.selectable.status)"
-                                    :text="item.selectable.status"
-                                    class="text-uppercase"
-                                    size="small"
-                                    label>
-                            </v-chip>   
+                            <v-chip :color="getColor(item.selectable.status)" :text="item.selectable.status"
+                                class="text-uppercase" size="small" label>
+                            </v-chip>
                         </template>
 
                         <template v-slot:item.type="{ item }">
                             <div class="text-end">
-                                <v-chip
-                                    :color="item.selectable.type=='invite' ? 'green' : 'orange'"
-                                    :text="item.selectable.type"
-                                    class="text-uppercase"
-                                    size="small"
-                                    label
-                                ></v-chip>
+                                <v-chip :color="item.selectable.type == 'invite' ? 'green' : 'orange'"
+                                    :text="item.selectable.type" class="text-uppercase" size="small" label></v-chip>
                             </div>
                         </template>
 

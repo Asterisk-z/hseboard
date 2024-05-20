@@ -61,13 +61,13 @@ const fields = ref({
     email: "",
     phone: "",
     password: "",
+    currentPassword: "",
     confirmPassword: "",
     end_date: "",
     start_date: ""
 });
 
-
-const fieldRules : any = ref({
+const fieldRules: any = ref({
     lastName: [
         (v: string) => !!v || 'Last Name is required',
     ],
@@ -81,6 +81,9 @@ const fieldRules : any = ref({
         (v: string) => !!v || 'Phone Number is required',
         (v: string) => (v && v.length == 11) || 'Phone Number must be 11 characters',
     ],
+    currentPassword: [
+        (v: string) => !!v || 'Password is required',
+    ],
     password: [
         (v: string) => !!v || 'Password is required',
         (v: string) => (v && passwordRegex.test(fields.value.password)) || 'Password must be uppercase, lowercase, numbers and 8 characters',
@@ -92,17 +95,14 @@ const fieldRules : any = ref({
     ],
 })
 
-
 onMounted(() => {
     accountStore.getUserDetail()
 });
 
-
-
-const getAuthUser : any  = computed(() => (authStore.loggedUser));
-const getUserDetail : any  = computed(() => (accountStore.userDetail));
-const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
-const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const getAuthUser: any = computed(() => (authStore.loggedUser));
+const getUserDetail: any = computed(() => (accountStore.userDetail));
+const getActiveOrg: any = computed(() => (organizationStore.getActiveOrg()));
+const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 const save = async (e: any) => {
@@ -113,39 +113,30 @@ const save = async (e: any) => {
 
         const values = { ...fields.value }
 
-        // let objectValues = {
-        //     "title": values?.title,
-        //     "description": values?.description,
-        //     "assignee_id": values?.assigneeId,
-        //     "start_date": moment(values?.start_date).format('YYYY-MM-DD HH:mm:ss'),
-        //     "end_date": moment(values?.end_date).format('YYYY-MM-DD HH:mm:ss'),
-        //     // "priority_id": values?.priorityId
-        // }
+        let objectValues = {
+            "lastName": values?.lastName,
+            "firstName": values?.firstName,
+            "email": values?.email,
+            "phone": values?.phone,
+        }
 
-        // const resp = await actionStore.addAction(objectValues)
-        //     .catch((error: any) => {
-        //         console.log(error)
-        //         throw error
-        //     })
-        //     .then((resp: any) => {
-        //         return resp
-        //     });
+        const resp = await accountStore.updateDetail(objectValues)
+            .catch((error: any) => {
+                console.log(error)
+                throw error
+            })
+            .then((resp: any) => {
+                return resp
+            });
 
-        // if (resp?.message == 'success') {
-        //     setLoading(false)
-        //     setDialog(false)
+        if (resp?.message == 'success') {
+            setLoading(false)
+            setDialog(false)
 
-        //     fields.value.title = "";
-        //     fields.value.description = "";
-        //     fields.value.assigneeId = "";
-        //     fields.value.priorityId = "";
-        //     fields.value.end_date = "";
-        //     fields.value.start_date = "";
-
-        //     actionStore.getActions();
+            accountStore.getUserDetail()
 
 
-        // }
+        }
 
         setLoading(false)
         setDialog(false)
@@ -159,6 +150,18 @@ const save = async (e: any) => {
     }
 
 }
+
+
+watch(
+    () => getUserDetail.value,
+    (value) => {
+        fields.value.lastName = getUserDetail.value?.lastName
+        fields.value.firstName = getUserDetail.value?.firstName
+        fields.value.email = getUserDetail.value?.email
+        fields.value.phone = getUserDetail.value?.phone
+
+    }
+)
 
 </script>
 
@@ -174,7 +177,8 @@ const save = async (e: any) => {
 
                         <v-sheet>
                             <v-btn color="primary" class="mr-2" @click="setDialog(true)">Update Information</v-btn>
-                            <v-btn color="primary" class="mr-2" @click="setPasswordDialog(true)">Update Password</v-btn>
+                            <v-btn color="primary" class="mr-2" @click="setPasswordDialog(true)">Update
+                                Password</v-btn>
 
 
                             <v-dialog v-model="passwordDialog" max-width="600">
@@ -196,14 +200,17 @@ const save = async (e: any) => {
                                             <VRow class="mt-5 mb-3">
 
                                                 <VCol cols="12" md="12">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Current Password</v-label>
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Current
+                                                        Password</v-label>
                                                     <VTextField :type="showPassword ? 'text' : 'password'"
-                                                        v-model="fields.lastName" :rules="fieldRules.lastName" required
-                                                        variant="outlined" label="Current Password"
+                                                        v-model="fields.currentPassword"
+                                                        :rules="fieldRules.currentPassword" required variant="outlined"
+                                                        label="Current Password"
                                                         :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                                                         @click:append-inner="showPassword = !showPassword">
                                                     </VTextField>
                                                 </VCol>
+
 
                                                 <VCol cols="12" md="6">
                                                     <v-label class="text-subtitle-1 font-weight-medium pb-2">New
@@ -268,8 +275,7 @@ const save = async (e: any) => {
                                                         Name</v-label>
                                                     <VTextField type="text" v-model="fields.lastName"
                                                         :rules="fieldRules.lastName" required variant="outlined"
-                                                        label="Last Name"
-                                                        :color="fields.lastName.length > 2 ? 'success' : 'primary'">
+                                                        label="Last Name">
                                                     </VTextField>
                                                 </VCol>
                                                 <VCol cols="12" md="6">
@@ -277,8 +283,7 @@ const save = async (e: any) => {
                                                         Name</v-label>
                                                     <VTextField type="text" v-model="fields.firstName"
                                                         :rules="fieldRules.firstName" required variant="outlined"
-                                                        label="First Name"
-                                                        :color="fields.firstName.length > 2 ? 'success' : 'primary'">
+                                                        label="First Name">
                                                     </VTextField>
                                                 </VCol>
 
@@ -287,8 +292,7 @@ const save = async (e: any) => {
                                                         class="text-subtitle-1 font-weight-medium pb-1">Email</v-label>
                                                     <VTextField type="email" v-model="fields.email"
                                                         :rules="fieldRules.email" required variant="outlined"
-                                                        label="Email"
-                                                        :color="fields.email.length > 2 ? 'success' : 'primary'">
+                                                        label="Email">
                                                     </VTextField>
                                                 </VCol>
 
@@ -297,8 +301,7 @@ const save = async (e: any) => {
                                                         Number</v-label>
                                                     <VTextField type="number" v-model="fields.phone"
                                                         :rules="fieldRules.phone" required variant="outlined"
-                                                        label="Phone Number"
-                                                        :color="fields.phone.length > 2 ? 'success' : 'primary'">
+                                                        label="Phone Number">
                                                     </VTextField>
                                                 </VCol>
 
@@ -343,7 +346,8 @@ const save = async (e: any) => {
                             </VCol>
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">Creation Date</label>
-                                <p class="text-body-1"> {{ `${moment(getUserDetail?.created_at).format('MMMM Do YYYY, h:mm a')}` }}</p>
+                                <p class="text-body-1"> {{ moment(getUserDetail?.created_at).format(`MMMM Do YYYY, h:mm
+                                    a`) }}</p>
                             </VCol>
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">Account Role</label>
@@ -363,4 +367,3 @@ const save = async (e: any) => {
     min-height: 68px;
 }
 </style>
-

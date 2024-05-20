@@ -41,13 +41,13 @@ onMounted(() => {
     auditTemplateStore.getAuditTemplates()
 });
 
-const computedIndex = (index : any) => ++index;
+const computedIndex = (index: any) => ++index;
 
-const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser : any  = computed(() => (authStore.loggedUser));
-const getAuditTemplates : any  = computed(() => (auditTemplateStore.auditTemplates));
-const getAuditTypes : any  = computed(() => (auditTemplateStore.auditTypes));
-const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const getActiveOrg: any = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser: any = computed(() => (authStore.loggedUser));
+const getAuditTemplates: any = computed(() => (auditTemplateStore.auditTemplates));
+const getAuditTypes: any = computed(() => (auditTemplateStore.auditTypes));
+const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 const valid = ref(true);
@@ -87,6 +87,11 @@ const selectItem = (item: any, action: string = '') => {
         case 'edit':
             setEditDialog(true)
             break;
+        case 'viewQuestion':
+            // setViewQuestion(true)
+            questions.value = selectedItem.value.questions?.map((question: any) => (question?.question))
+            setQuestionDialog(true)
+            break;
         case 'delete':
             setDeleteDialog(true)
             break;
@@ -108,12 +113,12 @@ const headers = ref([
     {
         key: 'title',
         title: 'Title',
-        value: (item: any): string => `${item.title}`,
+        value: (item: any): string => `${item.title.substring(0, 15)} ${item.title.length > 15 ? '...' : ''}`
     },
     {
         key: 'description',
         title: 'Description',
-        value: (item: any): string => `${item.description}`
+        value: (item: any): string => `${item.description.substring(0, 15)} ${item.description.length > 15 ? '...' : ''}`
     },
     {
         key: 'created_at',
@@ -156,7 +161,7 @@ const fieldRules: any = ref({
 })
 
 
-const newRow : any = ref([]);
+const newRow: any = ref([]);
 const save = async (e: any) => {
     e.preventDefault();
 
@@ -270,13 +275,13 @@ const selectImage = (image: any) => {
     images.value = image.target.files;
     previewImage.value = [];
 
-    readXlsxFile(image.target.files[0]).then((rows : any) => {
+    readXlsxFile(image.target.files[0]).then((rows: any) => {
         questions.value = rows
         questionDialog.value = true
         rows.forEach((row: any) => {
             newRow.value.push(row[0])
         })
-        
+
     })
 
 
@@ -295,7 +300,7 @@ const selectImage = (image: any) => {
         <v-row>
             <v-col cols="12" md="12">
 
-                <v-card :title="`Audit Documents`" flat>
+                <v-card :title="`Inspection Templates`" flat>
 
 
                     <template v-slot:append>
@@ -306,7 +311,7 @@ const selectImage = (image: any) => {
                                 <v-card>
                                     <v-card-text>
                                         <div class="d-flex justify-space-between">
-                                            <h3 class="text-h3">Add Document</h3>
+                                            <h3 class="text-h3">Add Template</h3>
                                             <v-btn icon @click="setDialog(false)" size="small" flat>
                                                 <XIcon size="16" />
                                             </v-btn>
@@ -321,7 +326,7 @@ const selectImage = (image: any) => {
                                             <VRow class="mt-5 mb-3">
 
                                                 <VCol cols="12" md="12">
-                                                    <v-label class="font-weight-medium pb-1">Audit Type</v-label>
+                                                    <v-label class="font-weight-medium pb-1">Inspection Type</v-label>
                                                     <VSelect v-model="fields.audit_type_id" :items="getAuditTypes"
                                                         label="Select" single-line variant="outlined"
                                                         class="text-capitalize"
@@ -434,7 +439,7 @@ const selectImage = (image: any) => {
                                             </thead>
                                             <tbody>
                                                 <tr v-for="(item) in questions" :key="item">
-                                                    <td>{{ `${item[0]}` }}</td>
+                                                    <td>{{ `${item}` }}</td>
                                                 </tr>
                                             </tbody>
                                             <tfoot>
@@ -442,7 +447,8 @@ const selectImage = (image: any) => {
                                                     <th class="text-left">
 
                                                         <v-btn color="primary" class="mr-2"
-                                                            @click="setQuestionDialog(false)">Close Template</v-btn>
+                                                            @click="setQuestionDialog(false)">Close
+                                                            Questions</v-btn>
                                                     </th>
                                                 </tr>
                                             </tfoot>
@@ -514,7 +520,8 @@ const selectImage = (image: any) => {
                         <template v-slot:item.action="{ item }">
                             <div v-if="isLoggedInUserOwnsActionOrg">
                                 <v-btn color="error" @click="selectItem(item, 'delete')"> Delete </v-btn>
-                                <v-btn color="primary" > View Questions </v-btn>
+                                <v-btn color="primary" @click="selectItem(item, 'viewQuestion')"> View Questions
+                                </v-btn>
                             </div>
                         </template>
 

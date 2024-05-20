@@ -36,17 +36,17 @@ onMounted(() => {
     // investigationStore.getInvestigationQuestions(route.params.observation_id as string);
 });
 
-const getAuditOptions : any   = computed(() => (auditTemplateStore.auditOptions));
-const getAuditTypes : any   = computed(() => (auditTemplateStore.auditTypes));
+const getAuditOptions: any = computed(() => (auditTemplateStore.auditOptions));
+const getAuditTypes: any = computed(() => (auditTemplateStore.auditTypes));
 
-const getActiveOrg : any   = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser : any   = computed(() => (authStore.loggedUser));
-const getMembers : any   = computed(() => (teamMemberStore.members));
-const getInvestigationQuestions : any   = computed(() => (investigationStore.questions));
-const getInvestigation : any   = computed(() => (investigationStore.investigation));
-const getPriorities : any   = computed(() => (openLinks.priorities));
-const isLoggedInUserOwnsActionOrg : any   = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
-const isLoggedInUserIsLead : any   = computed(() => (getAuthUser.value?.id == getInvestigation.value?.lead?.member?.id));
+const getActiveOrg: any = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser: any = computed(() => (authStore.loggedUser));
+const getMembers: any = computed(() => (teamMemberStore.members));
+const getInvestigationQuestions: any = computed(() => (investigationStore.questions));
+const getInvestigation: any = computed(() => (investigationStore.investigation));
+const getPriorities: any = computed(() => (openLinks.priorities));
+const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const isLoggedInUserIsLead: any = computed(() => (getAuthUser.value?.id == getInvestigation.value?.lead?.member?.id));
 
 
 const page = ref({ title: 'Create Audit' });
@@ -139,7 +139,7 @@ const selectItem = (item: any, action: string = '', extra: any = '') => {
 }
 
 const fields = ref({
-    leadInvestigator: getInvestigation?.lead ??'',
+    leadInvestigator: getInvestigation?.lead ?? '',
     teamMember: [],
     groupChatName: '',
 
@@ -147,10 +147,10 @@ const fields = ref({
     organization_id: getActiveOrg.value?.uuid,
 });
 
-const filteredMember : any  = computed(() => (getMembers.value?.filter((member: any) => (member.id != fields.value?.leadInvestigator))));
+const filteredMember: any = computed(() => (getMembers.value?.filter((member: any) => (member.id != fields.value?.leadInvestigator))));
 
-const members_ids : any  = computed(() => (getInvestigation.value?.all_members.map((member: any) => (member.member_id))));
-const filteredNonMember : any  = computed(() => (getMembers.value?.filter((member: any) => (!members_ids.value?.includes(member.id)))));
+const members_ids: any = computed(() => (getInvestigation.value?.all_members.map((member: any) => (member.member_id))));
+const filteredNonMember: any = computed(() => (getMembers.value?.filter((member: any) => (!members_ids.value?.includes(member.id)))));
 
 
 const fieldRules: any = ref({
@@ -174,15 +174,15 @@ const save = async (e: any) => {
         setLoading(true)
 
         const values = { ...fields.value }
-        
-        
-        
+
+
+
         let objectValues = {
             "organization_id": getActiveOrg.value?.uuid,
             "investigation_id": getInvestigation.value?.uuid,
             "lead_investigator": values?.leadInvestigator,
-            "team_members":  values?.teamMember,
-            'group_name':  values?.groupChatName,
+            "team_members": values?.teamMember,
+            'group_name': values?.groupChatName,
         }
 
         const resp = await investigationStore.setInvestigationMember(objectValues)
@@ -217,13 +217,13 @@ const removeMember = async (member: any) => {
 
     try {
         setLoading(true)
-        
+
         let objectValues = {
             "organization_id": getActiveOrg.value?.uuid,
             "investigation_id": getInvestigation.value?.uuid,
-            "team_member":  member
+            "team_member": member
         }
-        
+
         Swal.fire({
             title: 'Info!',
             text: 'Do you want to start investigation?',
@@ -234,8 +234,8 @@ const removeMember = async (member: any) => {
             allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
-                
-                
+
+
                 investigationStore.removeMember(objectValues)
                     .catch((error: any) => {
                         throw error
@@ -284,12 +284,12 @@ const sendQuestion = async (e: any) => {
 
         const values = { ...stepTwoFields.value }
         console.log(values)
-        
+
         let objectValues = {
             "organization_id": getActiveOrg.value?.uuid,
             "investigation_id": getInvestigation.value?.uuid,
             "questions": values?.questions,
-            "members":  values?.members,
+            "members": values?.members,
         }
 
         const resp = await investigationStore.sendInvestigationQuestions(objectValues)
@@ -303,7 +303,7 @@ const sendQuestion = async (e: any) => {
 
         if (resp?.message == 'success') {
             setLoading(false)
-            
+
             // investigationStore.getInvestigation(route.params.observation_id as string);
         }
 
@@ -357,10 +357,10 @@ const sendInvites = async (e: any) => {
             "organization_id": getActiveOrg.value?.uuid,
             "investigation_id": getInvestigation.value?.uuid,
             "date_times": date_times,
-            "members":  values?.members,
-            "interview_type":  values?.interview_type,
-            "interview_link":  values?.interview_link,
-            "interview_location":  values?.interview_location,
+            "members": values?.members,
+            "interview_type": values?.interview_type,
+            "interview_link": values?.interview_link,
+            "interview_location": values?.interview_location,
         }
 
         const resp = await investigationStore.sendInvestigationInvites(objectValues)
@@ -416,8 +416,8 @@ const sendFindings = async (e: any) => {
         let objectValues = {
             "organization_id": getActiveOrg.value?.uuid,
             "investigation_id": getInvestigation.value?.uuid,
-            "type":  values?.type,
-            "detail":  values?.detail,
+            "type": values?.type,
+            "detail": values?.detail,
         }
 
         const resp = await investigationStore.sendInvestigationFindings(objectValues)
@@ -436,14 +436,14 @@ const sendFindings = async (e: any) => {
         }
 
         setLoading(false)
-            setViewFindingDialog(false)
+        setViewFindingDialog(false)
         stepFourFields.value.detail = ''
 
 
     } catch (error) {
         console.log(error)
-        setLoading(false)           
-         setViewFindingDialog(false)
+        setLoading(false)
+        setViewFindingDialog(false)
     }
 
 }
@@ -455,10 +455,10 @@ const stepFiveFields = ref({
     end_date: "",
     start_date: "",
     organization_id: getActiveOrg.value?.uuid,
-    
+
 });
 
-const stepFiveFieldRules : any = ref({
+const stepFiveFieldRules: any = ref({
     priorityId: [
         (v: string) => !!v || 'Priority is required',
     ],
@@ -497,7 +497,7 @@ const sendRecommendation = async (e: any) => {
             "description": values?.description,
             "assignee_id": values?.assigneeId,
             "start_date": moment(values?.start_date).format('YYYY-MM-DD HH:mm:ss'),
-            "end_date":  moment(values?.end_date).format('YYYY-MM-DD HH:mm:ss'),  
+            "end_date": moment(values?.end_date).format('YYYY-MM-DD HH:mm:ss'),
             "priority_id": values?.priorityId
         }
 
@@ -539,10 +539,10 @@ const stepSixFields = ref({
     location: "",
     incident_date_time: "",
     organization_id: getActiveOrg.value?.uuid,
-    
+
 });
 
-const stepSixFieldRules : any = ref({
+const stepSixFieldRules: any = ref({
     location: [
         (v: string) => !!v || 'Priority is required',
     ],
@@ -620,7 +620,7 @@ const addQuestion = async (e: any) => {
         setLoading(true)
 
         const values = { ...stepTwoFields.value }
-        
+
         let objectValues = {
             "investigation_id": getInvestigation.value?.uuid,
             "question": values?.question
@@ -637,7 +637,7 @@ const addQuestion = async (e: any) => {
 
         if (resp?.message == 'success') {
             setLoading(false)
-            
+
             // investigationStore.getInvestigationQuestions(route.params.observation_id as string);
         }
 
@@ -657,12 +657,12 @@ const completeInvestigation = async (member: any) => {
 
     try {
         setLoading(true)
-        
+
         let objectValues = {
             "organization_id": getActiveOrg.value?.uuid,
             "investigation_id": getInvestigation.value?.uuid,
         }
-        
+
         Swal.fire({
             title: 'Info!',
             text: 'Do you want to complete investigation?',
@@ -673,8 +673,8 @@ const completeInvestigation = async (member: any) => {
             allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
-                
-                
+
+
                 investigationStore.completeInvestigation(objectValues)
                     .catch((error: any) => {
                         throw error
@@ -689,8 +689,8 @@ const completeInvestigation = async (member: any) => {
             }
         });
 
-        
-            
+
+
 
 
         setLoading(false)
@@ -779,7 +779,7 @@ const fetchOrganization = async (token: string) => {
     // console.log(stepOneFields.value.orgToken);
 
     try {
-        
+
 
         const resp = await organizationStore.getTokenOrganizations(stepOneFields.value.orgToken)
             .catch((error: any) => {
@@ -789,28 +789,28 @@ const fetchOrganization = async (token: string) => {
             .then((resp: any) => {
                 return resp
             });
-            
+
         if (resp) {
             stepOneFields.value.organization = resp
         } else {
 
             stepOneFields.value.organization = {
-                        uuid: '',
-                        name: '',
-                        token: '',
-                    };
+                uuid: '',
+                name: '',
+                token: '',
+            };
         }
 
 
     } catch (error) {
-        
+
     }
 }
 
 const fetchTemplate = async (token: string) => {
 
     try {
-        
+
 
         const resp = await auditTemplateStore.getAuditTypeTemplate(stepOneFields.value.auditType)
             .catch((error: any) => {
@@ -820,8 +820,8 @@ const fetchTemplate = async (token: string) => {
             .then((resp: any) => {
                 return resp
             });
-            
-        
+
+
         if (resp) {
             stepOneFields.value.auditTemplates = resp
         } else {
@@ -832,7 +832,7 @@ const fetchTemplate = async (token: string) => {
 
 
     } catch (error) {
-        
+
     }
 }
 
@@ -845,10 +845,10 @@ const sendAuditOption = async (e: any) => {
 
         const values = { ...stepOneFields.value }
 
-        
+
         let objectValues = {
             "organization_id": getActiveOrg.value?.uuid,
-            "recipient_organization_id": values?.organization ? values?.organization?.uuid : getActiveOrg.value?.uuid,
+            "recipient_organization_id": Object.keys(values?.organization).length === 0 ? getActiveOrg.value?.uuid : values.organization?.uuid,
             'audit_type_id': values?.auditType,
             'audit_template_id': values?.auditTemplate,
             'audit_scope': values?.auditScope,
@@ -866,22 +866,22 @@ const sendAuditOption = async (e: any) => {
 
         if (resp?.message == 'success') {
             setLoading(false)
-            
+
             stepOneFields.value.auditOption = '';
             stepOneFields.value.auditType = '';
-                stepOneFields.value.orgToken = '';
-                stepOneFields.value.organization = {
-                        uuid: '',
-                        name: '',
-                        token: '',
-                    };
-                stepOneFields.value.auditTitle = '';
-                stepOneFields.value.auditScope = '';
-                stepOneFields.value.auditTemplate = '';
-                stepOneFields.value.auditTemplates = '';
+            stepOneFields.value.orgToken = '';
+            stepOneFields.value.organization = {
+                uuid: '',
+                name: '',
+                token: '',
+            };
+            stepOneFields.value.auditTitle = '';
+            stepOneFields.value.auditScope = '';
+            stepOneFields.value.auditTemplate = '';
+            stepOneFields.value.auditTemplates = '';
 
-                router.push(`/ongoing-hse-audit-report/${resp.data?.data?.uuid}`)
-            
+            router.push(`/ongoing-hse-audit-report/${resp.data?.data?.uuid}`)
+
             setAddAuditSetupDialog(false)
         }
 
@@ -896,6 +896,10 @@ const sendAuditOption = async (e: any) => {
         setAddAuditSetupDialog(false)
     }
 
+}
+
+const gotoRoute = (value: string) => {
+    router.push(value)
 }
 
 </script>
@@ -1019,8 +1023,7 @@ const sendAuditOption = async (e: any) => {
 
 
                                 <VCol cols="12" lg="12" class="text-right">
-                                    <v-btn color="error" @click="setAddAuditSetupDialog(false)"
-                                        variant="text">Cancel</v-btn>
+                                    <v-btn color="error" @click="gotoRoute('hse-audit')" variant="text">Cancel</v-btn>
 
                                     <v-btn color="primary" type="submit" :loading="loading" :disabled="!valid"
                                         @click="sendAuditOption">
@@ -1047,4 +1050,3 @@ const sendAuditOption = async (e: any) => {
     min-height: 68px;
 }
 </style>
-

@@ -33,6 +33,7 @@ import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 import Vue3Toasity, { type ToastContainerOptions } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import '@/assets/css/toast-wrapper.css'
+import GoogleSignInPlugin from "vue3-google-signin"
 
 const i18n = createI18n({
     locale: 'en',
@@ -61,6 +62,10 @@ app.use(vuetify).use(
     Vue3Toasity,
     { autoClose: 3000, multiple: true, limit: 3, newestOnTop : true } as ToastContainerOptions,
 )
+
+app.use(GoogleSignInPlugin, {
+    clientId: '661088481369-cjnjhm6eijug19q05nn61931p15j2frd.apps.googleusercontent.com',
+});
 // app.use(DatetimePicker);
 app.component('pulse-loader', PulseLoader)
 app.component('clip-loader', ClipLoader).mount('#app');

@@ -51,9 +51,40 @@ export const useOrganizationStore = defineStore({
                 }).catch((error: any) => {
                     console.log(error)
                 });
-           return data;
+            return data;
+        },
+        async getOrganizationUsers(org_id: string) {
+
+            const data = await fetchWrapper
+                .get(`organizations/users/${org_id}`)
+                .then((response: any) => {
+                    return response.data
+                }).catch((error: any) => {
+                    console.log(error)
+                });
+            return data;
         },
 
+        async updateDetails(value: any) {
+            try {
+
+                const authStore = useAuthStore();
+                const data = await fetchWrapper.post(`organizations/update-details`, value)
+                    .catch((error: any) => {
+                        throw error;
+                    }).then((response: any) => {
+                        authStore.refresh()
+                        return response
+                    })
+
+                return toastWrapper.success(data?.message, data)
+
+
+            } catch (error: any) {
+                return toastWrapper.error(error, error)
+            }
+
+        },
         async getActiveOrganization(value: any) {
             try {
 
@@ -68,13 +99,12 @@ export const useOrganizationStore = defineStore({
                         return response
                     })
                 
-                toastWrapper.success(data?.message, data)
-                this.setActiveOrg(value?.organization_id)
-                window.location.href = `${import.meta.env.VITE_API_WEB}dashboard`
+                // toastWrapper.success(data?.message, data)
+                // this.setActiveOrg(value?.organization_id)
+                // window.location.href = `${import.meta.env.VITE_API_WEB}dashboard`
 
                 // return toastWrapper.success(data?.message, data)
-
-
+                
             } catch (error: any) {
                 return toastWrapper.error(error, error)
             }

@@ -607,7 +607,7 @@ const blankFn = () => {
                                         <v-card>
                                             <v-card-text>
                                                 <div class="d-flex justify-space-between">
-                                                    <h3 class="text-h3">Step Job Hazard Analysis Step</h3>
+                                                    <h3 class="text-h3">Job Hazard Analysis Step</h3>
                                                     <v-btn icon @click="setStepDialog(false)" size="small" flat>
                                                         <XIcon size="16" />
                                                     </v-btn>

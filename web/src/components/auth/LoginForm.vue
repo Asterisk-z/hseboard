@@ -19,12 +19,12 @@ const username = ref('');
 
 const passwordRules = ref([
     (v: string) => !!v || 'Password is required',
-    (v: string) => (v && v.length <= 10) || 'Password must be less than 10 characters'
+    // (v: string) => (v && v.length >= 10) || 'Password must be less than 10 characters'
 ]);
 
 const emailRules = ref([(v: string) => !!v || 'E-mail is required', (v: string) => /.+@.+\..+/.test(v) || 'E-mail must be valid']);
 
-const validate = async (values: any, { setErrors }: any) =>  {
+const validate = async (values: any, { setErrors }: any) => {
     const request = await authStore.login(username.value, password.value).catch((error) => setErrors({ apiError: error }));
     if (request?.message == 'success') {
         console.log('redirect to dash')
@@ -33,7 +33,7 @@ const validate = async (values: any, { setErrors }: any) =>  {
         setInterval(() => {
             window.location.href = `${import.meta.env.VITE_API_WEB}dashboard`
         }, 2000)
-        
+
     }
 }
 
@@ -57,20 +57,16 @@ const validate = async (values: any, { setErrors }: any) =>  {
         <Form @submit="validate" v-slot="{ errors, isSubmitting }" class="mt-5">
 
             <v-label class="text-subtitle-1 font-weight-semibold pb-2 text-lightText">Email</v-label>
-            <VTextField v-model="username" :rules="emailRules" class="mb-8" required hide-details="auto"
-                label="Email"></VTextField>
+            <VTextField v-model="username" :rules="emailRules" class="mb-8" required hide-details="auto" label="Email">
+            </VTextField>
             <v-label class="text-subtitle-1 font-weight-semibold pb-2 text-lightText">Password</v-label>
 
             <VTextField class="pwdInput" hide-details="auto" :type="showPassword ? 'text' : 'password'"
                 v-model="password" :rules="passwordRules" required variant="outlined" label="Password"
                 :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 @click:append-inner="showPassword = !showPassword"></VTextField>
-                
-            <div class="d-flex flex-wrap align-center my-3 ml-n2">
-                <v-checkbox v-model="checkbox" :rules="[(v:any) => !!v || 'You must agree to continue!']" required
-                    hide-details color="primary">
-                    <template v-slot:label>Remember this Device</template>
-                </v-checkbox>
+
+            <div class="d-flex flex-wrap align-center my-3 ">
                 <div class="ml-sm-auto">
                     <RouterLink to="/auth/initiate-reset-password"
                         class="text-primary text-decoration-none text-body-1 opacity-1 font-weight-medium">Forgot

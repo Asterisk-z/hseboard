@@ -32,21 +32,21 @@ const openLinks = useOpenLinksStore();
 const actionStore = useActionStore();
 
 onMounted(() => {
-    teamMemberStore.getTeamMembersExcept();
+    teamMemberStore.getTeamMembers();
     openLinks.getPriorities();
     actionStore.getActions();
 });
 
 
-const computedIndex = (index : any) => ++index;
+const computedIndex = (index: any) => ++index;
 
-const getActions : any   = computed(() => (actionStore.actions));
-const getTeamMembersExceptMe : any   = computed(() => (teamMemberStore.membersExceptMe));
-const getActiveOrg : any   = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser : any   = computed(() => (authStore.loggedUser));
-const getObservationTypes : any   = computed(() => (openLinks.observationTypes));
-const getPriorities : any   = computed(() => (openLinks.priorities));
-const isLoggedInUserOwnsActionOrg : any   = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const getActions: any = computed(() => (actionStore.actions));
+const getTeamMembersExceptMe: any = computed(() => (teamMemberStore.members));
+const getActiveOrg: any = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser: any = computed(() => (authStore.loggedUser));
+const getObservationTypes: any = computed(() => (openLinks.observationTypes));
+const getPriorities: any = computed(() => (openLinks.priorities));
+const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 const valid = ref(true);
@@ -90,7 +90,7 @@ const setDeleteDialog = (value: boolean) => {
 const selectedItem = ref({} as any);
 const selectItem = (item: any, action: string = '') => {
     selectedItem.value = Object.assign({}, item.raw);
- 
+
     switch (action) {
         case 'view':
             setViewDialog(true)
@@ -103,7 +103,7 @@ const selectItem = (item: any, action: string = '') => {
             editFields.value.priorityId = selectedItem.value?.priority_id
             editFields.value.end_date = selectedItem.value?.end_datetime
             editFields.value.start_date = selectedItem.value?.start_datetime
-            
+
             setEditDialog(true)
             break;
         case 'delete':
@@ -112,10 +112,10 @@ const selectItem = (item: any, action: string = '') => {
         default:
             break;
     }
-    
+
 }
 
-const isAssignee : any  = computed(() => (selectedItem?.value?.assignee_id == getAuthUser?.value?.id));
+const isAssignee: any = computed(() => (selectedItem?.value?.assignee_id == getAuthUser?.value?.id));
 
 
 
@@ -131,12 +131,12 @@ const headers = ref([
         key: 'title',
         title: 'Title',
         sortable: false,
-        value: (item: any): string => `${item.title} `,
+        value: (item: any): string => `${item.title.substring(0, 15)} ${item.title.length > 15 ? '...' : ''}`
     },
     {
         key: 'description',
         title: 'Description',
-        value: (item: any): string => `${item.description}`
+        value: (item: any): string => `${item.description.substring(0, 15)} ${item.description.length > 15 ? '...' : ''}`
     },
     {
         key: 'assignee_id',
@@ -180,7 +180,7 @@ const fields = ref({
     end_date: "",
     start_date: "",
     organization_id: getActiveOrg.value?.uuid,
-    
+
 });
 
 const editFields = ref({
@@ -191,10 +191,10 @@ const editFields = ref({
     end_date: "",
     start_date: "",
     organization_id: getActiveOrg.value?.uuid,
-    
+
 });
 
-const fieldRules : any = ref({
+const fieldRules: any = ref({
     priorityId: [
         (v: string) => !!v || 'Priority is required',
     ],
@@ -233,7 +233,7 @@ const save = async (e: any) => {
             "description": values?.description,
             "assignee_id": values?.assigneeId,
             "start_date": moment(values?.start_date).format('YYYY-MM-DD HH:mm:ss'),
-            "end_date":  moment(values?.end_date).format('YYYY-MM-DD HH:mm:ss'),  
+            "end_date": moment(values?.end_date).format('YYYY-MM-DD HH:mm:ss'),
             "priority_id": values?.priorityId
         }
 
@@ -245,7 +245,7 @@ const save = async (e: any) => {
             .then((resp: any) => {
                 return resp
             });
-            
+
         if (resp?.message == 'success') {
             setLoading(false)
             setDialog(false)
@@ -258,7 +258,7 @@ const save = async (e: any) => {
             fields.value.start_date = "";
 
             actionStore.getActions();
-            
+
 
         }
 
@@ -289,7 +289,7 @@ const update = async (e: any) => {
             "description": values?.description,
             "action_id": values?.actionId,
             "start_date": moment(values?.start_date).format('YYYY-MM-DD HH:mm:ss'),
-            "end_date":  moment(values?.end_date).format('YYYY-MM-DD HH:mm:ss'),  
+            "end_date": moment(values?.end_date).format('YYYY-MM-DD HH:mm:ss'),
             "priority_id": values?.priorityId
         }
 
@@ -482,7 +482,7 @@ const selectImage = (image: any) => {
                                                     <v-label class="font-weight-medium pb-1">User</v-label>
                                                     <VSelect v-model="fields.assigneeId" :items="getTeamMembersExceptMe"
                                                         :rules="fieldRules.assigneeId" label="Select" :selected="''"
-                                                        item-title='lastName' item-value="uuid" single-line
+                                                        item-title='full_name' item-value="uuid" single-line
                                                         variant="outlined" class="text-capitalize">
 
                                                         <!-- <template v-slot:selection="{ item }">
@@ -962,14 +962,14 @@ const selectImage = (image: any) => {
 
                         <template v-slot:item.status="{ item }">
                             <div class="">
-                                <v-chip :color="item.selectable.status=='invite' ? 'green' : 'orange'"
+                                <v-chip :color="item.selectable.status == 'invite' ? 'green' : 'orange'"
                                     :text="item.selectable.status" class="text-uppercase" size="small" label></v-chip>
                             </div>
                         </template>
 
                         <template v-slot:item.priority_id="{ item }">
                             <div class="">
-                                <v-chip :color="item.selectable.priority.description=='invite' ? 'green' : 'orange'"
+                                <v-chip :color="item.selectable.priority.description == 'invite' ? 'green' : 'orange'"
                                     :text="item.selectable.priority.description" class="text-uppercase" size="small"
                                     label></v-chip>
                             </div>

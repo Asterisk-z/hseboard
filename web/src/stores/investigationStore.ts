@@ -112,6 +112,20 @@ export const useInvestigationStore = defineStore({
                 return toastWrapper.error(error, error)
             }
         },
+        async setExternalInvestigationMember(values: any) {
+            try {
+                const data = await fetchWrapper
+                    .post(`investigations/external-member`, values)
+                    .then((response: any) => {
+                        return response.data
+                    }).catch((error: any) => {
+                        console.log(error)
+                    });
+                return toastWrapper.success(data?.message, data)
+            } catch (error: any) {
+                return toastWrapper.error(error, error)
+            }
+        },
         async removeMember(values: any) {
             const organizationStore = useOrganizationStore();
             try {

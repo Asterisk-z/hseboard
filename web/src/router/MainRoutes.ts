@@ -51,6 +51,11 @@ const MainRoutes = {
             component: () => import('@/views/HSEStatistics/Index.vue')
         },
         {
+            name: 'HSE Statistics Report',
+            path: '/hse-statistics-report/:report_id',
+            component: () => import('@/views/HSEStatistics/Report.vue')
+        },
+        {
             name: 'Create HSE Statistics',
             path: '/create-statistics',
             component: () => import('@/views/HSEStatistics/Create.vue')

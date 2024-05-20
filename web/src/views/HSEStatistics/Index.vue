@@ -41,14 +41,14 @@ onMounted(() => {
 });
 
 
-const computedIndex = (index : any) => ++index;
+const computedIndex = (index: any) => ++index;
 
-const getActions : any  = computed(() => (actionStore.actions));
-const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser : any  = computed(() => (authStore.loggedUser));
-const getPriorities : any  = computed(() => (openLinks.priorities));
-const getReports : any  = computed(() => (reportStore.reports));
-const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const getActions: any = computed(() => (actionStore.actions));
+const getActiveOrg: any = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser: any = computed(() => (authStore.loggedUser));
+const getPriorities: any = computed(() => (openLinks.priorities));
+const getReports: any = computed(() => (reportStore.reports));
+const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 const valid = ref(true);
@@ -117,7 +117,7 @@ const selectItem = (item: any, action: string = '') => {
 
 }
 
-const isAssignee : any  = computed(() => (selectedItem?.value?.assignee_id == getAuthUser?.value?.id));
+const isAssignee: any = computed(() => (selectedItem?.value?.assignee_id == getAuthUser?.value?.id));
 
 
 
@@ -283,8 +283,8 @@ const selectImage = (image: any) => {
 
 }
 
-const goToRoute = () => {
-    router.push('/create-statistics')
+const goToRoute = (value: string) => {
+    router.push(value)
 }
 
 </script>
@@ -300,7 +300,8 @@ const goToRoute = () => {
 
                     <template v-slot:append>
                         <v-sheet v-if="isLoggedInUserOwnsActionOrg">
-                            <v-btn color="primary" class="mr-2" @click="goToRoute">Create HSE Statistics</v-btn>
+                            <v-btn color="primary" class="mr-2" @click="goToRoute('/create-statistics')">Create HSE
+                                Statistics</v-btn>
                         </v-sheet>
                     </template>
 
@@ -505,24 +506,10 @@ const goToRoute = () => {
                         items-per-page="5" item-value="fat" show-select>
                         <template v-slot:item.action="{ item }">
 
-                            <v-menu>
-                                <template v-slot:activator="{ props }">
-                                    <v-btn color="primary" dark v-bind="props" flat> Action </v-btn>
-                                </template>
+                            <v-btn color="primary" dark
+                                @click="goToRoute(`/hse-statistics-report/${item.selectable.uuid}`)" flat>
+                                Report </v-btn>
 
-                                <v-list>
-                                    <template>
-                                        <v-list-item @click="selectItem(item, 'view')">
-                                            <v-list-item-title>
-                                                <v-icon class="mr-2" size="small">
-                                                    mdi-pencil
-                                                </v-icon>
-                                                Edit Action
-                                            </v-list-item-title>
-                                        </v-list-item>
-                                    </template>
-                                </v-list>
-                            </v-menu>
                         </template>
 
                         <template v-slot:item.sn="{ index }">

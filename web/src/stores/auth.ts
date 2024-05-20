@@ -13,6 +13,7 @@ type registerType = {
     accountType: string,
     password: string,
     password_confirmation: string,
+    rcNumber?: string,
     orgName?: string,
     industry?: string,
     country?: string,
@@ -101,6 +102,10 @@ export const useAuthStore = defineStore({
                     this.user = btoa(JSON.stringify(data.user))
                     this.hse_tok_passer = data.access_token
                     // user.accessToken
+                    // setTimeout(() => {
+                    //   auth.refresh();
+                    // }, 10000)
+                    window.location.href = `${import.meta.env.VITE_API_WEB}dashboard`
                 }
 
                 // return toastWrapper.success(data?.message, data)

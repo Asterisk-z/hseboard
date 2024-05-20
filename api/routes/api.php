@@ -124,6 +124,7 @@ Route::middleware('auth:api')->group(function ($router) {
 
     Route::prefix('statistic')->group(function ($router) {
         Route::get('/all', [StatisticsController::class, 'index']);
+        Route::get('/show/{report_id}', [StatisticsController::class, 'show']);
         Route::post('/create', [StatisticsController::class, 'store']);
         Route::post('/delete', [StatisticsController::class, 'delete']);
     });

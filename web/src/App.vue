@@ -8,9 +8,8 @@ import { useAuthStore } from '@/stores/auth';
 const auth: any = useAuthStore();
 
 if (auth.user || auth.hse_tok_passer) {
-  setTimeout(() => {
-    auth.refresh();
-  }, 10000)
-
+  // setTimeout(() => {
+  //   auth.refresh();
+  // }, 10000)
 }
 </script>

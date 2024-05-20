@@ -62,10 +62,30 @@ export const useAccountStore = defineStore({
                 });
             this.userDetail = data;
         },
+        async updateToken() {
+            const data = await fetchWrapper
+                .post(`auth/reset-token`)
+                .then((response: any) => {
+                    return response
+                }).catch((error: any) => {
+                    console.log(error)
+                });
+            this.userDetail = data;
+        },
+        async updateDetail(values : any) {
+            const data = await fetchWrapper
+                .post(`auth/update-details`, values)
+                .then((response: any) => {
+                    return response
+                }).catch((error: any) => {
+                    console.log(error)
+                });
+            this.userDetail = data;
+        },
 
 
 
-
+        
 
 
 

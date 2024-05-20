@@ -105,9 +105,17 @@ class OrganisationController extends Controller
             if (!$relation = OrganisationUser::where('user_id', $user->id)->where('organization_id', $organization->id)->first()) {
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "User is not in organization");
             }
-            $user->active_organization = null;
-            $user->save();
+
             $relation->delete();
+
+            if ($relation = OrganisationUser::where('user_id', $user->id)->first()) {
+                $new_organisation = Organisation::where('id', $relation->organization_id)->first();
+                $user->active_organization = $new_organisation->uuid;
+            } else {
+                $user->active_organization = null;
+            }
+
+            $user->save();
 
             logAction($user->email, 'Your Account was removed from an organization ', 'Remove user', $request->ip());
             logAction(auth()->user()->email, 'You removed a user from your organization ', 'Remove user', $request->ip());
@@ -134,6 +142,8 @@ class OrganisationController extends Controller
             'businessName' => ['required'],
             'address' => ['required'],
             'bio' => ['required'],
+            'rcNumber' => ['required'],
+            'ispon' => ['sometimes'],
         ]);
 
         try {
@@ -145,6 +155,8 @@ class OrganisationController extends Controller
             $organization->name = $request->businessName;
             $organization->address = $request->address;
             $organization->bio = $request->bio;
+            $organization->rc_number = $request->rcNumber;
+            $organization->ispon = $request->ispon;
             $organization->save();
 
             logAction(auth()->user()->email, 'Organization details updated successful ', 'Organization Detail', $request->ip());

@@ -109,5 +109,35 @@ export const useTeamMemberStore = defineStore({
             }
 
         },
+        async verifyMember(values: any) {
+            try {
+                const data = await fetchWrapper.post(`users/verify-email`, values)
+                    .catch((error: any) => {
+                        throw error;
+                    }).then((response: any) => {
+                        return response
+                    })
+
+                return toastWrapper.success(data?.message, data)
+            } catch (error: any) {
+                return toastWrapper.error(error, error)
+            }
+
+        },
+        async sendMessage(values: any) {
+            try {
+                const data = await fetchWrapper.post(`users/send-message`, values)
+                    .catch((error: any) => {
+                        throw error;
+                    }).then((response: any) => {
+                        return response
+                    })
+
+                return toastWrapper.success(data?.message, data)
+            } catch (error: any) {
+                return toastWrapper.error(error, error)
+            }
+
+        },
     }
 });

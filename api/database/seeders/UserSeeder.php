@@ -42,6 +42,7 @@ class UserSeeder extends Seeder
                     'lastName' => "$name",
                     'email' => "$name@gmail.com",
                     'phone' => "08166633322$item",
+                    'ispon' => "322$item",
                     'account_role_id' => 3,
                     'account_type_id' => 1,
                     'password' => Hash::make('Pass@1111'),
@@ -50,6 +51,8 @@ class UserSeeder extends Seeder
 
                 $organization = Organisation::create([
                     'name' => "Big Dream$item",
+                    'ispon' => "3432$item",
+                    'rc_number' => "322$item",
                     'bio' => "Dreams starts when you belief",
                     'address' => 'No road house un the street',
                     'country_id' => 1,
