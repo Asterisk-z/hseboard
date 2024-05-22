@@ -17,6 +17,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class InvestigationController extends Controller
 {
@@ -52,6 +53,137 @@ class InvestigationController extends Controller
         }
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function witnessIndex()
+    {
+
+        try {
+
+            $question_user = InvestigationQuestionUser::where('responder_id', auth()->user()->id)->pluck('investigation_id');
+
+            $stats = Investigation::whereIn('id', $question_user)->where('is_del', 'no')->orderBy('created_at', 'desc')->get();
+
+            $converted_stats = arrayKeysToCamelCase($stats);
+
+            return successResponse('Investigation Fetched Successfully', $converted_stats);
+
+        } catch (Exception $error) {
+            logger($error);
+            return successResponse('Investigation Fetched Successfully', []);
+
+        }
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function witnessQuestions()
+    {
+
+        try {
+
+            $investigation = Investigation::where('uuid', request('investigation_id'))->first();
+
+            $question_user = InvestigationQuestionUser::where('responder_id', auth()->user()->id)->where('investigation_id', $investigation->id)->get();
+
+            $converted_stats = arrayKeysToCamelCase($question_user);
+
+            return successResponse('Investigation Fetched Successfully', $converted_stats);
+
+        } catch (Exception $error) {
+            logger($error);
+            return successResponse('Investigation Fetched Successfully', []);
+
+        }
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function witnessCompleted(Request $request)
+    {
+
+        $data = $request->validate([
+            'investigation_id' => ['required'],
+        ]);
+
+        try {
+
+            $investigation = Investigation::where('uuid', request('investigation_id'))->first();
+
+            $questions = InvestigationQuestionUser::where('responder_id', auth()->user()->id)->where('investigation_id', $investigation->id)->get();
+            DB::beginTransaction();
+            if ($questions) {
+                foreach ($questions as $question) {
+                    if (!$question->response) {
+                        DB::rollBack();
+                        continue;
+                    }
+
+                    $question->is_completed = 'yes';
+                    $question->save();
+
+                }
+
+                DB::commit();
+
+                logAction(auth()->user()->email, 'You Answered all investigation Question ', 'All Response Sent', $request->ip());
+                return successResponse('Response Sent Successfully', []);
+            }
+
+        } catch (Exception $e) {
+            logger($e);
+            return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Something Went Wrong");
+
+        }
+
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function witnessRespond(Request $request)
+    {
+
+        $data = $request->validate([
+            'investigation_question_id' => ['required'],
+            'investigation_id' => ['required'],
+            'response' => ['required', 'string'],
+        ]);
+
+        try {
+
+            $investigation = Investigation::where('id', request('investigation_id'))->first();
+
+            $question_user = InvestigationQuestionUser::where('responder_id', auth()->user()->id)->where('investigation_id', $investigation->id)->where('id', request('investigation_question_id'))->first();
+
+            if ($question_user) {
+                $question_user->response = request('response');
+                $question_user->responded_at = now();
+                $question_user->save();
+                logAction(auth()->user()->email, 'You Answered an investigation Question ', 'Response Sent', $request->ip());
+                return successResponse('Response Sent Successfully', []);
+            }
+
+        } catch (Exception $e) {
+            logger($e);
+            return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Something Went Wrong");
+
+        }
+
+    }
     /**
      * Store a newly created resource in storage.
      *

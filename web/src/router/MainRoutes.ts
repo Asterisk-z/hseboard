@@ -66,6 +66,16 @@ const MainRoutes = {
             component: () => import('@/views/HSEInvestigation/Index.vue')
         },
         {
+            name: 'HSE Investigation Witness',
+            path: '/hse-investigation-witness',
+            component: () => import('@/views/HSEInvestigation/Witness.vue')
+        },
+        {
+            name: 'HSE Investigation Witness Question',
+            path: '/hse-witness-questions/:investigation_id',
+            component: () => import('@/views/HSEInvestigation/WitnessQuestion.vue')
+        },
+        {
             name: 'HSE investigating',
             path: '/hse-investigating/:observation_id',
             component: () => import('@/views/HSEInvestigation/Ongoing.vue')
@@ -189,6 +199,11 @@ const MainRoutes = {
             name: 'Billing',
             path: '/billing',
             component: () => import('@/views/Billing/Index.vue')
+        },
+        {
+            name: 'Billing Receipt',
+            path: '/billing/receipt/:transaction_id',
+            component: () => import('@/views/Billing/Receipt.vue')
         },
         {
             name: 'Account Setting',

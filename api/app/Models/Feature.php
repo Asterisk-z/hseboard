@@ -17,9 +17,10 @@ class Feature extends Model
     }
     public function org_feature()
     {
-        $organization = Organisation::where('uuid', request('organization_id'))->first();
+        $organization = Organisation::where('uuid', auth()->user()->active_organization)->first();
         return $this->hasOne(OrganizationFeature::class, 'feature_id', 'id')->where('organization_id', $organization->id);
     }
+
     public function currency()
     {
         return $this->hasOne(Currency::class, 'id', 'currency_id');

@@ -1534,7 +1534,7 @@ const blankFn = () => {
                     <v-card-text>
                         <h1 class="text-uppercase mb-3"> Audit Title - {{ getOngoingMainAudit?.audit_title }}</h1>
                         <h2 class="text-uppercase mb-3">Organization - {{
-                            getOngoingMainAudit?.recipient_organization?.name }}</h2>
+            getOngoingMainAudit?.recipient_organization?.name }}</h2>
                     </v-card-text>
                     <v-card-text>
                         <v-tabs v-model="tab" color="primary" class="customTab">
@@ -1604,8 +1604,6 @@ const blankFn = () => {
                                             <v-sheet>
                                                 <v-dialog v-model="addAuditorsDialog" max-width="800">
                                                     <v-card>
-
-
                                                         <v-card-text>
 
                                                             <div class="d-flex justify-space-between">
@@ -1615,7 +1613,6 @@ const blankFn = () => {
                                                                     <XIcon size="16" />
                                                                 </v-btn>
                                                             </div>
-
                                                         </v-card-text>
                                                         <v-divider></v-divider>
 
@@ -2118,7 +2115,7 @@ const blankFn = () => {
                                                         <td>{{ `${document?.title}` }}</td>
                                                         <td>{{ `${document?.description}` }}</td>
                                                         <td>{{ `${document?.recipient_user_id ?
-                                                            `${document?.uploaded_by?.lastName}
+            `${document?.uploaded_by?.lastName}
                                                             ${document?.uploaded_by?.firstName}` : ''}` }}</td>
                                                         <td class="text-uppercase">{{ `${document?.status}` }}</td>
                                                         <td>
@@ -2339,7 +2336,7 @@ const blankFn = () => {
                                                         <td></td>
                                                         <td>
                                                             {{ `${getSchedule?.auditor_time ? getSchedule?.auditor_time
-                                                            : ""}` }}
+            : ""}` }}
 
                                                             <v-btn color='primary' size='small'
                                                                 @click="actionAcceptedTime('auditor')"
@@ -2349,7 +2346,7 @@ const blankFn = () => {
                                                         </td>
                                                         <td>
                                                             {{ `${getSchedule?.recipient_time ?
-                                                            getSchedule?.recipient_time : ""}` }}
+            getSchedule?.recipient_time : ""}` }}
                                                             <v-btn color='primary' size='small'
                                                                 @click="actionAcceptedTime('recipient')"
                                                                 v-if="isLoggedInUserIsLeadAuditor && !getSchedule?.is_accepted && getSchedule?.auditor_time && getSchedule?.recipient_time">
@@ -2358,7 +2355,7 @@ const blankFn = () => {
                                                         </td>
                                                         <td>
                                                             {{ `${getSchedule?.accepted_time ?
-                                                            getSchedule?.accepted_time : ""}` }}
+            getSchedule?.accepted_time : ""}` }}
                                                         </td>
                                                         <td>{{ `Start Onsite` }}</td>
                                                     </tr>
@@ -2589,8 +2586,8 @@ const blankFn = () => {
                                                                                             @click="setSendCommentDialog(true, question?.id, title_question.id, question)"
                                                                                             flat>
                                                                                             {{ (question?.comment ||
-                                                                                            question?.response?.comment)
-                                                                                            ? `Edit Comment` : `Add
+            question?.response?.comment)
+            ? `Edit Comment` : `Add
                                                                                             Comment` }}
                                                                                         </v-btn>
                                                                                     </template>
@@ -2655,7 +2652,8 @@ const blankFn = () => {
 
 
                                         <v-col cols="12">
-                                            <v-btn color="primary" @click="setViewFindingDialog(true)" class="mr-2"  v-if="isLoggedInUserIsLeadAuditor" >Add
+                                            <v-btn color="primary" @click="setViewFindingDialog(true)" class="mr-2"
+                                                v-if="isLoggedInUserIsLeadAuditor">Add
                                                 Finding</v-btn>
 
                                             <v-sheet>

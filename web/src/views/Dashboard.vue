@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 
-import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
-import UiParentCard from '@/components/shared/UiParentCard.vue';
-// import { getPrimary, getLight100 } from '@/utils/UpdateColors';
+import { useDashboardStore } from '@/stores/dashboardStore';
 
 const page = ref({ title: 'Home' });
 const breadcrumbs = ref([
@@ -20,8 +18,16 @@ const breadcrumbs = ref([
 ]);
 
 
+const dashboardStore = useDashboardStore();
+
+onMounted(() => {
+    dashboardStore.getData();
+});
+
+const getData: any = computed(() => (dashboardStore.data));
+
 /* Chart */
-const chartOptions = computed(() => {
+const ActionChartOptions = computed(() => {
     return {
         chart: {
             height: 275,
@@ -54,7 +60,8 @@ const chartOptions = computed(() => {
             }
         },
         xaxis: {
-            categories: [['Apr'], ['May'], ['June'], ['July'], ['Aug'], ['Sept']],
+
+            categories: [['Pending'], ['Unassigned'], ['Assigned'], ['Rejected'], ['Accepted'], ['Completed']],
             axisBorder: {
                 show: false
             }
@@ -72,11 +79,71 @@ const chartOptions = computed(() => {
         }
     };
 });
-const Chart = {
+const ObservationChartOptions = computed(() => {
+    return {
+        chart: {
+            height: 275,
+            type: 'bar',
+            fontFamily: `inherit`,
+            toolbar: {
+                show: false
+            }
+        },
+        // colors: [getLight100.value, getLight100.value, getPrimary.value, getLight100.value, getLight100.value, getLight100.value],
+        plotOptions: {
+            bar: {
+                borderRadius: 4,
+                columnWidth: '45%',
+                distributed: true,
+                endingShape: 'rounded'
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        legend: {
+            show: false
+        },
+        grid: {
+            yaxis: {
+                lines: {
+                    show: false
+                }
+            }
+        },
+        xaxis: {
+            // labels: ['', '', 'Near Miss', 'Medical Treatment Case', 'Fatality', 'Dangerous Occurrence'],
+            categories: [['Unsafe Act'], ['Unsafe Condition'], ['Near Miss'], ['Medical Treatment Case'], ['Fatality'], ['Dangerous Occurrence']],
+            axisBorder: {
+                show: false
+            }
+        },
+        yaxis: {
+            labels: {
+                show: false
+            }
+        },
+        tooltip: {
+            theme: 'dark',
+            x: {
+                format: 'dd/MM/yy HH:mm'
+            }
+        }
+    };
+});
+const ActionChart = {
     series: [
         {
             name: '',
-            data: [20, 15, 30, 25, 10, 15]
+            data: [0, 0, 0, 0, 0, 0]
+        }
+    ]
+};
+const ObservationChart = {
+    series: [
+        {
+            name: '',
+            data: [0, 0, 0, 0, 0, 0]
         }
     ]
 };
@@ -100,7 +167,7 @@ const Chart = {
                             </v-avatar>
                             <div class="pl-4">
                                 <h6 class="text-subtitle-1 textSecondary">Total Actions</h6>
-                                <h3 class="text-h6">0</h3>
+                                <h3 class="text-h6">{{ getData?.action ? getData?.action : '0' }}</h3>
                             </div>
                         </div>
                     </v-card-item>
@@ -115,7 +182,7 @@ const Chart = {
                             </v-avatar>
                             <div class="pl-4">
                                 <h6 class="text-subtitle-1 textSecondary">Total Inspections</h6>
-                                <h3 class="text-h6">0</h3>
+                                <h3 class="text-h6">{{ getData?.inspection ? getData?.inspection : '0' }}</h3>
                             </div>
                         </div>
                     </v-card-item>
@@ -130,7 +197,7 @@ const Chart = {
                             </v-avatar>
                             <div class="pl-4">
                                 <h6 class="text-subtitle-1 textSecondary">Investigation</h6>
-                                <h3 class="text-h6">0</h3>
+                                <h3 class="text-h6">{{ getData?.investigation ? getData?.investigation : '0' }}</h3>
                             </div>
                         </div>
                     </v-card-item>
@@ -145,7 +212,7 @@ const Chart = {
                             </v-avatar>
                             <div class="pl-4">
                                 <h6 class="text-subtitle-1 textSecondary">Total Report</h6>
-                                <h3 class="text-h6">0</h3>
+                                <h3 class="text-h6">{{ getData?.report ? getData?.report : '0' }}</h3>
                             </div>
                         </div>
                     </v-card-item>
@@ -160,7 +227,7 @@ const Chart = {
                     <v-card-item>
                         <v-card-title class="text-h5">Action</v-card-title>
                         <v-card-subtitle class="text-subtitle-1 textSecondary">All</v-card-subtitle>
-                        <apexchart type="bar" height="275" :options="chartOptions" :series="Chart.series">
+                        <apexchart type="bar" height="275" :options="ActionChartOptions" :series="ActionChart.series">
                         </apexchart>
                     </v-card-item>
                 </v-card>
@@ -171,7 +238,8 @@ const Chart = {
                     <v-card-item>
                         <v-card-title class="text-h5">Observation</v-card-title>
                         <v-card-subtitle class="text-subtitle-1 textSecondary">All</v-card-subtitle>
-                        <apexchart type="bar" height="275" :options="chartOptions" :series="Chart.series">
+                        <apexchart type="bar" height="275" :options="ObservationChartOptions"
+                            :series="ObservationChart.series">
                         </apexchart>
                     </v-card-item>
                 </v-card>

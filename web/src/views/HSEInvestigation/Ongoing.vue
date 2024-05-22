@@ -11,6 +11,7 @@ import { useInvestigationStore } from '@/stores/investigationStore';
 import { useReportStore } from '@/stores/reportStore';
 import { useAuthStore } from '@/stores/auth';
 import { useOpenLinksStore } from '@/stores/openLinks';
+import BuildTeam from '@/views/HSEInvestigation/components/ongoingInvestigation/BuildTeam.vue'
 import moment from 'moment'
 import Swal from 'sweetalert2'
 
@@ -41,6 +42,7 @@ const getInvestigationQuestions: any = computed(() => (investigationStore.questi
 const getInvestigation: any = computed(() => (investigationStore.investigation));
 const getPriorities: any = computed(() => (openLinks.priorities));
 const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const isLoggedInUserOwnInvestigationOrganization: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id && getAuthUser.value?.id == getInvestigation.value.organization?.user_id));
 const isLoggedInUserIsLead: any = computed(() => (getAuthUser.value?.id == getInvestigation.value?.lead?.member?.id));
 
 
@@ -96,6 +98,11 @@ const setAddExternalMemberDialog = (value: boolean) => {
 const viewQuestionTeamDialog = ref(false);
 const setSelectQuestionaireTeam = (value: boolean) => {
     viewQuestionTeamDialog.value = value;
+}
+
+const viewExternalWitnessDialog = ref(false);
+const setExternalWitnessDialog = (value: boolean) => {
+    viewExternalWitnessDialog.value = value;
 }
 
 const viewQuestionDialog = ref(false);
@@ -401,7 +408,11 @@ const removeMember = async (member: any) => {
 const stepTwoFields = ref({
     question: "",
     questions: [],
+    externalTeamMembers: [],
     members: [],
+    orgToken: '',
+    organization: null as null || {} as OrganizationType,
+    externalOrgMembers: null as null || {} as UserType[],
 });
 
 const stepTwoFieldRules: any = ref({
@@ -422,13 +433,20 @@ const sendQuestion = async (e: any) => {
         setLoading(true)
 
         const values = { ...stepTwoFields.value }
-        console.log(values)
+        // console.log(values)
+        // let teams: any[]
+        let teams: any[] = [...values?.members];
+        if (viewExternalWitnessDialog) {
+
+            teams = [...teams, ...values?.externalOrgMembers]
+
+        }
 
         let objectValues = {
             "organization_id": getActiveOrg.value?.uuid,
             "investigation_id": getInvestigation.value?.uuid,
             "questions": values?.questions,
-            "members": values?.members,
+            "members": teams,
         }
 
         const resp = await investigationStore.sendInvestigationQuestions(objectValues)
@@ -459,6 +477,66 @@ const sendQuestion = async (e: any) => {
 
 }
 
+const fetchWitnessOrganization = async (token: string) => {
+
+    try {
+
+        const resp = await organizationStore.getTokenOrganizations(fields.value.orgToken)
+            .catch((error: any) => {
+                console.log(error)
+                throw error
+            })
+            .then((resp: any) => {
+                return resp
+            });
+
+        if (resp) {
+
+            stepTwoFields.value.organization = resp
+            fetchWitnessOrgUser(resp.uuid)
+        } else {
+
+            stepTwoFields.value.organization = {
+                uuid: '',
+                name: '',
+                token: '',
+            }
+        }
+
+
+    } catch (error) {
+
+    }
+}
+
+
+const fetchWitnessOrgUser = async (token: string) => {
+
+    try {
+
+        const resp = await organizationStore.getOrganizationUsers(token)
+            .catch((error: any) => {
+                console.log(error)
+                throw error
+            })
+            .then((resp: any) => {
+                return resp
+            });
+
+        if (resp) {
+
+            stepTwoFields.value.externalOrgMembers = resp
+
+        } else {
+
+            stepTwoFields.value.externalOrgMembers = []
+        }
+
+
+    } catch (error) {
+
+    }
+}
 const stepThreeFields = ref({
     interview_type: "online",
     interview_link: "",
@@ -977,273 +1055,7 @@ const selectImage = (image: any) => {
                             <v-window-item value="tab-1" class="pa-1">
 
                                 <div>
-                                    <v-row class="mt-3 px-4">
-
-                                        <v-col cols="12">
-
-                                            <v-btn color="primary" @click="setAddMemberDialog(true)" class="mr-2">Add
-                                                Investigators</v-btn>
-                                            <v-btn color="primary" @click="setAddExternalMemberDialog(true)"
-                                                class="mr-2">Add
-                                                External Investigators</v-btn>
-                                            <v-sheet>
-                                                <v-dialog v-model="addMemberDialog" max-width="800">
-                                                    <v-card>
-
-                                                        <v-card-text>
-                                                            <div class="d-flex justify-space-between">
-                                                                <h3 class="text-h3">Add Member </h3>
-                                                                <v-btn icon @click="setAddMemberDialog(false)"
-                                                                    size="small" flat>
-                                                                    <XIcon size="16" />
-                                                                </v-btn>
-                                                            </div>
-                                                        </v-card-text>
-                                                        <v-divider></v-divider>
-
-                                                        <v-card-text>
-
-                                                            <VForm v-model="valid" ref="formContainer" fast-fail
-                                                                lazy-validation @submit.prevent="save" class="py-1">
-                                                                <VRow class="mt-5 mb-3">
-
-                                                                    <VCol cols="12" md="12">
-                                                                        <v-label class="font-weight-medium pb-1">Select
-                                                                            a lead
-                                                                            investigator</v-label>
-                                                                        <VSelect v-model="fields.leadInvestigator"
-                                                                            :items="getMembers"
-                                                                            update:modelValue="fields.teamMember.length = 0"
-                                                                            :rules="fieldRules.leadInvestigator"
-                                                                            label="Select" item-title="lastName"
-                                                                            item-value="id"
-                                                                            :item-props="(item: any) => ({ title: `${item?.lastName} ${item?.firstName}`, subtitle: `${item?.email}` })"
-                                                                            single-line variant="outlined"
-                                                                            class="text-capitalize">
-                                                                        </VSelect>
-                                                                    </VCol>
-
-                                                                    <VCol cols="12" md="12"
-                                                                        v-if="fields.leadInvestigator">
-                                                                        <v-label class="font-weight-medium pb-1">Select
-                                                                            Team Member</v-label>
-                                                                        <VSelect v-model="fields.teamMember"
-                                                                            :items="filteredMember"
-                                                                            :rules="fieldRules.teamMember"
-                                                                            label="Select" item-title="lastName"
-                                                                            item-value="id" single-line
-                                                                            variant="outlined" class="text-capitalize"
-                                                                            chips
-                                                                            :item-props="(item: any) => ({ title: `${item?.lastName} ${item?.firstName}`, subtitle: `${item?.email}` })"
-                                                                            multiple>
-
-                                                                        </VSelect>
-                                                                    </VCol>
-
-                                                                    <VCol cols="12" md="12">
-                                                                        <v-label
-                                                                            class="text-subtitle-1 font-weight-medium pb-1">Group
-                                                                            Chat Name</v-label>
-                                                                        <VTextField type="text"
-                                                                            v-model="fields.groupChatName"
-                                                                            :rules="fieldRules.groupChatName" required
-                                                                            variant="outlined" label="Group Chat Name"
-                                                                            :color="fields.groupChatName.length > 2 ? 'success' : 'primary'">
-                                                                        </VTextField>
-                                                                    </VCol>
-
-
-                                                                    <VCol cols="12" lg="12" class="text-right">
-                                                                        <v-btn color="error"
-                                                                            @click="setAddMemberDialog(false)"
-                                                                            variant="text">Cancel</v-btn>
-
-                                                                        <v-btn color="primary" type="submit"
-                                                                            :loading="loading" :disabled="!valid"
-                                                                            @click="save">
-                                                                            <span v-if="!loading">
-                                                                                Save
-                                                                            </span>
-                                                                            <clip-loader v-else :loading="loading"
-                                                                                color="white"
-                                                                                :size="'25px'"></clip-loader>
-                                                                        </v-btn>
-
-                                                                    </VCol>
-                                                                </VRow>
-                                                            </VForm>
-                                                        </v-card-text>
-                                                    </v-card>
-                                                </v-dialog>
-                                                <v-dialog v-model="addExternalMemberDialog" max-width="800">
-                                                    <v-card>
-
-                                                        <v-card-text>
-                                                            <div class="d-flex justify-space-between">
-                                                                <h3 class="text-h3">Add External Investigators </h3>
-                                                                <v-btn icon @click="setAddExternalMemberDialog(false)"
-                                                                    size="small" flat>
-                                                                    <XIcon size="16" />
-                                                                </v-btn>
-                                                            </div>
-                                                        </v-card-text>
-                                                        <v-divider></v-divider>
-
-                                                        <v-card-text>
-
-                                                            <VForm v-model="valid" ref="formContainer" fast-fail
-                                                                lazy-validation @submit.prevent="saveExternal"
-                                                                class="py-1">
-                                                                <VRow class="mt-5 mb-3">
-
-                                                                    <VCol cols="12" md="12">
-                                                                        <v-label
-                                                                            class="text-subtitle-1 font-weight-medium pb-1">Organization
-                                                                            Invite Token</v-label>
-                                                                        <VTextField type="text"
-                                                                            v-model="fields.orgToken"
-                                                                            :rules="fieldRules.orgToken" required
-                                                                            variant="outlined" label=""
-                                                                            @change="fetchOrganization"
-                                                                            :color="fields.orgToken.length > 2 ? 'success' : 'primary'">
-                                                                            <template v-slot:append>
-                                                                                <v-btn color="primary"
-                                                                                    @click="fetchOrganization"
-                                                                                    :disabled="fields.orgToken?.length < 12">Search</v-btn>
-                                                                            </template>
-                                                                        </VTextField>
-                                                                    </VCol>
-
-                                                                    <VCol cols="12" md="12"
-                                                                        v-if="fields.orgToken?.length > 12">
-
-                                                                        <div v-if="fields.organization">
-                                                                            <v-card elevation="10" rounded="md">
-                                                                                <v-card-item>
-                                                                                    <div class="d-flex align-center">
-                                                                                        <div class="pl-4 mt-n1">
-                                                                                            <h5 class="text-h6">{{
-            fields.organization?.name
-        }}</h5>
-                                                                                            <h5 class="text-h6">{{
-                fields.organization?.token
-            }}</h5>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </v-card-item>
-                                                                            </v-card>
-                                                                        </div>
-                                                                        <div v-else>
-                                                                            <v-card elevation="10" rounded="md">
-                                                                                <v-card-item>
-                                                                                    <div class="d-flex align-center">
-                                                                                        <div class="pl-4 mt-n1">
-                                                                                            <h5 class="text-h6">
-                                                                                                Organization Not Found
-                                                                                            </h5>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </v-card-item>
-                                                                            </v-card>
-                                                                        </div>
-                                                                    </VCol>
-                                                                    <!-- <VCol cols="12" md="12">
-                                                                        <v-label class="font-weight-medium pb-1">Select
-                                                                            a lead
-                                                                            investigator</v-label>
-                                                                        <VSelect v-model="fields.leadInvestigator"
-                                                                            :items="getMembers"
-                                                                            update:modelValue="fields.teamMember.length = 0"
-                                                                            :rules="fieldRules.leadInvestigator"
-                                                                            label="Select" item-title="lastName"
-                                                                            item-value="id"
-                                                                            :item-props="(item: any) => ({ title: `${item?.lastName} ${item?.firstName}`, subtitle: `${item?.email}` })"
-                                                                            single-line variant="outlined"
-                                                                            class="text-capitalize">
-                                                                        </VSelect>
-                                                                    </VCol> -->
-
-                                                                    <VCol cols="12" md="12"
-                                                                        v-if="fields.externalOrgMembers?.length > 0">
-                                                                        <v-label class="font-weight-medium pb-1">Select
-                                                                            Team Member</v-label>
-                                                                        <VSelect v-model="fields.externalTeamMembers"
-                                                                            :items="fields.externalOrgMembers"
-                                                                            :rules="fieldRules.externalTeamMember"
-                                                                            label="Select" item-title="full_name"
-                                                                            item-value="id" single-line
-                                                                            variant="outlined" class="text-capitalize"
-                                                                            chips multiple>
-
-                                                                        </VSelect>
-                                                                    </VCol>
-
-                                                                    <VCol cols="12" lg="12" class="text-right">
-                                                                        <v-btn color="error"
-                                                                            @click="setAddExternalMemberDialog(false)"
-                                                                            variant="text">Cancel</v-btn>
-
-                                                                        <v-btn color="primary" type="submit"
-                                                                            :loading="loading" :disabled="!valid"
-                                                                            @click="saveExternal">
-                                                                            <span v-if="!loading">
-                                                                                Save
-                                                                            </span>
-                                                                            <clip-loader v-else :loading="loading"
-                                                                                color="white"
-                                                                                :size="'25px'"></clip-loader>
-                                                                        </v-btn>
-
-                                                                    </VCol>
-                                                                </VRow>
-                                                            </VForm>
-                                                        </v-card-text>
-                                                    </v-card>
-                                                </v-dialog>
-                                            </v-sheet>
-                                        </v-col>
-
-                                        <v-col cols="12">
-                                            <v-table>
-                                                <thead>
-                                                    <tr>
-                                                        <th class="text-left">
-                                                            #
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Full Name
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Email
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Position
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Action
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr v-for="(member, index) in getInvestigation?.all_members"
-                                                        :key="member">
-                                                        <td>{{ computedIndex(index) }}</td>
-                                                        <td>{{ `${member?.member?.lastName}
-                                                            ${member?.member?.firstName}` }}</td>
-                                                        <td>{{ `${member?.member?.email}` }}</td>
-                                                        <td>{{ `${member?.position}` }}</td>
-                                                        <td>
-                                                            <v-btn color='error' size='small'
-                                                                @click="removeMember(member?.member?.id)">
-                                                                Remove
-                                                            </v-btn>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </v-table>
-                                        </v-col>
-                                    </v-row>
-
+                                    <BuildTeam />
                                 </div>
 
                                 <v-row class="mt-3">
@@ -1296,12 +1108,16 @@ const selectImage = (image: any) => {
 
 
                                         <v-col cols="12" v-else>
+                                            <v-btn color="primary" @click="setExternalWitnessDialog(true)"
+                                                class="m-2">Add
+                                                External Witness</v-btn>
                                             <VForm v-model="valid" ref="formContainer" fast-fail lazy-validation
                                                 @submit.prevent="sendQuestion" class="py-1">
                                                 <VRow class="mt-5 mb-3">
 
                                                     <VCol cols="12" md="12">
-                                                        <v-label class="font-weight-medium pb-1">Select Member</v-label>
+                                                        <v-label class="font-weight-medium pb-1">Select
+                                                            Witness</v-label>
                                                         <VSelect v-model="stepTwoFields.members"
                                                             :items="filteredNonMember"
                                                             :rules="stepTwoFieldRules.members" label="Select"
@@ -1311,6 +1127,74 @@ const selectImage = (image: any) => {
                                                             multiple>
                                                         </VSelect>
                                                     </VCol>
+                                                    <template v-if="viewExternalWitnessDialog">
+
+                                                        <VCol cols="12" md="12">
+                                                            <v-label
+                                                                class="text-subtitle-1 font-weight-medium pb-1">Organization
+                                                                Token</v-label>
+                                                            <VTextField type="text" v-model="stepTwoFields.orgToken"
+                                                                :rules="stepTwoFieldRules.orgToken" required
+                                                                variant="outlined" label=""
+                                                                @change="fetchWitnessOrganization"
+                                                                :color="stepTwoFields.orgToken.length > 2 ? 'success' : 'primary'">
+                                                                <template v-slot:append>
+                                                                    <v-btn color="primary"
+                                                                        @click="fetchWitnessOrganization"
+                                                                        :disabled="stepTwoFields.orgToken?.length < 12">Search</v-btn>
+                                                                </template>
+                                                            </VTextField>
+                                                        </VCol>
+
+                                                        <VCol cols="12" md="12"
+                                                            v-if="stepTwoFields.orgToken?.length > 12">
+
+                                                            <div v-if="stepTwoFields.organization">
+                                                                <v-card elevation="10" rounded="md">
+                                                                    <v-card-item>
+                                                                        <div class="d-flex align-center">
+                                                                            <div class="pl-4 mt-n1">
+                                                                                <h5 class="text-h6">{{
+            stepTwoFields.organization?.name
+        }}</h5>
+                                                                                <h5 class="text-h6">{{
+                stepTwoFields.organization?.token
+            }}</h5>
+                                                                            </div>
+                                                                        </div>
+                                                                    </v-card-item>
+                                                                </v-card>
+                                                            </div>
+                                                            <div v-else>
+                                                                <v-card elevation="10" rounded="md">
+                                                                    <v-card-item>
+                                                                        <div class="d-flex align-center">
+                                                                            <div class="pl-4 mt-n1">
+                                                                                <h5 class="text-h6">
+                                                                                    Organization Not Found
+                                                                                </h5>
+                                                                            </div>
+                                                                        </div>
+                                                                    </v-card-item>
+                                                                </v-card>
+                                                            </div>
+                                                        </VCol>
+
+
+                                                        <VCol cols="12" md="12"
+                                                            v-if="stepTwoFields.externalOrgMembers?.length > 0">
+                                                            <v-label class="font-weight-medium pb-1">Select
+                                                                Team Member</v-label>
+                                                            <VSelect v-model="stepTwoFields.externalTeamMembers"
+                                                                :items="stepTwoFields.externalOrgMembers"
+                                                                :rules="stepTwoFieldRules.externalTeamMember"
+                                                                label="Select" item-title="full_name" item-value="id"
+                                                                single-line variant="outlined" class="text-capitalize"
+                                                                chips multiple>
+
+                                                            </VSelect>
+                                                        </VCol>
+                                                    </template>
 
 
                                                     <VCol cols="12" lg="12" class="text-right">
@@ -1333,7 +1217,13 @@ const selectImage = (image: any) => {
                                             <v-btn color="primary" @click="selectItem({}, 'viewQuestion')"
                                                 class="mr-2">Add Question</v-btn>
                                             <v-btn color="primary" @click="setSelectQuestionaireTeam(true)" class="mr-2"
-                                                v-if="stepTwoFields.questions.length > 0">Select Team Members</v-btn>
+                                                v-if="stepTwoFields.questions.length > 0 && !viewQuestionTeamDialog">Select
+                                                Team Members</v-btn>
+                                            <v-btn color="primary" @click="setSelectQuestionaireTeam(false)"
+                                                class="mr-2"
+                                                v-if="stepTwoFields.questions.length > 0 && viewQuestionTeamDialog">Back
+                                                to
+                                                Questions</v-btn>
                                             <v-sheet>
                                                 <v-dialog v-model="viewQuestionDialog" max-width="500">
                                                     <v-card>

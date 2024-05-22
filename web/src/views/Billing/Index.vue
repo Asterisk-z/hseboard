@@ -63,6 +63,7 @@ const enabled = ref(true);
 const delivery = ref('free');
 const selectedFeatures = ref([]);
 const selectedFeaturesTotal = ref(0);
+
 const total = () => {
     let totalValue: number = 0;
     selectedFeatures.value.forEach((feature: any) => {
@@ -122,8 +123,26 @@ const fieldRules: any = ref({
 
 
 const convertedTotal = ref(0);
+const payCurrency = ref('$');
+const estimatedTotal = ref(0);
 const convertTotal = () => {
     convertedTotal.value = selectedFeaturesTotal.value;
+    console.log(selectedCurrency())
+    console.log(selectedPlan())
+    estimatedTotal.value = selectedFeaturesTotal.value * selectedCurrency() * selectedPlan();
+}
+
+
+const selectedPlan = () => {
+    let plan = getAllPlans.value?.filter((item: any) => item?.id == fields.value.plan)
+    // console.log(plan[0])
+    return plan?.length > 0 ? plan[0]?.noOfMonths : 1;
+}
+const selectedCurrency = () => {
+    let currency = getAllCurrencies.value?.filter((item: any) => item?.id == fields.value.currency)
+    // console.log(currency[0])
+    payCurrency.value = currency?.length > 0 ? currency[0]?.symbol : "$"
+    return currency?.length > 0 ? currency[0]?.exchangeToBase : 1;
 }
 
 const initiatePayment = async (e: any) => {
@@ -224,11 +243,12 @@ const transaction_headers = ref([
 
 
 const viewSelectedFeatures: any = ref([]);
+const viewSelectedSubscription: any = ref('');
 const viewDialog = ref(false);
-const setViewDialog = (value: boolean, item = []) => {
+const setViewDialog = (value: boolean, item = [], uuid: string = '') => {
     viewDialog.value = value;
-    console.log(item)
     viewSelectedFeatures.value = item
+    viewSelectedSubscription.value = uuid
     if (value == false) {
         // selectItem({})
 
@@ -266,6 +286,9 @@ const unlocked_headers = ref([
     }
 ]);
 
+const gotoRoute = (link: string) => {
+    router.push(link)
+}
 
 </script>
 
@@ -407,7 +430,7 @@ const unlocked_headers = ref([
                                                                         <v-card-text>
 
                                                                             <div class="d-flex justify-space-between">
-                                                                                <h3 class="text-h3">Add Auditor </h3>
+                                                                                <h3 class="text-h3">Make Payment </h3>
                                                                                 <v-btn icon
                                                                                     @click="setAddAuditorsDialog(false)"
                                                                                     size="small" flat>
@@ -458,6 +481,15 @@ const unlocked_headers = ref([
                                                                                         </VSelect>
                                                                                     </VCol>
 
+                                                                                    <VCol cols="12" md="12">
+                                                                                        <p>Feature Cost : ${{
+            `${selectedFeaturesTotal}`
+        }}</p>
+                                                                                        <p>Estimated Total Cost : {{
+                `${payCurrency}${estimatedTotal}`
+            }}
+                                                                                        </p>
+                                                                                    </VCol>
 
 
 
@@ -473,7 +505,7 @@ const unlocked_headers = ref([
                                                                                             :disabled="!valid"
                                                                                             @click="initiatePayment">
                                                                                             <span v-if="!loading">
-                                                                                                Save
+                                                                                                Unlock
                                                                                             </span>
                                                                                             <clip-loader v-else
                                                                                                 :loading="loading"
@@ -519,8 +551,8 @@ const unlocked_headers = ref([
                                                             <template v-slot:item.action="{ item }">
 
                                                                 <v-btn color="primary" dark flat
-                                                                    @click="setViewDialog(true, item.selectable.features)">
-                                                                    Features </v-btn>
+                                                                    @click="setViewDialog(true, item.selectable.features, item.selectable.uuid)">
+                                                                    Details </v-btn>
                                                             </template>
 
 
@@ -587,10 +619,10 @@ const unlocked_headers = ref([
                                                                                             <td>{{ computedIndex(index)
                                                                                                 }}</td>
                                                                                             <td>{{
-            `${feat?.org_feature?.feature_name}`
-        }}</td>
+                                                                                                `${feat?.org_feature?.feature_name}`
+                                                                                                }}</td>
                                                                                             <td>{{
-                `${feat?.currency.symbol}
+                                                                                                `${feat?.currency.symbol}
                                                                                                 ${feat?.cost}` }}
                                                                                             </td>
                                                                                         </tr>
@@ -602,11 +634,11 @@ const unlocked_headers = ref([
                                                                             </VCol>
 
                                                                             <VCol cols="12" lg="12" class="text-right">
+                                                                                <v-btn color="primary"
+                                                                                    @click="gotoRoute(`/billing/receipt/${viewSelectedSubscription}`)">Receipt</v-btn>
                                                                                 <v-btn color="error"
                                                                                     @click="setViewDialog(false, [])"
                                                                                     variant="text">Close</v-btn>
-
-
                                                                             </VCol>
                                                                         </VRow>
                                                                     </v-card-text>

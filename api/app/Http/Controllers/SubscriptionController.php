@@ -50,6 +50,31 @@ class SubscriptionController extends Controller
     }
 
     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function show()
+    {
+
+        try {
+
+            // $stats = Subscription::query();
+
+            $organization = Organisation::where('uuid', auth()->user()->active_organization)->first();
+
+            $stats = Subscription::where('organization_id', $organization->id)->where('uuid', request('sub_uuid'))->first();
+
+            return successResponse('Transaction Fetched Successfully', $stats);
+
+        } catch (Exception $error) {
+
+            return successResponse('Transaction Fetched Successfully', []);
+
+        }
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
@@ -83,7 +108,7 @@ class SubscriptionController extends Controller
 
         try {
 
-            if (!$organization = Organisation::where('uuid', $data['organization_id'])->first()) {
+            if (!$organization = Organisation::where('uuid', auth()->user()->active_organization)->first()) {
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Organization");
             }
 
@@ -135,13 +160,14 @@ class SubscriptionController extends Controller
                     return errorResponse(ResponseStatusCodes::BAD_REQUEST, "One of the selected features is running");
                 }
 
-                $cost = $cost + floatval($organization_feature->cost);
+                $amountToPay = (floatval($organization_feature->cost) * floatval($currency->exchange_to_base) * $plan->no_of_months);
+                $cost = $cost + $amountToPay;
 
                 SubscribedFeature::create([
                     "organization_feature_id" => $organization_feature->id,
                     "transaction_id" => $transaction->id,
                     "currency_id" => $currency->id,
-                    "cost" => $organization_feature->cost,
+                    "cost" => $amountToPay,
                     "plan_id" => $plan->id,
                 ]);
 
@@ -276,17 +302,6 @@ class SubscriptionController extends Controller
 
         }
 
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Subscription  $subscription
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Subscription $subscription)
-    {
-        //
     }
 
     /**

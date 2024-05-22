@@ -28,14 +28,14 @@ class CurrencySeeder extends Seeder
                 'name' => 'eur',
                 'code' => 'EUR',
                 'symbol' => '€',
-                'exchange_to_base' => 1200,
+                'exchange_to_base' => 0.92,
                 'description' => 'European Union',
             ],
             [
                 'name' => 'ngn',
                 'code' => 'NGN',
                 'symbol' => '₦',
-                'exchange_to_base' => 0.92,
+                'exchange_to_base' => 1200,
                 'description' => 'Nigerian Naira',
             ],
         ];

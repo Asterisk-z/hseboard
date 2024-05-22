@@ -44,6 +44,8 @@ export const useInvestigationStore = defineStore({
         // initialize state from local storage to enable user to stay logged in
         // @ts-ignore
         investigations: null as null || [],
+        witness_investigations: null as null || [],
+        witness_investigation_questions: null as null || [],
         investigation: null as null || [],
         questions: null as null || [],
         
@@ -54,7 +56,6 @@ export const useInvestigationStore = defineStore({
     actions: {
         async getInvestigations() {
 
-            const organizationStore = useOrganizationStore();
             const data = await fetchWrapper
                 .get(`investigations/all`)
                 .then((response: any) => {
@@ -63,6 +64,58 @@ export const useInvestigationStore = defineStore({
                     console.log(error)
                 });
             this.investigations = data;
+        },
+        async getWitnessInvestigation() {
+
+            const data = await fetchWrapper
+                .get(`investigations/witness/all`)
+                .then((response: any) => {
+                    return response.data
+                }).catch((error: any) => {
+                    console.log(error)
+                });
+            this.witness_investigations = data;
+        },
+        async getWitnessInvestigationQuestions(item: string) {
+
+            const data = await fetchWrapper
+                .get(`investigations/witness/all/${item}`)
+                .then((response: any) => {
+                    return response.data
+                }).catch((error: any) => {
+                    console.log(error)
+                });
+            this.witness_investigation_questions = data;
+        },
+        async sendWitnessResponse(values: any) {
+            
+            try {
+                const data = await fetchWrapper
+                    .post(`investigations/witness/respond`, values)
+                    .then((response: any) => {
+                        return response.data
+                    }).catch((error: any) => {
+                        console.log(error)
+                    });
+                return toastWrapper.success(data?.message, data)
+            } catch (error: any) {
+                return toastWrapper.error(error, error)
+            }
+        },
+        async completeWitnessResponse(values: any) {
+            
+            try {
+                const data = await fetchWrapper
+                    .post(`investigations/witness/complete-respond`, values)
+                    .then((response: any) => {
+                        return response.data
+                    }).catch((error: any) => {
+                        console.log(error)
+                    });
+                return toastWrapper.success(data?.message, data)
+            } catch (error: any) {
+                return toastWrapper.error(error, error)
+            }
         },
         async getInvestigation(item: string) {
 

@@ -160,6 +160,10 @@ class ActionController extends Controller
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Action Not Found");
             }
 
+            if ($action->user_id != auth()->user()->id) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "User can not update action Found");
+            }
+
             $action->user_id = auth()->user()->id;
             $action->organization_id = $organization->id;
             $action->title = $request->title;

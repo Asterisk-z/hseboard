@@ -14,7 +14,12 @@ class AuditController extends Controller
      */
     public function index()
     {
-        //
+        $audits = Audit::where('user', auth()->user()->email)
+            ->orderBy('created_at', 'desc')->get()->toArray();
+
+        $converted_audits = arrayKeysToCamelCase($audits);
+        return successResponse('Audits Fetched Successfully', $converted_audits);
+
     }
 
     /**

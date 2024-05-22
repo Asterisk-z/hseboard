@@ -11,6 +11,7 @@ export const useOpenLinksStore = defineStore({
         countries: null as null || [],
         priorities: null as null || [],
         observationTypes: null as null || [],
+        notifications: null as null || [],
     }),
     actions: {
         async getIndustries() {
@@ -98,6 +99,17 @@ export const useOpenLinksStore = defineStore({
                     console.log(error)
                 });
             this.countries = data;
+        },
+        async getNotifications() {
+            // this.countries = { loading: true };
+            const data = await fetchWrapper
+                .get(`notifications`)
+                .then((response: any) => {
+                    return response.data
+                }).catch((error: any) => {
+                    console.log(error)
+                });
+            this.notifications = data;
         },
     }
 });

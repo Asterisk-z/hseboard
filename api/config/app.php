@@ -61,6 +61,8 @@ return [
 
     'asset_url' => env('ASSET_URL'),
 
+    'flutter_wave' => env('FLW'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

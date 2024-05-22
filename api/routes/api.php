@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountRoleController;
 use App\Http\Controllers\AccountTypeController;
 use App\Http\Controllers\ActionController;
+use App\Http\Controllers\AuditController;
 use App\Http\Controllers\AuditDocumentController;
 use App\Http\Controllers\AuditOptionController;
 use App\Http\Controllers\AuditTemplateController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\AuditTypeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\IndustryController;
 use App\Http\Controllers\InspectionController;
@@ -65,6 +67,14 @@ Route::get('industries', [IndustryController::class, 'index']);
 Route::get('account-roles', [AccountRoleController::class, 'index']);
 
 Route::middleware('auth:api')->group(function ($router) {
+
+    Route::prefix('dashboard')->group(function ($router) {
+        Route::get('/', [DashboardController::class, 'index']);
+    });
+
+    Route::prefix('notifications')->group(function ($router) {
+        Route::get('/', [AuditController::class, 'index']);
+    });
 
     Route::prefix('auth')->group(function ($router) {
         Route::post('reset-token', [AuthController::class, 'resetToken']);
@@ -131,6 +141,10 @@ Route::middleware('auth:api')->group(function ($router) {
 
     Route::prefix('investigations')->group(function ($router) {
         Route::get('/all', [InvestigationController::class, 'index']);
+        Route::get('/witness/all', [InvestigationController::class, 'witnessIndex']);
+        Route::get('/witness/all/{investigation_id}', [InvestigationController::class, 'witnessQuestions']);
+        Route::post('/witness/respond', [InvestigationController::class, 'witnessRespond']);
+        Route::post('/witness/complete-respond', [InvestigationController::class, 'witnessCompleted']);
         Route::post('/start', [InvestigationController::class, 'start']);
         Route::post('/external-member', [InvestigationController::class, 'setExternalTeamMembers']);
         Route::post('/member/{organization_id?}', [InvestigationController::class, 'setTeamMembers']);
@@ -201,6 +215,7 @@ Route::middleware('auth:api')->group(function ($router) {
 
     Route::prefix('billing')->group(function ($router) {
         Route::post('/initiate', [SubscriptionController::class, 'initiate']);
+        Route::get('/transaction/{sub_uuid?}', [SubscriptionController::class, 'show']);
         Route::get('/all-transactions/{organization_id?}', [SubscriptionController::class, 'index']);
         Route::get('/organization-features/{organization_id?}', [OrganizationFeatureController::class, 'index']);
         Route::get('/plans/{organization_id?}', [SubscriptionController::class, 'plans']);

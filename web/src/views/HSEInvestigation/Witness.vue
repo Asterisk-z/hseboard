@@ -11,15 +11,20 @@ import { useInvestigationStore } from '@/stores/investigationStore';
 import moment from 'moment'
 import { router } from '@/router';
 
-const page = ref({ title: 'HSE Investigation' });
+const page = ref({ title: 'HSE Investigation Witness' });
 const breadcrumbs = ref([
     {
         text: 'Dashboard',
         disabled: false,
-        href: 'dashboard'
+        href: '/dashboard'
     },
     {
         text: 'HSE Investigation',
+        disabled: false,
+        href: '/hse-investigation'
+    },
+    {
+        text: 'Witness',
         disabled: true,
         href: '#'
     }
@@ -32,12 +37,12 @@ const actionStore = useActionStore();
 const investigationStore = useInvestigationStore();
 
 onMounted(() => {
-    investigationStore.getInvestigations();
+    investigationStore.getWitnessInvestigation();
 });
 
 const computedIndex = (index: any) => ++index;
 
-const getInvestigations: any = computed(() => (investigationStore.investigations));
+const getWitnessInvestigation: any = computed(() => (investigationStore.witness_investigations));
 const getActiveOrg: any = computed(() => (organizationStore.getActiveOrg()));
 const getAuthUser: any = computed(() => (authStore.loggedUser));
 const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
@@ -167,8 +172,7 @@ const gotoRoute = (link: string) => {
                 <v-card :title="`HSE Investigation`" flat>
 
                     <template v-slot:append>
-                        <v-btn color="primary" class="mr-2" @click="gotoRoute('/hse-investigation-witness')">WItnessed
-                            Investigations</v-btn>
+                        <v-btn color="primary" class="mr-2" @click="gotoRoute('/hse-investigations')">Back</v-btn>
                     </template>
 
 
@@ -285,17 +289,11 @@ const gotoRoute = (link: string) => {
 
 
                                             <VCol cols="12" lg="12" class="text-right">
-                                                <span v-if="selectedItem?.is_ongoing">
+                                                <span>
                                                     <v-btn color="primary" class="mr-3"
-                                                        @click="gotoRoute(`/hse-investigating/${selectedItem?.observation?.uuid}`)">Continue
-                                                        Investigation</v-btn>
+                                                        @click="gotoRoute(`/hse-witness-questions/${selectedItem?.uuid}`)">View
+                                                        Questions</v-btn>
                                                 </span>
-                                                <span v-if="selectedItem?.is_completed">
-                                                    <v-btn color="primary" class="mr-3"
-                                                        @click="gotoRoute(`/hse-investigated/${selectedItem?.uuid}`)">View
-                                                        Investigation</v-btn>
-                                                </span>
-
 
                                             </VCol>
                                             <VCol cols="12" lg="12" class="text-right">
@@ -329,7 +327,7 @@ const gotoRoute = (link: string) => {
                             variant="outlined" hide-details single-line></v-text-field>
                     </template>
 
-                    <VDataTable :headers="headers" :items="getInvestigations" :search="search" item-key="name"
+                    <VDataTable :headers="headers" :items="getWitnessInvestigation" :search="search" item-key="name"
                         items-per-page="5" item-value="fat" show-select>
                         <template v-slot:item.action="{ item }">
 

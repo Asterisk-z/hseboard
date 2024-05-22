@@ -45,6 +45,7 @@ export const useBillingStore = defineStore({
     state: () => ({
         // initialize state from local storage to enable user to stay logged in
         // @ts-ignore
+        transaction: null as null || [],
         all_transactions: null as null || [],
         all_org_feature: null as null || [],
         plans: null as null || [],
@@ -60,8 +61,7 @@ export const useBillingStore = defineStore({
     actions: {
         async initiatePayment(values: any) {
             try {
-                const organizationStore = useOrganizationStore();
-                const data = await fetchWrapper.post(`billing/initiate/${organizationStore.active}`, values)
+                const data = await fetchWrapper.post(`billing/initiate`, values)
                     .catch((error: any) => {
                         throw error;
                     }).then((response: any) => {
@@ -89,6 +89,16 @@ export const useBillingStore = defineStore({
                 return toastWrapper.error(error, error)
             }
 
+        },
+        async getTransaction(value: string) {
+            const data = await fetchWrapper
+                .get(`billing/transaction/${value}`)
+                .then((response: any) => {
+                    return response.data
+                }).catch((error: any) => {
+                    console.log(error)
+                });
+            this.transaction = data;
         },
         async getAllTransaction() {
             const organizationStore = useOrganizationStore();
