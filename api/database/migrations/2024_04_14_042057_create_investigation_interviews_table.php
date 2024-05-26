@@ -20,9 +20,9 @@ return new class extends Migration
             $table->integer('invitee_id');
             $table->enum('type', ['online', 'physical'])->default('online');
             $table->enum('required_action', ['interviewee', 'interviewer'])->default('interviewee');
-            $table->timestamp('date_1');
-            $table->timestamp('date_2');
-            $table->timestamp('date_3');
+            $table->timestamp('date_1')->nullable();
+            $table->timestamp('date_2')->nullable();
+            $table->timestamp('date_3')->nullable();
             $table->timestamp('selected_date')->nullable();
             $table->string('location')->nullable();
             $table->string('link')->nullable();

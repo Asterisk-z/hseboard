@@ -89,13 +89,13 @@ const actualManHour: any = computed(() => (parseFloat(totalManHour.value - lostW
 
 const fieldRules: any = ref({
     start_date: [
-        (v: number) => !!v || 'Number Of Workers is required',
+        (v: number) => !!v || 'Field is required',
     ],
     end_date: [
-        (v: number) => !!v || 'Number Of Workers is required',
+        (v: number) => !!v || 'Field is required',
     ],
     workers: [
-        (v: number) => !!v || 'Number Of Workers is required',
+        (v: number) => !!v || 'Workers is required',
     ],
     workingHoursPerDay: [
         (v: number) => !!v || 'Number of working hours is required',
@@ -103,30 +103,30 @@ const fieldRules: any = ref({
     ],
     sickWorkers: [
         (v: number) => !!v || 'Number of sick worker is required',
-        (v: number) => (v && v <= Number(fields.value.workers)) || 'Sick worker can not be more than workers'
+        (v: number) => (v && v <= Number(fields.value.workers)) || 'Sick workers cannot be more than number of workers'
     ],
     offWorkingDays: [
-        (v: number) => !!v || 'Number of working hours is required',
-        (v: number) => v <= daysInterval.value || 'Days off work cannot be more than report days'
+        (v: number) => !!v || 'Days away is required',
+        (v: number) => v <= daysInterval.value || 'Days away cannot be more than Report day'
     ],
     workersOnLeave: [
-        (v: number) => !!v || 'Number of worker on leave is required',
-        (v: number) => (v && v <= Number(fields.value.workers)) || 'Sick worker can not be more than workers'
+        (v: number) => !!v || 'Worker on leave is required',
+        (v: number) => (v && v <= Number(fields.value.workers)) || 'Worker on leave can not be more than workers'
     ],
     leaveDays: [
-        (v: number) => !!v || 'Number of working hours is required',
-        (v: number) => v <= daysInterval.value || 'Days off work cannot be more than report days'
+        (v: number) => !!v || 'Leave Days is required',
+        (v: number) => v <= daysInterval.value || 'Days on leave cannot be more than Report days'
     ],
     overTimeHoursParDay: [
-        (v: number) => !!v || 'Number of working hours is required',
-        (v: number) => (v && v <= Number(fields.value.workingHoursPerDay)) || 'Over time hours per day can not be more than hours per day'
+        (v: number) => !!v || 'Overtime hours is required',
+        (v: number) => (v && v <= Number(fields.value.workingHoursPerDay)) || 'Overtime hours can not be more than hours per day'
     ],
     overTimeDays: [
-        (v: number) => !!v || 'Number of worker on leave is required',
+        (v: number) => !!v || 'Overtime Days required',
         (v: number) => (v && v <= daysInterval.value) || 'Overtime days can not be more than report days'
     ],
     overTimeWorkers: [
-        (v: number) => !!v || 'Number of working hours is required',
+        (v: number) => !!v || 'Overtime worker is required',
         (v: number) => (v && v <= Number(fields.value.workers)) || 'Worker on overtime cannot be more than workers on duty'
     ],
     meetingTarget: [],
@@ -287,7 +287,7 @@ const save = async (e: any) => {
                                                 days away from work</v-label>
                                             <VTextField type="number" v-model="fields.offWorkingDays"
                                                 :rules="fieldRules.offWorkingDays" required variant="outlined"
-                                                label="Number of Working Hours">
+                                                label="Days away from work">
                                             </VTextField>
                                         </VCol>
 
@@ -298,7 +298,7 @@ const save = async (e: any) => {
                                                     workers on leave</v-label>
                                                 <VTextField type="number" v-model="fields.workersOnLeave"
                                                     :rules="fieldRules.workersOnLeave" required variant="outlined"
-                                                    label="Number of Sick Worker">
+                                                    label="Workers on leave">
                                                 </VTextField>
                                             </VCol>
                                             <VCol cols="12" md="6">
@@ -306,34 +306,34 @@ const save = async (e: any) => {
                                                     of days spent on leave</v-label>
                                                 <VTextField type="number" v-model="fields.leaveDays"
                                                     :rules="fieldRules.leaveDays" required variant="outlined"
-                                                    label="Number of Working Hours">
+                                                    label="Total Days on leave">
                                                 </VTextField>
                                             </VCol>
 
 
                                             <template v-if="fields.workersOnLeave && fields.leaveDays">
-                                                <VCol cols="12" md="4">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Average
+                                                <VCol cols="12" md="6">
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Avg.
                                                         number of overtime hours per day</v-label>
                                                     <VTextField type="number" v-model="fields.overTimeHoursParDay"
                                                         :rules="fieldRules.overTimeHoursParDay" required
-                                                        variant="outlined" label="Number of Sick Worker">
+                                                        variant="outlined" label="Overtime hrs per day">
                                                     </VTextField>
                                                 </VCol>
-                                                <VCol cols="12" md="4">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Average
+                                                <VCol cols="12" md="6">
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Avg.
                                                         number of overtime days</v-label>
                                                     <VTextField type="number" v-model="fields.overTimeDays"
                                                         :rules="fieldRules.overTimeDays" required variant="outlined"
-                                                        label="Number of Working Hours">
+                                                        label="Overtime Days">
                                                     </VTextField>
                                                 </VCol>
-                                                <VCol cols="12" md="4">
+                                                <VCol cols="12" md="12">
                                                     <v-label class="text-subtitle-1 font-weight-medium pb-1">Number of
                                                         workers on overtime</v-label>
                                                     <VTextField type="number" v-model="fields.overTimeWorkers"
                                                         :rules="fieldRules.overTimeWorkers" required variant="outlined"
-                                                        label="Number of Working Hours">
+                                                        label="Overtime Worker">
                                                     </VTextField>
                                                 </VCol>
 
@@ -343,7 +343,7 @@ const save = async (e: any) => {
                                                             Meetings Target</v-label>
                                                         <VTextField type="number" v-model="fields.meetingTarget"
                                                             :rules="fieldRules.meetingTarget" required
-                                                            variant="outlined" label="Number of Sick Worker">
+                                                            variant="outlined" label="HSE Meetings Target">
                                                         </VTextField>
                                                     </VCol>
                                                     <VCol cols="12" md="6">
@@ -351,7 +351,7 @@ const save = async (e: any) => {
                                                             Meetings Actual</v-label>
                                                         <VTextField type="number" v-model="fields.meetingActual"
                                                             :rules="fieldRules.meetingActual" required
-                                                            variant="outlined" label="Number of Working Hours">
+                                                            variant="outlined" label="HSE Meetings Actual">
                                                         </VTextField>
                                                     </VCol>
                                                     <VCol cols="12" md="6">
@@ -359,7 +359,7 @@ const save = async (e: any) => {
                                                             Talks Target</v-label>
                                                         <VTextField type="number" v-model="fields.toolboxTarget"
                                                             :rules="fieldRules.toolboxTarget" required
-                                                            variant="outlined" label="Number of Sick Worker">
+                                                            variant="outlined" label="Toolbox Talks Target">
                                                         </VTextField>
                                                     </VCol>
                                                     <VCol cols="12" md="6">
@@ -367,7 +367,7 @@ const save = async (e: any) => {
                                                             Talks Actual</v-label>
                                                         <VTextField type="number" v-model="fields.toolboxActual"
                                                             :rules="fieldRules.toolboxActual" required
-                                                            variant="outlined" label="Number of Working Hours">
+                                                            variant="outlined" label="Toolbox Talks Actual">
                                                         </VTextField>
                                                     </VCol>
                                                     <VCol cols="12" md="6">
@@ -375,7 +375,7 @@ const save = async (e: any) => {
                                                             Audit/Inspections Target</v-label>
                                                         <VTextField type="number" v-model="fields.inspectionTarget"
                                                             :rules="fieldRules.inspectionTarget" required
-                                                            variant="outlined" label="Number of Sick Worker">
+                                                            variant="outlined" label="HSE Audit/Inspections Target">
                                                         </VTextField>
                                                     </VCol>
                                                     <VCol cols="12" md="6">
@@ -383,7 +383,7 @@ const save = async (e: any) => {
                                                             Audit/Inspections Actual</v-label>
                                                         <VTextField type="number" v-model="fields.inspectionActual"
                                                             :rules="fieldRules.inspectionActual" required
-                                                            variant="outlined" label="Number of Working Hours">
+                                                            variant="outlined" label="HSE Audit/Inspections Actual">
                                                         </VTextField>
                                                     </VCol>
                                                     <VCol cols="12" md="6">
@@ -391,7 +391,7 @@ const save = async (e: any) => {
                                                             Target</v-label>
                                                         <VTextField type="number" v-model="fields.drillsTarget"
                                                             :rules="fieldRules.drillsTarget" required variant="outlined"
-                                                            label="Number of Sick Worker">
+                                                            label="Drills Target">
                                                         </VTextField>
                                                     </VCol>
                                                     <VCol cols="12" md="6">
@@ -399,7 +399,7 @@ const save = async (e: any) => {
                                                             Actual</v-label>
                                                         <VTextField type="number" v-model="fields.drillsActual"
                                                             :rules="fieldRules.drillsActual" required variant="outlined"
-                                                            label="Number of Working Hours">
+                                                            label="Drills Actual">
                                                         </VTextField>
                                                     </VCol>
                                                     <VCol cols="12" md="12">
@@ -407,15 +407,15 @@ const save = async (e: any) => {
                                                             Acts (UA) Target</v-label>
                                                         <VTextField type="number" v-model="fields.unSafeActTarget"
                                                             :rules="fieldRules.unSafeActTarget" required
-                                                            variant="outlined" label="Number of Sick Worker">
+                                                            variant="outlined" label="Unsafe Acts (UA) Target">
                                                         </VTextField>
                                                     </VCol>
-                                                    <VCol cols="12" md="6">
+                                                    <VCol cols="12" md="12">
                                                         <v-label class="text-subtitle-1 font-weight-medium pb-1">Unsafe
                                                             Conditions (UC) Target</v-label>
                                                         <VTextField type="number" v-model="fields.unSafeConditionTarget"
                                                             :rules="fieldRules.unSafeConditionTarget" required
-                                                            variant="outlined" label="Number of Sick Worker">
+                                                            variant="outlined" label="Unsafe Conditions (UC) Target">
                                                         </VTextField>
                                                     </VCol>
 

@@ -193,9 +193,11 @@ const save = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setDialog(false)
-            setTimeout(() => {
-                // formContainer.value.reset()
-            }, 2000)
+            fields.value.title = ''
+            fields.value.description = ''
+            fields.value.file = ''
+            files.value = []
+            previewImage.value = []
             auditDocumentStore.getAuditDocuments();
         }
 
@@ -457,7 +459,12 @@ const selectImage = (image: any) => {
 
                         <template v-slot:item.file="{ item }">
                             <div class="">
-                                <v-btn color="primary" @click="selectItem(item, 'view')"> View </v-btn>
+
+                                <a class="btn btn-primary btn-sm" :href="item.selectable?.media?.full_url"
+                                    target="_blank">
+                                    <v-btn color="primary"> View </v-btn>
+                                </a>
+
                             </div>
                         </template>
 

@@ -8,6 +8,7 @@ import UiParentCard from '@/components/shared/UiParentCard.vue';
 import { useOrganizationStore } from '@/stores/organizationStore';
 import { useAccountStore } from '@/stores/accountStore';
 import { useAuthStore } from '@/stores/auth';
+import { useFormatter } from '@/composables/formatter';
 import moment from 'moment'
 
 import Swal from 'sweetalert2'
@@ -32,6 +33,7 @@ const breadcrumbs = ref([
     }
 ]);
 
+const { formatDate } = useFormatter();
 const route = useRoute()
 const authStore = useAuthStore();
 const organizationStore = useOrganizationStore();
@@ -52,6 +54,11 @@ const setPasswordDialog = (value: boolean) => {
     passwordDialog.value = value;
 }
 
+const logoDialog = ref(false);
+const setLogoDialog = (value: boolean) => {
+    logoDialog.value = value;
+}
+
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
 const showPassword = ref(false);
 
@@ -64,6 +71,7 @@ const fields = ref({
     currentPassword: "",
     confirmPassword: "",
     end_date: "",
+    images: [],
     start_date: ""
 });
 
@@ -94,6 +102,22 @@ const fieldRules: any = ref({
         (v: string) => (v && passwordRegex.test(fields.value.confirmPassword)) || 'Password most be uppercase, lowercase, numbers and 8 characters',
     ],
 })
+
+const files = ref(null as any)
+const previewImage = ref(null as any)
+
+const selectImage = (image: any) => {
+
+    fields.value.images = image.target.files;
+    files.value = image.target.files;
+    previewImage.value = [];
+
+    for (let index = 0; index < files.value.length; index++) {
+        const element = files.value[index];
+        previewImage.value.push(URL.createObjectURL(element) as string)
+    }
+
+}
 
 onMounted(() => {
     accountStore.getUserDetail()
@@ -152,6 +176,47 @@ const save = async (e: any) => {
 }
 
 
+const uploadLogo = async (e: any) => {
+    e.preventDefault();
+
+    try {
+        setLoading(true)
+
+        const formData = new FormData();
+        formData.append('image', files.value[0])
+
+        const resp = await accountStore.uploadLogo(formData)
+            .catch((error: any) => {
+                console.log(error)
+                throw error
+            })
+            .then((resp: any) => {
+                return resp
+            });
+
+        if (resp?.message == 'success') {
+            setLoading(false)
+            setLogoDialog(false)
+
+            fields.value.images = [];
+            files.value = []
+            previewImage.value = []
+            // observationStore.getObservations();
+        }
+
+        setLoading(false)
+        setLogoDialog(false)
+
+
+
+    } catch (error) {
+        console.log(error)
+        setLoading(false)
+        setLogoDialog(false)
+    }
+
+}
+
 watch(
     () => getUserDetail.value,
     (value) => {
@@ -176,10 +241,69 @@ watch(
                     <v-card-text class="text-right">
 
                         <v-sheet>
+                            <v-btn color="primary" class="mr-2" @click="setLogoDialog(true)">Update Photo</v-btn>
                             <v-btn color="primary" class="mr-2" @click="setDialog(true)">Update Information</v-btn>
                             <v-btn color="primary" class="mr-2" @click="setPasswordDialog(true)">Update
                                 Password</v-btn>
 
+                            <v-dialog v-model="logoDialog" max-width="600">
+                                <v-card>
+                                    <v-card-text>
+                                        <div class="d-flex justify-space-between">
+                                            <h3 class="text-h3">Photo</h3>
+                                            <v-btn icon @click="setLogoDialog(false)" size="small" flat>
+                                                <XIcon size="16" />
+                                            </v-btn>
+                                        </div>
+                                    </v-card-text>
+                                    <v-divider></v-divider>
+
+                                    <v-card-text>
+
+                                        <VForm v-model="valid" ref="formContainer" fast-fail lazy-validation
+                                            @submit.prevent="uploadLogo" class="py-1">
+                                            <VRow class="mt-5 mb-3">
+
+                                                <VCol cols="12" md="12">
+
+                                                    <v-file-input :show-size="1000" color="deep-purple-accent-4"
+                                                        label="Photo" placeholder="Select your photo"
+                                                        prepend-icon="mdi-paperclip" variant="outlined" accept="image/*"
+                                                        @change="selectImage">
+                                                    </v-file-input>
+
+                                                    <div v-if="previewImage">
+                                                        <VRow>
+                                                            <VCol cols="4" v-for="image in previewImage" :key="image">
+
+                                                                <div>
+                                                                    <img class="preview my-3" :src="image" alt=""
+                                                                        style="max-width: 200px;" />
+                                                                </div>
+                                                            </VCol>
+                                                        </VRow>
+                                                    </div>
+                                                </VCol>
+
+                                                <VCol cols="12" lg="12" class="text-right">
+                                                    <v-btn color="error" @click="setLogoDialog(false)"
+                                                        variant="text">Cancel</v-btn>
+
+                                                    <v-btn color="primary" type="submit" :loading="loading"
+                                                        :disabled="!valid" @click="uploadLogo">
+                                                        <span v-if="!loading">
+                                                            Upload
+                                                        </span>
+                                                        <clip-loader v-else :loading="loading" color="white"
+                                                            :size="'25px'"></clip-loader>
+                                                    </v-btn>
+
+                                                </VCol>
+                                            </VRow>
+                                        </VForm>
+                                    </v-card-text>
+                                </v-card>
+                            </v-dialog>
 
                             <v-dialog v-model="passwordDialog" max-width="600">
                                 <v-card>
@@ -331,6 +455,14 @@ watch(
                     </v-card-text>
                     <v-card-text class="">
                         <VRow>
+                            <VCol cols='12' md="12" class="text-center" v-if="getUserDetail?.media">
+
+                                <a :href="getUserDetail?.media?.full_url" target="_blank">
+                                    <v-avatar size="140">
+                                        <img :src="getUserDetail?.media?.full_url" height="140" alt="image" />
+                                    </v-avatar>
+                                </a>
+                            </VCol>
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">Full Name</label>
                                 <p class="text-body-1"> {{ `${getUserDetail?.full_name}` }}</p>
@@ -346,8 +478,7 @@ watch(
                             </VCol>
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">Creation Date</label>
-                                <p class="text-body-1"> {{ moment(getUserDetail?.created_at).format(`MMMM Do YYYY, h:mm
-                                    a`) }}</p>
+                                <p class="text-body-1"> {{ formatDate(getUserDetail?.created_at) }}</p>
                             </VCol>
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">Account Role</label>

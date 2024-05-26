@@ -23,7 +23,7 @@ return new class extends Migration
             $table->integer('audit_template_id');
             $table->string('audit_scope')->nullable();
             $table->string('audit_title');
-            $table->timestamp('start_date');
+            $table->timestamp('start_date')->nullable();
             $table->timestamp('scheduled_start_date')->nullable();
             $table->timestamp('end_date')->nullable();
             $table->text('status_reason')->nullable();

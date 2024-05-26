@@ -170,4 +170,36 @@ class OrganisationController extends Controller
         }
 
     }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateLogo(Request $request)
+    {
+        $request->validate([
+            'image' => ['required', 'file'],
+        ]);
+
+        try {
+
+            if (!$organization = Organisation::where('uuid', auth()->user()->active_organization)->where('user_id', auth()->user()->id)->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "can not update organization detail.");
+            }
+
+            storeMedia(request('image'), Organisation::class, $organization->id, 'organization_logo', $organization->media ? $organization->media->id : null);
+
+            logAction(auth()->user()->email, 'Organization Logo updated successfully ', 'Organization Logo', $request->ip());
+
+            return successResponse('Organization logo updated successful ', []);
+
+        } catch (Exception $e) {
+            logger($e);
+            return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Something Went Wrong");
+
+        }
+
+    }
 }

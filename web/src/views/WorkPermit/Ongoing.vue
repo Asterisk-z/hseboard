@@ -48,85 +48,85 @@ onMounted(() => {
 });
 
 
-const getPriorities : any  = computed(() => (openLinks.priorities));
-const computedIndex = (index : any) => ++index;
+const getPriorities: any = computed(() => (openLinks.priorities));
+const computedIndex = (index: any) => ++index;
 
-const getAuthUser : any  = computed(() => (authStore.loggedUser));
-const getAcceptedPermit: any   = computed(() => (permitToWorkStore.acceptedPermit));
-const getActiveJHA : any  = computed(() => (permitToWorkStore.activeJHA));
-const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
-const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
-const isIssuerOrg : any  = computed(() => (getAcceptedPermit.value?.issuer_organization_id == getActiveOrg.value?.id));
-const isHolderOrg : any  = computed(() => (getAcceptedPermit.value?.holder_organization_id == getActiveOrg.value?.id));
-const isSameOrg : any  = computed(() => (getAcceptedPermit.value?.holder_organization_id == getAcceptedPermit.value?.issuer_organization_id));
+const getAuthUser: any = computed(() => (authStore.loggedUser));
+const getAcceptedPermit: any = computed(() => (permitToWorkStore.acceptedPermit));
+const getActiveJHA: any = computed(() => (permitToWorkStore.activeJHA));
+const getActiveOrg: any = computed(() => (organizationStore.getActiveOrg()));
+const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const isIssuerOrg: any = computed(() => (getAcceptedPermit.value?.issuer_organization_id == getActiveOrg.value?.id));
+const isHolderOrg: any = computed(() => (getAcceptedPermit.value?.holder_organization_id == getActiveOrg.value?.id));
+const isSameOrg: any = computed(() => (getAcceptedPermit.value?.holder_organization_id == getAcceptedPermit.value?.issuer_organization_id));
 
-const getHoldingMembers : any  = computed(() => (permitToWorkStore.holdingMembers));
-const getInspecteeMembers : any  = computed(() => (permitToWorkStore.inspecteeMembers));
+const getHoldingMembers: any = computed(() => (permitToWorkStore.holdingMembers));
+const getInspecteeMembers: any = computed(() => (permitToWorkStore.inspecteeMembers));
 
-const isLoggedInUserIsPermitHolder : any  = computed(() => (getAuthUser.value?.id == getAcceptedPermit.value?.holder?.id));
-const isLoggedInUserIsPermitIssuer : any  = computed(() => (getAuthUser.value?.id == getAcceptedPermit.value?.issuer?.id));
+const isLoggedInUserIsPermitHolder: any = computed(() => (getAuthUser.value?.id == getAcceptedPermit.value?.holder?.id));
+const isLoggedInUserIsPermitIssuer: any = computed(() => (getAuthUser.value?.id == getAcceptedPermit.value?.issuer?.id));
 
 watch(
-  () => isHolderOrg.value,
-  (value) => {
-    if(value) {  
-        permitToWorkStore.getHoldingMembers(route.params.permit_id as string)
+    () => isHolderOrg.value,
+    (value) => {
+        if (value) {
+            permitToWorkStore.getHoldingMembers(route.params.permit_id as string)
+        }
+
+        if (getAcceptedPermit.value?.is_pending) {
+            Swal.fire({
+                title: 'Info!',
+                text: 'Organization is yet to accept Inspection?',
+                icon: 'info',
+                confirmButtonText: 'Ok',
+                showCancelButton: false,
+                allowOutsideClick: false,
+            }).then((result) => {
+
+            });
+        }
     }
-    
-      if (getAcceptedPermit.value?.is_pending) {
-        Swal.fire({
-            title: 'Info!',
-            text: 'Organization is yet to accept Inspection?',
-            icon: 'info',
-            confirmButtonText: 'Ok',
-            showCancelButton: false,
-            allowOutsideClick: false,
-        }).then((result) => {
-            
-        });
-    }
-  }
 )
 watch(
-  () => isIssuerOrg.value,
-  (value) => {
-    //   if (value) {
-    //     permitToWorkStore.getInspecteeMembers(route.params.permit_id as string)
-    //     }
-      if (getAcceptedPermit.value?.is_pending) {
-        Swal.fire({
-            title: 'Info!',
-            text: `${getAcceptedPermit.value?.holder_organization?.name} sent a request to inspect your organization, do you accept or reject`,
-            icon: 'info',
-            confirmButtonText: 'Accept',
-            cancelButtonText: 'Reject',
-            showCancelButton: true,
-            allowOutsideClick: false,
-        }).then((result) => {
-            
-                
-        
+    () => isIssuerOrg.value,
+    (value) => {
+        //   if (value) {
+        //     permitToWorkStore.getInspecteeMembers(route.params.permit_id as string)
+        //     }
+        if (getAcceptedPermit.value?.is_pending) {
+            Swal.fire({
+                title: 'Info!',
+                text: `${getAcceptedPermit.value?.holder_organization?.name} sent a request to inspect your organization, do you accept or reject`,
+                icon: 'info',
+                confirmButtonText: 'Accept',
+                cancelButtonText: 'Reject',
+                showCancelButton: true,
+                allowOutsideClick: false,
+            }).then((result) => {
+
+
+
                 let objectValues = {
                     "organization_id": getActiveOrg.value?.uuid,
                     "permit_id": getAcceptedPermit.value?.uuid,
                     "action": result.isConfirmed ? 'accepted' : 'rejected',
-                    "reason":  'reason',
+                    "reason": 'reason',
                 }
-                        
-            // permitToWorkStore.actionInspection(objectValues)
-            //         .catch((error: any) => {
-            //             throw error
-            //         })
-            //         .then((resp: any) => {
-            //              permitToWorkStore.getAcceptedPermit(route.params.permit_id as string);
-            //             return resp
-            //         });
+
+                // permitToWorkStore.actionInspection(objectValues)
+                //         .catch((error: any) => {
+                //             throw error
+                //         })
+                //         .then((resp: any) => {
+                //              permitToWorkStore.getAcceptedPermit(route.params.permit_id as string);
+                //             return resp
+                //         });
 
 
 
-        });
+            });
+        }
     }
-  }
 )
 
 //-------------------------------------------------------------------------------------
@@ -308,11 +308,11 @@ const clearOtherUsers = () => {
     fields.value.attendants = []
 }
 
-const filteredSupervisor : any  = computed(() => (getHoldingMembers.value?.filter((member: any) => (member.id != fields.value?.supervisor))));
+const filteredSupervisor: any = computed(() => (getHoldingMembers.value?.filter((member: any) => (member.id != fields.value?.supervisor))));
 
-const getRepresentatives : any  = computed(() => (getAcceptedPermit.value?.all_representatives));
-const getInspectors : any  = computed(() => (getAcceptedPermit.value?.all_inspectors));
-const getMembers : any  = computed(() => (getAcceptedPermit.value?.team_members));
+const getRepresentatives: any = computed(() => (getAcceptedPermit.value?.all_representatives));
+const getInspectors: any = computed(() => (getAcceptedPermit.value?.all_inspectors));
+const getMembers: any = computed(() => (getAcceptedPermit.value?.team_members));
 
 // const filteredgetInspecteeMembers : any  = computed(() => (getInspecteeMembers.value?.filter((member: any) => (member.id != fields.value?.leadRepresentative  && member.id != getAcceptedPermit.value?.lead_inspector?.user_id))));
 
@@ -349,7 +349,7 @@ const sendTeamMembers = async (e: any) => {
         setLoading(true)
 
         const values = { ...fields.value }
-             
+
         let objectValues = {
             "organization_id": getActiveOrg.value?.uuid,
             "permit_id": getAcceptedPermit.value?.uuid,
@@ -394,13 +394,13 @@ const removeMember = async (member: any) => {
 
     try {
         setLoading(true)
-        
+
         let objectValues = {
             "organization_id": getActiveOrg.value?.uuid,
             "permit_id": getAcceptedPermit.value?.uuid,
-            "team_member":  member
+            "team_member": member
         }
-        
+
         Swal.fire({
             title: 'Info!',
             text: 'Do you want to remove member?',
@@ -411,8 +411,8 @@ const removeMember = async (member: any) => {
             allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
-                
-                
+
+
                 permitToWorkStore.removeMember(objectValues)
                     .catch((error: any) => {
                         throw error
@@ -532,7 +532,7 @@ const updatePermitDetails = async (e: any) => {
             "contractor_name": values?.contractorName,
             "description": values?.description,
             "request_date": moment(values?.requestDate).format('YYYY-MM-DD HH:mm:ss'),
-            "start_date":  moment(values?.start_date).format('YYYY-MM-DD HH:mm:ss'),
+            "start_date": moment(values?.start_date).format('YYYY-MM-DD HH:mm:ss'),
             "end_date": moment(values?.end_date).format('YYYY-MM-DD HH:mm:ss'),
         }
 
@@ -635,12 +635,12 @@ const actionRequestForm = async (e: any) => {
 
 //     try {
 //         setLoading(true)
-        
+
 //         let objectValues = {
 //             "organization_id": getActiveOrg.value?.uuid,
 //             "permit_id": getAcceptedPermit.value?.uuid,
 //         }
-        
+
 //         Swal.fire({
 //             title: 'Info!',
 //             text: 'Do you want to proceed?',
@@ -651,8 +651,8 @@ const actionRequestForm = async (e: any) => {
 //             allowOutsideClick: false,
 //         }).then((result) => {
 //             if (result.isConfirmed) {
-                
-                
+
+
 //                 permitToWorkStore.proceedInspection(objectValues)
 //                     .catch((error: any) => {
 //                         throw error
@@ -711,13 +711,13 @@ const setRequestDocumentDialog = (value: boolean) => {
 }
 
 const sendDocumentDialog = ref(false);
-const setSendDocumentDialog = (value: boolean, item_id : any = '') => {
+const setSendDocumentDialog = (value: boolean, item_id: any = '') => {
     sendDocumentDialog.value = value;
     stepTwoFields.value.document_id = item_id
 }
 
 const showRejectDialog = ref(false);
-const setRejectReasonDialog = (value: boolean, item_id : any = '') => {
+const setRejectReasonDialog = (value: boolean, item_id: any = '') => {
     showRejectDialog.value = value;
     stepTwoFields.value.document_id = item_id
 }
@@ -741,7 +741,7 @@ const images = ref([])
 const previewImage = ref([] as any)
 
 const selectImage = (image: any) => {
-    stepTwoFields.value.files =  image.target.files
+    stepTwoFields.value.files = image.target.files
     images.value = image.target.files;
     previewImage.value = [];
 
@@ -819,8 +819,8 @@ const setActionJHADialog = (value: boolean, action: string = '') => {
     stepThreeFields.value.status = action
 }
 
-const getSchedule : any  = computed(() => (getAcceptedPermit.value?.schedule));
-const getJHA : any  = computed(() => (getAcceptedPermit.value?.jha));
+const getSchedule: any = computed(() => (getAcceptedPermit.value?.schedule));
+const getJHA: any = computed(() => (getAcceptedPermit.value?.jha));
 
 const stepThreeFields = ref({
     date_time: "",
@@ -954,7 +954,7 @@ const sendIssuePermit = async (value: any) => {
             "organization_id": getActiveOrg.value?.uuid,
             "permit_id": getAcceptedPermit.value?.uuid,
             "start_date": moment(values?.start_date).format('YYYY-MM-DD HH:mm:ss'),
-            "end_date":  moment(values?.end_date).format('YYYY-MM-DD HH:mm:ss'),  
+            "end_date": moment(values?.end_date).format('YYYY-MM-DD HH:mm:ss'),
         }
 
         const resp = await permitToWorkStore.sendIssuePermit(objectValues)
@@ -1043,12 +1043,12 @@ const sendForDeclaration = async (member: any) => {
 
     try {
         setLoading(true)
-        
+
         let objectValues = {
             "organization_id": getActiveOrg.value?.uuid,
             "permit_id": getAcceptedPermit.value?.uuid,
         }
-        
+
         Swal.fire({
             title: 'Info!',
             text: 'Are you sure?',
@@ -1059,8 +1059,8 @@ const sendForDeclaration = async (member: any) => {
             allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
-                
-                
+
+
                 permitToWorkStore.sendForDeclaration(objectValues)
                     .catch((error: any) => {
                         throw error
@@ -1088,12 +1088,12 @@ const sendDeclaration = async (member: any) => {
 
     try {
         setLoading(true)
-        
+
         let objectValues = {
             "organization_id": getActiveOrg.value?.uuid,
             "permit_id": getAcceptedPermit.value?.uuid,
         }
-        
+
         Swal.fire({
             title: 'Info!',
             text: `I declare that I have been briefed about the ${getAcceptedPermit.value?.job_title} at  ${getAcceptedPermit.value?.location_name}  to commence on  ${getAcceptedPermit.value?.work_start_time} . I understand the hazards and risks and I agree to comply with all safety requirements for the job?`,
@@ -1104,8 +1104,8 @@ const sendDeclaration = async (member: any) => {
             allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
-                
-                
+
+
                 permitToWorkStore.sendDeclaration(objectValues)
                     .catch((error: any) => {
                         throw error
@@ -1136,7 +1136,7 @@ function changeQuestionTab(e: string) {
     questionTab.value = e;
 }
 // console.log(questionTab.value)
-const getQuestions : any  = computed(() => (getAcceptedPermit.value?.questions));
+const getQuestions: any = computed(() => (getAcceptedPermit.value?.questions));
 
 const sendCommentDialog = ref(false);
 const setSendCommentDialog = (value: boolean, item_id: string = '', topic_id: string = '', question = {}) => {
@@ -1163,155 +1163,9 @@ const stepFourFieldRules: any = ref({
 })
 
 
-// const sendQuestionResponse = async (question_id: number, response: string, topic : number) => {
-    
 
-//     try {
-
-//         let objectValues = {
-//             "organization_id": getActiveOrg.value?.uuid,
-//             "permit_id": getAcceptedPermit.value?.uuid,
-//             "inspection_question_id": question_id,
-//             "response": response,
-//         }
-
-//         const resp = await permitToWorkStore.sendQuestionResponse(objectValues)
-//             .catch((error: any) => {
-//                 console.log(error)
-//                 throw error
-//             })
-//             .then((resp: any) => {
-//                 return resp
-//             });
-
-//         if (resp?.message == 'success') {
-//             permitToWorkStore.ongoingInspection.questions.forEach((question: any, index: number) => {
-//                 if(question.id == topic) {
-//                      question.questions.forEach((main_question: any, subIndex: number) => {
-//                         if(main_question.id == question_id) {
-//                             permitToWorkStore.ongoingInspection.questions[index].questions[subIndex].answer = response
-//                         }
-//                      })
-//                 }
-//             })
-            
-//         }
-
-
-//     } catch (error) {
-        
-//     }
-
-// }
-
-
-// const sendQuestionComment = async (e: any) => {
-//     e.preventDefault();
-
-//     try {
-//         setLoading(true)
-
-//         const values = { ...stepFourFields.value }
-
-
-//         let objectValues = {
-//             "organization_id": getActiveOrg.value?.uuid,
-//             "permit_id": getAcceptedPermit.value?.uuid,
-//             "inspection_question_id": values?.question_id,
-//             "comment": values?.comments,
-//         }
-
-//         const resp = await permitToWorkStore.sendQuestionComment(objectValues)
-//             .catch((error: any) => {
-//                 console.log(error)
-//                 throw error
-//             })
-//             .then((resp: any) => {
-//                 return resp
-//             });
-
-        
-//         if (resp?.message == 'success') {
-//             permitToWorkStore.ongoingInspection.questions.forEach((question: any, index: number) => {
-//                 if(question.id == values?.topic_id) {
-//                      question.questions.forEach((main_question: any, subIndex: number) => {
-//                         if(main_question.id == values?.question_id) {
-//                             permitToWorkStore.ongoingInspection.questions[index].questions[subIndex].comment = values?.comments
-//                         }
-//                      })
-//                 }
-//             })
-            
-//         }
-
-//         setLoading(false)
-//         setSendCommentDialog(false)
-
-//         stepFourFields.value.comments = "";
-
-//     } catch (error) {
-//         console.log(error)
-//         setLoading(false)
-//         setSendCommentDialog(false)
-//     }
-
-// }
-
-
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-const getFindings : any  = computed(() => (getAcceptedPermit.value?.findings));
-const getActions : any  = computed(() => (getAcceptedPermit.value?.actions));
+const getFindings: any = computed(() => (getAcceptedPermit.value?.findings));
+const getActions: any = computed(() => (getAcceptedPermit.value?.actions));
 
 
 const stepFiveFields = ref({
@@ -1323,10 +1177,10 @@ const stepFiveFields = ref({
     start_date: "",
     detail: "",
     organization_id: getActiveOrg.value?.uuid,
-    
+
 });
 
-const stepFiveFieldRules : any = ref({
+const stepFiveFieldRules: any = ref({
     priorityId: [
         (v: string) => !!v || 'Priority is required',
     ],
@@ -1353,203 +1207,6 @@ const stepFiveFieldRules : any = ref({
     ],
 })
 
-// const sendFindings = async (e: any) => {
-//     e.preventDefault();
-
-//     try {
-//         setLoading(true)
-
-//         const values = { ...stepFiveFields.value }
-
-
-//         let objectValues = {
-//             "organization_id": getActiveOrg.value?.uuid,
-//             "permit_id": getAcceptedPermit.value?.uuid,
-//             "detail":  values?.detail,
-//         }
-
-//         const resp = await permitToWorkStore.sendFindings(objectValues)
-//             .catch((error: any) => {
-//                 console.log(error)
-//                 throw error
-//             })
-//             .then((resp: any) => {
-//                 return resp
-//             });
-
-//         if (resp?.message == 'success') {
-//             setLoading(false)
-//             setViewFindingDialog(false)
-//             permitToWorkStore.getAcceptedPermit(route.params.permit_id as string);
-//         }
-
-//         setLoading(false)
-//         setViewFindingDialog(false)
-//         stepFiveFields.value.detail = ''
-//     } catch (error) {
-//         console.log(error)
-//         setLoading(false)           
-//          setViewFindingDialog(false)
-//     }
-
-
-// }
-// const sendRecommendation = async (e: any) => {
-//     e.preventDefault();
-
-//     try {
-//         setLoading(true)
-
-//         const values = { ...stepFiveFields.value }
-
-//         let objectValues = {
-//             "organization_id": getActiveOrg.value?.uuid,
-//             "permit_id": getAcceptedPermit.value?.uuid,
-//             "title": values?.title,
-//             "description": values?.description,
-//             "assignee_id": values?.assigneeId,
-//             "start_date": moment(values?.start_date).format('YYYY-MM-DD HH:mm:ss'),
-//             "end_date":  moment(values?.end_date).format('YYYY-MM-DD HH:mm:ss'),  
-//             "priority_id": values?.priorityId
-//         }
-
-
-//         const resp = await permitToWorkStore.sendRecommendation(objectValues)
-//             .catch((error: any) => {
-//                 console.log(error)
-//                 throw error
-//             })
-//             .then((resp: any) => {
-//                 return resp
-//             });
-
-
-//         if (resp?.message == 'success') {
-//             setLoading(false)
-//             setViewRecommendationDialog(false)
-//             permitToWorkStore.getAcceptedPermit(route.params.permit_id as string);
-//         }
-
-//         setLoading(false)
-//         setViewRecommendationDialog(false)
-
-
-
-//     } catch (error) {
-//         console.log(error)
-//         setLoading(false)
-//         setViewRecommendationDialog(false)
-//     }
-
-// }
-
-
-// const completeInspection = async (member: any) => {
-
-//     try {
-//         setLoading(true)
-        
-//         let objectValues = {
-//             "organization_id": getActiveOrg.value?.uuid,
-//             "permit_id": getAcceptedPermit.value?.uuid,
-//         }
-        
-//         Swal.fire({
-//             title: 'Info!',
-//             text: 'Do you want to close inspection?',
-//             icon: 'info',
-//             confirmButtonText: 'Yes',
-//             cancelButtonText: 'No',
-//             showCancelButton: true,
-//             allowOutsideClick: false,
-//         }).then((result) => {
-//             if (result.isConfirmed) {
-                
-                
-//                 permitToWorkStore.completeInspection(objectValues)
-//                     .catch((error: any) => {
-//                         throw error
-//                     })
-//                     .then((resp: any) => {
-//                         //  investigationStore.getInvestigation(route.params.observation_id as string);
-//                         // 
-//                         if(resp.message == 'success') {
-//                             router.push(`/inspections`)
-//                         }
-//                         // return resp
-//                     });
-
-
-//             }
-//         });
-
-        
-            
-
-
-//         setLoading(false)
-
-//     } catch (error) {
-//         console.log(error)
-//         setLoading(false)
-//     }
-
-// }
-
-
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-
-// ---------------------------------------------------
-
 const thankyou = ref(false);
 
 const tab = ref('tab-1');
@@ -1561,7 +1218,7 @@ function changeTab(e: string) {
 const blankFn = () => {
     console.log('black')
 }
-const goToRoute = (value : string) => {
+const goToRoute = (value: string) => {
     router.push(value)
 }
 
@@ -1581,7 +1238,7 @@ const goToRoute = (value : string) => {
                         <h1 class="text-uppercase mb-3"> Job Title - {{ getAcceptedPermit?.job_title }}
                         </h1>
                         <h2 class="text-uppercase mb-3">Organization - {{
-                            getAcceptedPermit?.issuer_organization?.name }}</h2>
+            getAcceptedPermit?.issuer_organization?.name }}</h2>
                     </v-card-text>
                     <v-card-text>
                         <v-tabs v-model="tab" color="primary" class="customTab">
@@ -1646,8 +1303,10 @@ const goToRoute = (value : string) => {
                                             <v-btn color="primary" @click="setUpdateInspectionDialog(true)" class="mr-2"
                                                 v-if="isLoggedInUserIsPermitHolder && !getAcceptedPermit?.is_rf_accepted">Update
                                                 Detail</v-btn>
-                                                <v-btn color="primary" @click="setActionRequestFormDialog(true)" class="mr-2"
-                                                    v-if="isLoggedInUserIsPermitIssuer  && !getAcceptedPermit?.is_rf_accepted">Review Permit Request Form</v-btn>
+                                            <v-btn color="primary" @click="setActionRequestFormDialog(true)"
+                                                class="mr-2"
+                                                v-if="isLoggedInUserIsPermitIssuer && !getAcceptedPermit?.is_rf_accepted">Review
+                                                Permit Request Form</v-btn>
                                             <v-sheet>
                                                 <v-dialog v-model="actionRequestFormDialog" max-width="800">
                                                     <v-card>
@@ -1682,15 +1341,14 @@ const goToRoute = (value : string) => {
                                                                             required>
                                                                         </VSelect>
                                                                     </VCol>
-                                                                    
-                                                                    
+
+
                                                                     <VCol cols="12" md="12">
                                                                         <v-label
                                                                             class="text-subtitle-1 font-weight-medium pb-1">Comment</v-label>
                                                                         <VTextarea variant="outlined" outlined
                                                                             name="Comment" label="Comment"
-                                                                            v-model="requestFormField.comment"
-                                                                            required
+                                                                            v-model="requestFormField.comment" required
                                                                             :rules="[(v: any) => !!v || 'Field is required!']"
                                                                             :color="requestFormField.comment.length > 10 ? 'success' : 'primary'">
                                                                         </VTextarea>
@@ -1908,7 +1566,8 @@ const goToRoute = (value : string) => {
                                                         <tr>
                                                             <td></td>
                                                             <td>Issuer Status</td>
-                                                            <td>{{ `${getAcceptedPermit?.is_rf_accepted ? "Accepted" : "Update Required"}` }}</td>
+                                                            <td>{{ `${getAcceptedPermit?.is_rf_accepted ? "Accepted" :
+            "Update Required"}` }}</td>
                                                         </tr>
                                                         <tr>
                                                             <td></td>
@@ -2002,7 +1661,8 @@ const goToRoute = (value : string) => {
                                         <v-col cols="12">
 
                                             <v-btn color="primary" @click="setAddMembersDialog(true)" class="mr-2"
-                                                v-if="isLoggedInUserIsPermitHolder  && !getAcceptedPermit?.is_declaration_stage">Add Members</v-btn>
+                                                v-if="isLoggedInUserIsPermitHolder && !getAcceptedPermit?.is_declaration_stage">Add
+                                                Members</v-btn>
                                             <v-sheet>
                                                 <v-dialog v-model="addMembersDialog" max-width="800">
                                                     <v-card>
@@ -2181,7 +1841,7 @@ const goToRoute = (value : string) => {
                                                         <td>{{ `${member?.position.split('_').join(' ')}` }}</td>
                                                         <td>
                                                             <v-btn color='error' size='small'
-                                                                v-if="isLoggedInUserIsPermitHolder  && !getAcceptedPermit?.is_declaration_stage"
+                                                                v-if="isLoggedInUserIsPermitHolder && !getAcceptedPermit?.is_declaration_stage"
                                                                 @click="removeMember(member?.member?.id)">
                                                                 Remove
                                                             </v-btn>
@@ -2214,9 +1874,10 @@ const goToRoute = (value : string) => {
 
                                             <template v-if="!getAcceptedPermit?.is_jha_accepted">
                                                 <v-btn color="primary" @click="setSendJHADialog(true)" class="mr-2"
-                                                    v-if="isLoggedInUserIsPermitHolder">Select Job Hazard Analysis</v-btn>
+                                                    v-if="isLoggedInUserIsPermitHolder">Select Job Hazard
+                                                    Analysis</v-btn>
                                             </template>
-                                            
+
                                             <v-sheet>
                                                 <v-dialog v-model="sendJHADialog" max-width="800">
                                                     <v-card>
@@ -2235,20 +1896,20 @@ const goToRoute = (value : string) => {
 
                                                         <v-card-text>
                                                             <VForm v-model="valid" ref="formContainer" fast-fail
-                                                                lazy-validation @submit.prevent="sendJHA"
-                                                                class="py-1">
+                                                                lazy-validation @submit.prevent="sendJHA" class="py-1">
                                                                 <VRow class="mt-5 mb-3">
 
                                                                     <VCol cols="12" md="12">
                                                                         <v-label
-                                                                            class="font-weight-medium pb-1">Approved Job Hazard Analysis</v-label>
+                                                                            class="font-weight-medium pb-1">Approved Job
+                                                                            Hazard
+                                                                            Analysis</v-label>
                                                                         <VSelect v-model="stepThreeFields.jha_id"
-                                                                            :items="getActiveJHA"
-                                                                            label="Select" single-line
-                                                                            variant="outlined" class="text-capitalize"
+                                                                            :items="getActiveJHA" label="Select"
+                                                                            single-line variant="outlined"
+                                                                            class="text-capitalize"
                                                                             :rules="[(v: any) => !!v || 'You must select to continue!']"
-                                                                            item-title='title' item-value="id"
-                                                                            required>
+                                                                            item-title='title' item-value="id" required>
                                                                         </VSelect>
                                                                     </VCol>
                                                                     <!-- <template
@@ -2304,7 +1965,7 @@ const goToRoute = (value : string) => {
                                                         </v-card-text>
                                                     </v-card>
                                                 </v-dialog>
-                                                
+
                                                 <v-dialog v-model="actionJHADialog" max-width="800">
                                                     <v-card>
 
@@ -2338,15 +1999,14 @@ const goToRoute = (value : string) => {
                                                                             required>
                                                                         </VSelect>
                                                                     </VCol>
-                                                                    
-                                                                    
+
+
                                                                     <VCol cols="12" md="12">
                                                                         <v-label
                                                                             class="text-subtitle-1 font-weight-medium pb-1">Comment</v-label>
                                                                         <VTextarea variant="outlined" outlined
                                                                             name="Comment" label="Comment"
-                                                                            v-model="stepThreeFields.comment"
-                                                                            required
+                                                                            v-model="stepThreeFields.comment" required
                                                                             :color="stepThreeFields.comment.length > 10 ? 'success' : 'primary'">
                                                                         </VTextarea>
                                                                     </VCol>
@@ -2415,50 +2075,50 @@ const goToRoute = (value : string) => {
                                                 </thead>
                                                 <tbody>
                                                     <tr v-if="getJHA">
-                                                        <td>{{ ''}}</td>
+                                                        <td>{{ '' }}</td>
                                                         <td>
                                                             {{ `${getJHA?.title ? getJHA?.title
-                                                            : ""}` }}
+            : ""}` }}
 
                                                         </td>
                                                         <td>
                                                             {{ `${getJHA?.status ?
-                                                            getJHA?.status : ""}` }}
+            getJHA?.status : ""}` }}
 
                                                         </td>
                                                         <td>
                                                             {{ `${getJHA?.reviewer_user?.full_name ?
-                                                            getJHA?.reviewer_user?.full_name : ""}` }}
+            getJHA?.reviewer_user?.full_name : ""}` }}
                                                         </td>
                                                         <td>
                                                             {{ `${getJHA?.status_message ?
-                                                            getJHA?.status_message : ""}` }}
+            getJHA?.status_message : ""}` }}
                                                         </td>
                                                         <td>
                                                             {{ `${getJHA?.reviewed_date ?
-                                                            getJHA?.reviewed_date : ""}` }}
+            getJHA?.reviewed_date : ""}` }}
                                                         </td>
                                                         <td>
                                                             {{ `${getAcceptedPermit?.jha_status ?
-                                                            getAcceptedPermit?.jha_status : ""}` }}
+            getAcceptedPermit?.jha_status : ""}` }}
                                                         </td>
                                                         <td>
                                                             <template v-if="isLoggedInUserIsPermitIssuer">
                                                                 <v-btn color='primary' size='small' class="mr-2"
                                                                     @click="setActionJHADialog(true, 'accepted')"
-                                                                    v-if="isLoggedInUserIsPermitHolder && getAcceptedPermit?.is_jha_pending ">
+                                                                    v-if="isLoggedInUserIsPermitHolder && getAcceptedPermit?.is_jha_pending">
                                                                     Accept
                                                                 </v-btn>
                                                                 <v-btn color='error' size='small' class="mr-2"
                                                                     @click="setActionJHADialog(true, 'declined')"
-                                                                    v-if="isLoggedInUserIsPermitHolder && getAcceptedPermit?.is_jha_pending ">
+                                                                    v-if="isLoggedInUserIsPermitHolder && getAcceptedPermit?.is_jha_pending">
                                                                     Decline
                                                                 </v-btn>
                                                             </template>
-                                                                <v-btn color='primary' size='small' class="mr-2"
-                                                                    @click="goToRoute(`/review-hazard-analysis/${getJHA?.uuid}`)">
-                                                                    Review JHA
-                                                                </v-btn>
+                                                            <v-btn color='primary' size='small' class="mr-2"
+                                                                @click="goToRoute(`/review-hazard-analysis/${getJHA?.uuid}`)">
+                                                                Review JHA
+                                                            </v-btn>
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -2486,16 +2146,19 @@ const goToRoute = (value : string) => {
 
                                         <v-col cols="12">
 
-                                            <template v-if="getAcceptedPermit?.is_jha_accepted && getAcceptedPermit?.is_rf_accepted  && !getAcceptedPermit?.is_declaration_stage">
+                                            <template
+                                                v-if="getAcceptedPermit?.is_jha_accepted && getAcceptedPermit?.is_rf_accepted && !getAcceptedPermit?.is_declaration_stage">
                                                 <v-btn color="primary" @click="sendForDeclaration" class="mr-2"
                                                     v-if="isLoggedInUserIsPermitIssuer">Send For Declaration</v-btn>
                                             </template>
-                                            
-                                            <template v-if="getAcceptedPermit?.can_issue && !getAcceptedPermit?.is_issued">
-                                                <v-btn color="primary" @click="setSendIssuePermitDialog(true)" class="mr-2"
-                                                    v-if="isLoggedInUserIsPermitIssuer">Issue Permit</v-btn>
+
+                                            <template
+                                                v-if="getAcceptedPermit?.can_issue && !getAcceptedPermit?.is_issued">
+                                                <v-btn color="primary" @click="setSendIssuePermitDialog(true)"
+                                                    class="mr-2" v-if="isLoggedInUserIsPermitIssuer">Issue
+                                                    Permit</v-btn>
                                             </template>
-                                            
+
                                             <v-sheet>
                                                 <v-dialog v-model="sendIssuePermitDialog" max-width="800">
                                                     <v-card>
@@ -2520,22 +2183,27 @@ const goToRoute = (value : string) => {
 
                                                                     <VCol cols="12" md="12">
                                                                         <v-label
-                                                                            class="text-subtitle-1 font-weight-medium pb-1">Duration of Permit
+                                                                            class="text-subtitle-1 font-weight-medium pb-1">Duration
+                                                                            of Permit
                                                                             Start
                                                                             Date</v-label>
-                                                                        <input type="hidden" v-model="issuePermitFields.start_date"/>
+                                                                        <input type="hidden"
+                                                                            v-model="issuePermitFields.start_date" />
                                                                         <VueDatePicker
                                                                             input-class-name="dp-custom-input"
                                                                             v-model="issuePermitFields.start_date"
-                                                                            :min-date="new Date(getAcceptedPermit?.work_start_time)" required>
+                                                                            :min-date="new Date(getAcceptedPermit?.work_start_time)"
+                                                                            required>
                                                                         </VueDatePicker>
                                                                     </VCol>
                                                                     <VCol cols="12" md="12">
                                                                         <v-label
-                                                                            class="text-subtitle-1 font-weight-medium pb-1">Duration of Permit
+                                                                            class="text-subtitle-1 font-weight-medium pb-1">Duration
+                                                                            of Permit
                                                                             End
                                                                             Date</v-label>
-                                                                        <input type="hidden" v-model="issuePermitFields.end_date"/>
+                                                                        <input type="hidden"
+                                                                            v-model="issuePermitFields.end_date" />
                                                                         <VueDatePicker
                                                                             input-class-name="dp-custom-input"
                                                                             :disabled='!issuePermitFields.start_date'
@@ -2570,11 +2238,11 @@ const goToRoute = (value : string) => {
                                                         </v-card-text>
                                                     </v-card>
                                                 </v-dialog>
-                                                
+
                                             </v-sheet>
                                         </v-col>
                                         <!--  -->
-                                        
+
                                         <v-col cols="12">
                                             <v-table>
                                                 <thead>
@@ -2647,21 +2315,29 @@ const goToRoute = (value : string) => {
                                         <v-col cols="12">
                                             <template v-if="getAcceptedPermit.is_active">
                                                 <!-- Holder TO make as complete -->
-                                                <v-btn color="primary" @click="setViewFindingDialog(true)" class="mr-2">Mark As Completed</v-btn>   
+                                                <v-btn color="primary" @click="setViewFindingDialog(true)"
+                                                    class="mr-2">Mark As Completed</v-btn>
                                                 <!-- Issuer to Review and add final comment -->
-                                                <v-btn color="primary" @click="setViewFindingDialog(true)" class="mr-2">Review And Complete</v-btn>  
-                                                                                          <!-- Issuer can Cancel Permit  -->
-                                                <v-btn color="primary" @click="setViewFindingDialog(true)" class="mr-2">Cancel Permit</v-btn>     
-                                                                                          <!-- Holder can Request to extend Permit  -->
-                                                <v-btn color="primary" @click="setViewFindingDialog(true)" class="mr-2">Permit Extension Request</v-btn>  
-                                                                                          <!-- Issuer can Cancel Permit  -->
-                                                <v-btn color="primary" @click="setViewFindingDialog(true)" class="mr-2">Extend Permit</v-btn>   
-                                                                                          <!-- Issuer can Suspend Permit  -->
-                                                <v-btn color="primary" @click="setViewFindingDialog(true)" class="mr-2">Suspend Permit</v-btn>     
-                                                                                          <!-- Holder can Request to extend Permit  -->
-                                                <v-btn color="primary" @click="setViewFindingDialog(true)" class="mr-2">Reactivation Request </v-btn>  
-                                                                                          <!-- Issuer can Reactivate Permit  -->
-                                                <v-btn color="primary" @click="setViewFindingDialog(true)" class="mr-2">Reactivate Permit</v-btn>                                            
+                                                <v-btn color="primary" @click="setViewFindingDialog(true)"
+                                                    class="mr-2">Review And Complete</v-btn>
+                                                <!-- Issuer can Cancel Permit  -->
+                                                <v-btn color="primary" @click="setViewFindingDialog(true)"
+                                                    class="mr-2">Cancel Permit</v-btn>
+                                                <!-- Holder can Request to extend Permit  -->
+                                                <v-btn color="primary" @click="setViewFindingDialog(true)"
+                                                    class="mr-2">Permit Extension Request</v-btn>
+                                                <!-- Issuer can Cancel Permit  -->
+                                                <v-btn color="primary" @click="setViewFindingDialog(true)"
+                                                    class="mr-2">Extend Permit</v-btn>
+                                                <!-- Issuer can Suspend Permit  -->
+                                                <v-btn color="primary" @click="setViewFindingDialog(true)"
+                                                    class="mr-2">Suspend Permit</v-btn>
+                                                <!-- Holder can Request to extend Permit  -->
+                                                <v-btn color="primary" @click="setViewFindingDialog(true)"
+                                                    class="mr-2">Reactivation Request </v-btn>
+                                                <!-- Issuer can Reactivate Permit  -->
+                                                <v-btn color="primary" @click="setViewFindingDialog(true)"
+                                                    class="mr-2">Reactivate Permit</v-btn>
                                             </template>
 
 
@@ -2974,4 +2650,3 @@ const goToRoute = (value : string) => {
     min-height: 68px;
 }
 </style>
-

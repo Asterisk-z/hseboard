@@ -9,6 +9,10 @@ import { useOrganizationStore } from '@/stores/organizationStore';
 import { useMainAuditStore } from '@/stores/mainAuditStore';
 import { useAuthStore } from '@/stores/auth';
 import { useOpenLinksStore } from '@/stores/openLinks';
+// import { VTimePicker } from 'vuetify/labs/VTimePicker'
+// import { VDateInput } from 'vuetify/labs/VDateInput'
+
+// import { VDataTable } from 'vuetify/labs/VDataTable'
 import moment from 'moment'
 import Swal from 'sweetalert2'
 
@@ -59,23 +63,67 @@ const isAuditeeOrg: any = computed(() => (getOngoingMainAudit.value?.recipient_o
 const getAuditMembers: any = computed(() => (mainAuditStore.auditMembers));
 const getAuditeeMembers: any = computed(() => (mainAuditStore.auditeeMembers));
 
+
+const declineAuditDialog = ref(false);
+const setDeclineAuditDialog = (value: boolean) => {
+    declineAuditDialog.value = value;
+}
+const preFields = ref({
+    reason: '',
+    action: '',
+    organization_id: getActiveOrg.value?.uuid,
+});
+
+const actionAudit = async (action: any) => {
+    try {
+        setLoading(true)
+
+        let objectValues = {
+            "organization_id": getActiveOrg.value?.uuid,
+            "main_audit_id": getOngoingMainAudit.value?.uuid,
+            "action": action,
+            "reason": preFields.value?.reason,
+        }
+
+        const resp = await mainAuditStore.actionAudit(objectValues)
+            .catch((error: any) => {
+                throw error
+            })
+            .then((resp: any) => {
+                mainAuditStore.getOngoingMainAudit(route.params.main_audit_id as string);
+                return resp
+            });
+
+        setLoading(false)
+        setAddAuditorsDialog(false)
+
+
+
+    } catch (error) {
+        console.log(error)
+        setLoading(false)
+        setAddAuditorsDialog(false)
+    }
+
+}
 watch(
     () => isAuditingOrg.value,
     (value) => {
         if (value) {
             mainAuditStore.getAuditMembers(route.params.main_audit_id as string)
+            mainAuditStore.getAuditeeMembers(route.params.main_audit_id as string)
         }
 
         if (getOngoingMainAudit.value.is_pending) {
             Swal.fire({
                 title: 'Info!',
-                text: 'Auditing Organization is yet to accept Audit?',
+                text: `${getOngoingMainAudit.value?.recipient_organization?.name} is yet to accept Audit?`,
                 icon: 'info',
                 confirmButtonText: 'Ok',
                 showCancelButton: false,
                 allowOutsideClick: false,
             }).then((result) => {
-
+                router.push(`/hse-audit`)
             });
         }
     }
@@ -97,25 +145,11 @@ watch(
                 allowOutsideClick: false,
             }).then((result) => {
 
-
-
-                let objectValues = {
-                    "organization_id": getActiveOrg.value?.uuid,
-                    "main_audit_id": getOngoingMainAudit.value?.uuid,
-                    "action": result.isConfirmed ? 'accepted' : 'rejected',
-                    "reason": 'reason',
+                if (result.isConfirmed) {
+                    actionAudit('accepted')
+                } else {
+                    setDeclineAuditDialog(true)
                 }
-
-                mainAuditStore.actionAudit(objectValues)
-                    .catch((error: any) => {
-                        throw error
-                    })
-                    .then((resp: any) => {
-                        mainAuditStore.getOngoingMainAudit(route.params.main_audit_id as string);
-                        return resp
-                    });
-
-
 
             });
         }
@@ -301,6 +335,7 @@ const getAuditors: any = computed(() => (getOngoingMainAudit.value?.all_auditors
 const filteredGetAuditeeMembers: any = computed(() => (getAuditeeMembers.value?.filter((member: any) => (member.id != fields.value?.leadRepresentative && member.id != getOngoingMainAudit.value?.lead_auditor?.user_id))));
 
 const isLoggedInUserIsLeadAuditor = computed(() => (getAuthUser.value?.id == getOngoingMainAudit.value?.lead_auditor?.member?.id));
+const isLoggedInUserIsSupportAuditor = computed(() => (getAuthUser.value?.id == getOngoingMainAudit.value?.support_auditor?.member?.id));
 const isLoggedInUserIsLeadRepresentative = computed(() => (getAuthUser.value?.id == getOngoingMainAudit.value?.lead_representative?.member?.id));
 
 const fieldRules: any = ref({
@@ -357,6 +392,8 @@ const sendAuditors = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setAddAuditorsDialog(false)
+            fields.value.leadAuditor = ""
+            fields.value.supportAuditor = ""
             mainAuditStore.getOngoingMainAudit(route.params.main_audit_id as string);
         }
 
@@ -402,6 +439,8 @@ const sendRepresentatives = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setAddRepresentativeDialog(false)
+            fields.value.leadRepresentative = ""
+            fields.value.representatives = []
             mainAuditStore.getOngoingMainAudit(route.params.main_audit_id as string);
         }
 
@@ -532,7 +571,18 @@ const setRejectReasonDialog = (value: boolean, item_id: any = '') => {
     stepTwoFields.value.document_id = item_id
 }
 
+const showCommentDialog = ref(false);
+const setShowCommentDialog = (value: boolean, item: any = '') => {
+    showCommentDialog.value = value;
+    stepTwoFields.value.document = item
+}
+
 const getDocuments: any = computed(() => (getOngoingMainAudit.value?.documents));
+
+type DocumentType = {
+    user_comment?: string,
+    recipient_comment?: string,
+};
 
 const stepTwoFields = ref({
     title: "",
@@ -541,6 +591,7 @@ const stepTwoFields = ref({
     comments: "",
     reason: "",
     files: '',
+    document: null as null || {} as DocumentType,
 
 });
 
@@ -1383,6 +1434,12 @@ const sendRecommendation = async (e: any) => {
         if (resp?.message == 'success') {
             setLoading(false)
             setViewRecommendationDialog(false)
+            stepFiveFields.value.title = ''
+            stepFiveFields.value.description = ''
+            stepFiveFields.value.assigneeId = ''
+            stepFiveFields.value.start_date = ''
+            stepFiveFields.value.end_date = ''
+            stepFiveFields.value.priorityId = ''
             mainAuditStore.getOngoingMainAudit(route.params.main_audit_id as string);
         }
 
@@ -1526,6 +1583,56 @@ const blankFn = () => {
     <div>
         <BaseBreadcrumb :title="page.title" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
 
+        <v-sheet>
+
+            <v-dialog v-model="declineAuditDialog" max-width="800">
+                <v-card>
+
+
+                    <v-card-text>
+                        <div class="d-flex justify-space-between">
+                            <h3 class="text-h3">Reason</h3>
+                            <v-btn icon @click="setDeclineAuditDialog(false)" size="small" flat>
+                                <XIcon size="16" />
+                            </v-btn>
+                        </div>
+                    </v-card-text>
+                    <v-divider></v-divider>
+
+                    <v-card-text>
+
+                        <VForm v-model="valid" ref="formContainer" fast-fail lazy-validation
+                            @submit.prevent="actionAudit('rejected')" class="py-1">
+                            <VRow class="mt-5 mb-3">
+
+                                <VCol cols="12" md="12">
+                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Reason</v-label>
+                                    <VTextarea variant="outlined" outlined name="Reason" label="Reason"
+                                        v-model="preFields.reason" :rules="stepTwoFieldRules.reason" required
+                                        :color="preFields.reason.length > 10 ? 'success' : 'primary'">
+                                    </VTextarea>
+                                </VCol>
+
+                                <VCol cols="12" lg="12" class="text-right">
+                                    <!-- <v-btn color="error" @click="setDeclineAuditDialog(false)"
+                                        variant="text">Cancel</v-btn> -->
+
+                                    <v-btn color="primary" type="submit" :loading="loading" :disabled="!valid">
+                                        <!-- @click="actionAudit('rejected')" -->
+                                        <span v-if="!loading">
+                                            Send
+                                        </span>
+                                        <clip-loader v-else :loading="loading" color="white"
+                                            :size="'25px'"></clip-loader>
+                                    </v-btn>
+
+                                </VCol>
+                            </VRow>
+                        </VForm>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
+        </v-sheet>
 
         <v-row v-if="getOngoingMainAudit?.is_accepted || getOngoingMainAudit?.is_ongoing">
             <v-col cols="12" md="11">
@@ -1534,7 +1641,7 @@ const blankFn = () => {
                     <v-card-text>
                         <h1 class="text-uppercase mb-3"> Audit Title - {{ getOngoingMainAudit?.audit_title }}</h1>
                         <h2 class="text-uppercase mb-3">Organization - {{
-            getOngoingMainAudit?.recipient_organization?.name }}</h2>
+                            getOngoingMainAudit?.recipient_organization?.name }}</h2>
                     </v-card-text>
                     <v-card-text>
                         <v-tabs v-model="tab" color="primary" class="customTab">
@@ -1598,9 +1705,10 @@ const blankFn = () => {
                                         <v-col cols="12">
 
                                             <v-btn color="primary" @click="setAddAuditorsDialog(true)" class="mr-2"
-                                                v-if="isAuditingOrg">Add Auditors</v-btn>
+                                                v-if="isAuditingOrg && isLoggedInUserOwnsActionOrg">Add Auditors</v-btn>
                                             <v-btn color="primary" @click="setAddRepresentativeDialog(true)"
-                                                class="mr-2" v-if="isAuditeeOrg">Add Representatives</v-btn>
+                                                class="mr-2" v-if="isAuditeeOrg && isLoggedInUserOwnsActionOrg">Add
+                                                Representatives</v-btn>
                                             <v-sheet>
                                                 <v-dialog v-model="addAuditorsDialog" max-width="800">
                                                     <v-card>
@@ -1781,36 +1889,38 @@ const blankFn = () => {
                                                 </thead>
                                                 <tbody>
 
-                                                    <template v-if="isAuditingOrg">
-                                                        <tr v-for="(member, index) in getAuditors" :key="member">
-                                                            <td>{{ computedIndex(index) }}</td>
-                                                            <td>{{ `${member?.member?.lastName}
-                                                                ${member?.member?.firstName}` }}</td>
-                                                            <td>{{ `${member?.member?.email}` }}</td>
-                                                            <td>{{ `${member?.position.split('_').join(' ')}` }}</td>
-                                                            <td>
-                                                                <v-btn color='error' size='small'
-                                                                    @click="removeMember(member?.member?.id)">
-                                                                    Remove
-                                                                </v-btn>
-                                                            </td>
-                                                        </tr>
-                                                    </template>
-                                                    <template v-if="isAuditeeOrg">
-                                                        <tr v-for="(member, index) in getRepresentatives" :key="member">
-                                                            <td>{{ computedIndex(index) }}</td>
-                                                            <td>{{ `${member?.member?.lastName}
-                                                                ${member?.member?.firstName}` }}</td>
-                                                            <td>{{ `${member?.member?.email}` }}</td>
-                                                            <td>{{ `${member?.position.split('_').join(' ')}` }}</td>
-                                                            <td>
-                                                                <v-btn color='error' size='small'
-                                                                    @click="removeMember(member?.member?.id)">
-                                                                    Remove
-                                                                </v-btn>
-                                                            </td>
-                                                        </tr>
-                                                    </template>
+                                                    <!-- <template v-if="isAuditingOrg"> -->
+                                                    <tr v-for="(member, index) in getAuditors" :key="member">
+                                                        <td>{{ computedIndex(index) }}</td>
+                                                        <td>{{ `${member?.member?.lastName}
+                                                            ${member?.member?.firstName}` }}</td>
+                                                        <td>{{ `${member?.member?.email}` }}</td>
+                                                        <td>{{ `${member?.position.split('_').join(' ')}` }}</td>
+                                                        <td>
+                                                            <v-btn color='error' size='small'
+                                                                @click="removeMember(member?.member?.id)"
+                                                                v-if="isLoggedInUserOwnsActionOrg && isAuditingOrg">
+                                                                Remove
+                                                            </v-btn>
+                                                        </td>
+                                                    </tr>
+                                                    <!-- </template>
+<template v-if="isAuditeeOrg"> -->
+                                                    <tr v-for="(member, index) in getRepresentatives" :key="member">
+                                                        <td>{{ computedIndex(index) }}</td>
+                                                        <td>{{ `${member?.member?.lastName}
+                                                            ${member?.member?.firstName}` }}</td>
+                                                        <td>{{ `${member?.member?.email}` }}</td>
+                                                        <td>{{ `${member?.position.split('_').join(' ')}` }}</td>
+                                                        <td>
+                                                            <v-btn color='error' size='small'
+                                                                @click="removeMember(member?.member?.id)"
+                                                                v-if="isLoggedInUserOwnsActionOrg && isAuditeeOrg">
+                                                                Remove
+                                                            </v-btn>
+                                                        </td>
+                                                    </tr>
+                                                    <!-- </template> -->
 
                                                 </tbody>
                                             </v-table>
@@ -1975,21 +2085,6 @@ const blankFn = () => {
                                                                                 </template>
                                                                             </template>
                                                                         </v-file-input>
-
-                                                                        <!-- <div v-if="previewImage">
-                                                                            <VRow>
-                                                                                <VCol cols="4"
-                                                                                    v-for="image in previewImage"
-                                                                                    :key="image">
-
-                                                                                    <div>
-                                                                                        <img class="preview my-3"
-                                                                                            :src="image" alt=""
-                                                                                            style="max-width: 200px;" />
-                                                                                    </div>
-                                                                                </VCol>
-                                                                            </VRow>
-                                                                        </div> -->
                                                                     </VCol>
 
 
@@ -2076,6 +2171,55 @@ const blankFn = () => {
                                                     </v-card>
                                                 </v-dialog>
 
+                                                <v-dialog v-model="showCommentDialog" max-width="800">
+                                                    <v-card>
+
+
+                                                        <v-card-text>
+                                                            <div class="d-flex justify-space-between">
+                                                                <h3 class="text-h3">Comments </h3>
+                                                                <v-btn icon @click="setShowCommentDialog(false)"
+                                                                    size="small" flat>
+                                                                    <XIcon size="16" />
+                                                                </v-btn>
+                                                            </div>
+                                                        </v-card-text>
+                                                        <v-divider></v-divider>
+
+                                                        <v-card-text>
+
+                                                            <VCol cols="12" lg="12">
+                                                                <v-table>
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th></th>
+                                                                            <th></th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <th>User Comment</th>
+                                                                            <th>{{ stepTwoFields.document?.user_comment
+                                                                                }}</th>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>Recipient Comment</th>
+                                                                            <th>{{
+                                                                                stepTwoFields.document?.recipient_comment
+                                                                                }}</th>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </v-table>
+                                                            </VCol>
+
+                                                            <VCol cols="12" lg="12" class="text-right">
+                                                                <v-btn color="error"
+                                                                    @click="setShowCommentDialog(false)"
+                                                                    variant="text">Cancel</v-btn>
+                                                            </VCol>
+                                                        </v-card-text>
+                                                    </v-card>
+                                                </v-dialog>
 
                                             </v-sheet>
                                         </v-col>
@@ -2115,7 +2259,7 @@ const blankFn = () => {
                                                         <td>{{ `${document?.title}` }}</td>
                                                         <td>{{ `${document?.description}` }}</td>
                                                         <td>{{ `${document?.recipient_user_id ?
-            `${document?.uploaded_by?.lastName}
+                                                            `${document?.uploaded_by?.lastName}
                                                             ${document?.uploaded_by?.firstName}` : ''}` }}</td>
                                                         <td class="text-uppercase">{{ `${document?.status}` }}</td>
                                                         <td>
@@ -2154,14 +2298,12 @@ const blankFn = () => {
                                                                 Upload Files
                                                             </v-btn>
                                                             <v-btn color='primary' size='small' class="mx-2"
-                                                                v-if="document?.recipient_comment || document?.user_comment">
-
+                                                                v-if="document?.recipient_comment || document?.user_comment"
+                                                                @click="setShowCommentDialog(true, document)">
                                                                 Comment
                                                             </v-btn>
                                                         </td>
                                                     </tr>
-
-
 
                                                 </tbody>
                                             </v-table>
@@ -2190,7 +2332,7 @@ const blankFn = () => {
                                                 v-if="isLoggedInUserIsLeadAuditor && !getSchedule?.is_accepted">Send
                                                 Onsite Schedule</v-btn>
                                             <v-btn color="primary" @click="setConfirmScheduleDialog(true)" class="mr-2"
-                                                v-if="isLoggedInUserIsLeadRepresentative && !getSchedule?.is_accepted">Confirm
+                                                v-if="isLoggedInUserIsLeadRepresentative && !getSchedule?.is_accepted && getSchedule?.auditor_time">Confirm
                                                 Onsite
                                                 Schedule</v-btn>
                                             <v-sheet>
@@ -2216,14 +2358,21 @@ const blankFn = () => {
 
                                                                     <VCol cols="12" md="12">
                                                                         <v-label class="font-weight-medium pb-1">Select
-                                                                            Dates</v-label>
+                                                                            Date</v-label>
                                                                         <VueDatePicker
                                                                             input-class-name="dp-custom-input"
                                                                             v-model="stepThreeFields.date_time"
                                                                             :min-date="new Date()" required>
                                                                         </VueDatePicker>
+
                                                                     </VCol>
 
+                                                                    <!-- <v-col cols="12" md="6">
+                                                                        <v-date-input label="Select a date"
+                                                                            prepend-icon=""
+                                                                            variant="solo"></v-date-input>
+
+                                                                    </v-col> -->
 
 
                                                                     <VCol cols="12" lg="12" class="text-right">
@@ -2272,7 +2421,7 @@ const blankFn = () => {
 
                                                                     <VCol cols="12" md="12">
                                                                         <v-label class="font-weight-medium pb-1">Select
-                                                                            Dates</v-label>
+                                                                            Date</v-label>
                                                                         <VueDatePicker
                                                                             input-class-name="dp-custom-input"
                                                                             v-model="stepThreeFields.date_time"
@@ -2336,28 +2485,28 @@ const blankFn = () => {
                                                         <td></td>
                                                         <td>
                                                             {{ `${getSchedule?.auditor_time ? getSchedule?.auditor_time
-            : ""}` }}
+                                                            : ""}` }}
 
                                                             <v-btn color='primary' size='small'
                                                                 @click="actionAcceptedTime('auditor')"
-                                                                v-if="isLoggedInUserIsLeadAuditor && !getSchedule?.is_accepted && getSchedule?.auditor_time && getSchedule?.recipient_time">
+                                                                v-if="isLoggedInUserIsLeadRepresentative && !getSchedule?.is_accepted && getSchedule?.auditor_time && getSchedule?.recipient_time">
                                                                 Accept
                                                             </v-btn>
                                                         </td>
                                                         <td>
                                                             {{ `${getSchedule?.recipient_time ?
-            getSchedule?.recipient_time : ""}` }}
+                                                            getSchedule?.recipient_time : ""}` }}
                                                             <v-btn color='primary' size='small'
                                                                 @click="actionAcceptedTime('recipient')"
-                                                                v-if="isLoggedInUserIsLeadAuditor && !getSchedule?.is_accepted && getSchedule?.auditor_time && getSchedule?.recipient_time">
+                                                                v-if="isLoggedInUserIsLeadRepresentative && !getSchedule?.is_accepted && getSchedule?.auditor_time && getSchedule?.recipient_time">
                                                                 Accept
                                                             </v-btn>
                                                         </td>
                                                         <td>
                                                             {{ `${getSchedule?.accepted_time ?
-            getSchedule?.accepted_time : ""}` }}
+                                                            getSchedule?.accepted_time : ""}` }}
                                                         </td>
-                                                        <td>{{ `Start Onsite` }}</td>
+                                                        <td>{{ `` }}</td>
                                                     </tr>
                                                 </tbody>
                                             </v-table>
@@ -2586,8 +2735,8 @@ const blankFn = () => {
                                                                                             @click="setSendCommentDialog(true, question?.id, title_question.id, question)"
                                                                                             flat>
                                                                                             {{ (question?.comment ||
-            question?.response?.comment)
-            ? `Edit Comment` : `Add
+                                                                                            question?.response?.comment)
+                                                                                            ? `Edit Comment` : `Add
                                                                                             Comment` }}
                                                                                         </v-btn>
                                                                                     </template>
@@ -2653,7 +2802,7 @@ const blankFn = () => {
 
                                         <v-col cols="12">
                                             <v-btn color="primary" @click="setViewFindingDialog(true)" class="mr-2"
-                                                v-if="isLoggedInUserIsLeadAuditor">Add
+                                                v-if="isLoggedInUserIsLeadAuditor || isLoggedInUserIsSupportAuditor">Add
                                                 Finding</v-btn>
 
                                             <v-sheet>
@@ -2662,7 +2811,7 @@ const blankFn = () => {
 
                                                         <v-card-text>
                                                             <div class="d-flex justify-space-between">
-                                                                <h3 class="text-h3">Add </h3>
+                                                                <h3 class="text-h3"> Add Finding </h3>
                                                                 <v-btn icon @click="setViewFindingDialog(false)"
                                                                     size="small" flat>
                                                                     <XIcon size="16" />
@@ -2680,7 +2829,7 @@ const blankFn = () => {
 
                                                                     <VCol cols="12" md="12">
                                                                         <v-label
-                                                                            class="text-subtitle-1 font-weight-medium pb-1">Details</v-label>
+                                                                            class="text-subtitle-1 font-weight-medium pb-1">Findings Details</v-label>
                                                                         <VTextarea variant="outlined" outlined
                                                                             name="Description" label="Details"
                                                                             v-model="stepFiveFields.detail"
@@ -2727,12 +2876,12 @@ const blankFn = () => {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr>
-                                                        <td>{{ getFindings ? `${getFindings?.user?.lastName}
-                                                            ${getFindings?.user?.firstName}` : ''
-                                                            }}</td>
-                                                        <td>{{ getFindings ? `${getFindings?.description}` : '' }}</td>
-                                                    </tr>
+                                                    <template v-if="getFindings">
+                                                        <tr v-for="finding in getFindings" :key="finding">
+                                                            <td>{{ `${finding?.user?.full_name}` }}</td>
+                                                            <td>{{ `${finding?.description}` }}</td>
+                                                        </tr>
+                                                    </template>
                                                 </tbody>
                                             </v-table>
                                         </v-col>
@@ -2793,9 +2942,10 @@ const blankFn = () => {
                                                                         <v-label
                                                                             class="font-weight-medium pb-1">User</v-label>
 
+                                                                            <!-- :items="isLoggedInUserIsLeadAuditor ? getAuditMembers : getAuditeeMembers" -->
 
                                                                         <VSelect v-model="stepFiveFields.assigneeId"
-                                                                            :items="isLoggedInUserIsLeadAuditor ? getAuditMembers : getAuditeeMembers"
+                                                                            :items="getAuditeeMembers"
                                                                             :rules="stepFiveFieldRules.assigneeId"
                                                                             label="Select" :selected="''"
                                                                             item-title='lastName' item-value="uuid"

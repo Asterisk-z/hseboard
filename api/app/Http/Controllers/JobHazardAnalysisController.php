@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseStatusCodes;
 use App\Models\JobHazardAnalysis;
 use App\Models\Organisation;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -145,6 +146,7 @@ class JobHazardAnalysisController extends Controller
         $data = $request->validate([
             'organization_id' => ['required', 'string'],
             'job_hazard_id' => ['required', 'string'],
+            'reviewer_id' => ['required', 'string'],
         ]);
 
         try {
@@ -161,12 +163,17 @@ class JobHazardAnalysisController extends Controller
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find User");
             }
 
+            if (!$user = User::where('uuid', $data['reviewer_id'])->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Organization");
+            }
+
             $job_hazard->status = 'completed';
+            $job_hazard->reviewed_by = $user->id;
             $job_hazard->save();
 
             // logAction(auth()->user()->email, 'You started a Job Hazard Analysis ', 'Start Job Hazard analysis', $request->ip());
 
-            return successResponse('Job Completed Successfully', []);
+            return successResponse('Sent Job for sent for review successfully', []);
 
         } catch (Exception $e) {
             logger($e);
@@ -199,6 +206,10 @@ class JobHazardAnalysisController extends Controller
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Job");
             }
 
+            if (auth()->user()->id != $job_hazard->reviewed_by) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Organization");
+            }
+
             // if ($job_hazard->prepared_by == auth()->user()->id || $job_hazard->organization_id != $organization->id) {
             //     return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find User");
             // }
@@ -210,9 +221,8 @@ class JobHazardAnalysisController extends Controller
             }
 
             $job_hazard->status = request('status');
-            $job_hazard->reviewed_by = auth()->user()->id;
-            $job_hazard->reviewed_date = now();
             $job_hazard->status_message = request('reason');
+            $job_hazard->reviewed_date = now();
             $job_hazard->save();
 
             // logAction(auth()->user()->email, 'You started a Job Hazard Analysis ', 'Start Job Hazard analysis', $request->ip());

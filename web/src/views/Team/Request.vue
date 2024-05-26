@@ -117,9 +117,9 @@ const headers = ref([
         value: (item: any): string => `${item.recipientEmail}`
     },
     {
-        key: 'typeMessage',
+        key: 'message',
         title: 'Message',
-        value: (item: any): string => `${item.typeMessage}`
+        value: (item: any): string => `${item.message}`
     },
     {
         key: 'created_at',

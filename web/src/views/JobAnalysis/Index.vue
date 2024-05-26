@@ -40,16 +40,16 @@ onMounted(() => {
 });
 
 
-const getAllJobHazardAnalysis : any  = computed(() => (jobHazardStore.jobHazards));
+const getAllJobHazardAnalysis: any = computed(() => (jobHazardStore.jobHazards));
 
-const computedIndex = (index : any) => ++index;
+const computedIndex = (index: any) => ++index;
 
-const getTeamMembersExceptMe : any  = computed(() => (teamMemberStore.membersExceptMe));
-const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
-const getAuthUser : any  = computed(() => (authStore.loggedUser));
-const getObservationTypes : any  = computed(() => (openLinks.observationTypes));
-const getPriorities : any  = computed(() => (openLinks.priorities));
-const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const getTeamMembersExceptMe: any = computed(() => (teamMemberStore.membersExceptMe));
+const getActiveOrg: any = computed(() => (organizationStore.getActiveOrg()));
+const getAuthUser: any = computed(() => (authStore.loggedUser));
+const getObservationTypes: any = computed(() => (openLinks.observationTypes));
+const getPriorities: any = computed(() => (openLinks.priorities));
+const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 const valid = ref(true);
@@ -112,7 +112,7 @@ const selectItem = (item: any, action: string = '') => {
 
 }
 
-const isAssignee : any  = computed(() => (selectedItem?.value?.assignee_id == getAuthUser?.value?.id));
+const isAssignee: any = computed(() => (selectedItem?.value?.assignee_id == getAuthUser?.value?.id));
 
 
 
@@ -339,7 +339,7 @@ const goToRoute = (url: string) => {
                                             View Job
                                         </v-list-item-title>
                                     </v-list-item>
-                                    <template v-if="isLoggedInUserOwnsActionOrg && ( item.selectable.is_completed ||  item.selectable.is_approved )">
+                                    <template v-if="(item.selectable.is_completed || item.selectable.is_approved)">
                                         <v-list-item @click="selectItem(item, 'review')">
                                             <v-list-item-title>
                                                 <v-icon class="mr-2" size="small">
@@ -361,7 +361,8 @@ const goToRoute = (url: string) => {
                         <template v-slot:item.status="{ item }">
                             <div class="">
                                 <v-chip :color="item.selectable.status == 'invite' ? 'green' : 'orange'"
-                                    :text="item.selectable.status" class="text-uppercase" size="small" label></v-chip>
+                                    :text="item.selectable.status == 'completed' ? 'reviewing' : item.selectable.status"
+                                    class="text-uppercase" size="small" label></v-chip>
                             </div>
                         </template>
 

@@ -825,11 +825,10 @@ const fetchTemplate = async (token: string) => {
         if (resp) {
             stepOneFields.value.auditTemplates = resp
         } else {
-
             stepOneFields.value.auditTemplates = ''
         }
 
-
+        stepOneFields.value.auditTemplate = ''
 
     } catch (error) {
 

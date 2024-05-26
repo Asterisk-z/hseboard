@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->text('location');
-            $table->timestamp('incident_date_time');
+            $table->timestamp('incident_date_time')->nullable();
             $table->text('damages');
             $table->timestamps();
         });

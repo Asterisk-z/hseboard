@@ -58,7 +58,7 @@ const setLoading = (value: boolean) => {
 
 const showSecondFormValue = ref('corporate')
 
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{9,}$/;
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{10,}$/;
 const showPassword = ref(false);
 
 const fields = ref({

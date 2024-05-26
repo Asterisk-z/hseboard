@@ -18,8 +18,8 @@ return new class extends Migration
             $table->uuid('uuid')->unique();
             $table->integer('user_id');
             $table->integer('organization_id');
-            $table->timestamp('start_date');
-            $table->timestamp('end_date');
+            $table->timestamp('start_date')->nullable();
+            $table->timestamp('end_date')->nullable();
             $table->float('number_of_workers');
             $table->float('number_of_working_hours_per_day');
             $table->float('number_of_days_under_observation');

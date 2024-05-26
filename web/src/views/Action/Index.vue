@@ -8,6 +8,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useOpenLinksStore } from '@/stores/openLinks';
 import { useActionStore } from '@/stores/actionStore';
 import moment from 'moment'
+import { useFormatter } from '@/composables/formatter';
 import { router } from '@/router';
 
 const page = ref({ title: 'Actions' });
@@ -47,6 +48,7 @@ const getAuthUser: any = computed(() => (authStore.loggedUser));
 const getObservationTypes: any = computed(() => (openLinks.observationTypes));
 const getPriorities: any = computed(() => (openLinks.priorities));
 const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const { formatDate } = useFormatter();
 
 
 const valid = ref(true);
@@ -156,7 +158,7 @@ const headers = ref([
     {
         key: 'created_at',
         title: 'Date Created',
-        value: (item: any): string => `${moment(item.created_at).format('MMMM Do YYYY, h:mm a')}`
+        value: (item: any): string => `${formatDate(item.created_at)}`
     },
     {
         key: 'action',

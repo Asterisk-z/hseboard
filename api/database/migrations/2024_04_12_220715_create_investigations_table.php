@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('user_id');
             $table->integer('organization_id');
             $table->integer('observation_id');
-            $table->timestamp('start_date');
+            $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();
             $table->string('method')->nullable();
 

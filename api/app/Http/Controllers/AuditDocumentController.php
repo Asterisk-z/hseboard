@@ -78,13 +78,15 @@ class AuditDocumentController extends Controller
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "User not authorized to perform action for organization");
             }
 
-            AuditDocument::create([
+            $audit_document = AuditDocument::create([
                 'organization_id' => $organization->id,
                 'user_id' => auth()->user()->id,
                 'title' => request('title'),
                 'description' => request('description'),
                 'file_id' => 1,
             ]);
+
+            storeMedia(request('file'), AuditDocument::class, $audit_document->id, 'audit_documents', $audit_document->media ? $audit_document->media->id : null);
 
             // logAction(auth()->user()->email, 'You started an investigation ', 'Start Investigation', $request->ip());
 

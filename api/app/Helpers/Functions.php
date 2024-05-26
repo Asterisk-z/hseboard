@@ -226,7 +226,7 @@ if (!function_exists('generateRandomString')) {
 }
 
 if (!function_exists('storeMedia')) {
-    function storeMedia($file, $model, $id, $path)
+    function storeMedia($file, $model, $id, $path, $updateId = null)
     {
 
         // $file = $file;
@@ -235,7 +235,7 @@ if (!function_exists('storeMedia')) {
 
         $file_name = $file->storePublicly($path, 'public');
 
-        $media = Media::create([
+        $media = Media::updateOrCreate(['id' => $updateId], [
             'file_name' => $file_name,
             'mime_type' => $file->getMimeType(),
             'file_size' => $file->getSize(),

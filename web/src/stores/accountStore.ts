@@ -82,6 +82,31 @@ export const useAccountStore = defineStore({
                 });
             this.userDetail = data;
         },
+        async uploadLogo(values: any) {
+            try {
+
+                const user = useAuthStore();
+                const data = await axios({
+                    method: 'post',
+                    url: `${import.meta.env.VITE_API_LINK}auth/upload-logo`,
+                    data: values,
+                    headers: {
+                        'Content-Type': "multipart/form-data; charset=utf-8; boundary=" + Math.random().toString().substr(2),
+                        "Authorization": `Bearer ${user.accessToken}`,
+                        "Accept": "Application/json",
+                    },
+                }).catch((error: any) => {
+                    throw error;
+                }).then((response: any) => {
+                    return response
+                })
+
+                return toastWrapper.success(data?.message, data)
+            } catch (error: any) {
+                return toastWrapper.error(error, error)
+            }
+
+        },
 
 
 

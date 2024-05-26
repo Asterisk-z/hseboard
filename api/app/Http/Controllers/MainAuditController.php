@@ -923,7 +923,11 @@ class MainAuditController extends Controller
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Organization");
             }
 
-            if ($organization->id != $main_audit->organization_id || $main_audit->lead_auditor->user_id != auth()->user()->id) {
+            // if ($organization->id != $main_audit->organization_id || $main_audit->lead_auditor->user_id != auth()->user()->id) {
+            //     return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unauthorized Action");
+            // }
+
+            if ($organization->id != $main_audit->recipient_organization_id || $main_audit->lead_representative->user_id != auth()->user()->id) {
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unauthorized Action");
             }
 
@@ -940,7 +944,7 @@ class MainAuditController extends Controller
 
             // logAction(auth()->user()->email, 'You started an investigation ', 'Start Investigation', $request->ip());
 
-            return successResponse('Action Delte to organization successfully', []);
+            return successResponse('Onsite Date Accepted successfully', []);
 
         } catch (Exception $e) {
             logger($e);
@@ -1064,6 +1068,7 @@ class MainAuditController extends Controller
         $data = $request->validate([
             'organization_id' => ['required', 'string'],
             'main_audit_id' => ['required', 'string'],
+            'main_audit_finding_id' => ['nullable', 'string'],
             'detail' => ['required', 'string'],
         ]);
 
@@ -1077,12 +1082,12 @@ class MainAuditController extends Controller
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Organization");
             }
 
-            if ($organization->id != $main_audit->organization_id || $main_audit->lead_auditor->user_id != auth()->user()->id) {
+            if ($organization->id != $main_audit->organization_id || !in_array(auth()->user()->id, [$main_audit->lead_auditor->user_id, $main_audit->support_auditor->user_id])) {
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unauthorized Action");
             }
 
             MainAuditFinding::updateOrCreate(
-                ['main_audit_id' => $main_audit->id], [
+                ['main_audit_id' => $main_audit->id, 'id' => request('main_audit_finding_id')], [
                     'user_id' => auth()->user()->id,
                     'main_audit_id' => $main_audit->id,
                     'description' => request('detail'),
@@ -1140,9 +1145,9 @@ class MainAuditController extends Controller
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "User Not Found");
             }
 
-            if (!$find_user_in_organization = Organisation::find_user($organization, $user->email)->first()) {
-                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "User is not in Organization");
-            }
+            // if (!$find_user_in_organization = Organisation::find_user($organization, $user->email)->first()) {
+            //     return errorResponse(ResponseStatusCodes::BAD_REQUEST, "User is not in Organization");
+            // }
 
             Action::create([
                 'user_id' => auth()->user()->id,

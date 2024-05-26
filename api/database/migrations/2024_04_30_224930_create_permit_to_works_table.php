@@ -28,9 +28,9 @@ return new class extends Migration
             $table->string('location_name');
             $table->string('contractor_name');
             $table->string('location_id_no');
-            $table->timestamp('work_start_time');
-            $table->timestamp('work_end_time');
-            $table->timestamp('requested_date');
+            $table->timestamp('work_start_time')->nullable();
+            $table->timestamp('work_end_time')->nullable();
+            $table->timestamp('requested_date')->nullable();
             $table->timestamp('alloted_work_start_time')->nullable();
             $table->timestamp('alloted_work_end_time')->nullable();
             $table->string('comment')->nullable();

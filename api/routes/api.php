@@ -82,6 +82,7 @@ Route::middleware('auth:api')->group(function ($router) {
         Route::get('profile', [AuthController::class, 'profile']);
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('refresh', [AuthController::class, 'refresh']);
+        Route::post('/upload-logo', [AuthController::class, 'updateLogo']);
     });
 
     Route::prefix('profile')->group(function ($router) {
@@ -104,6 +105,7 @@ Route::middleware('auth:api')->group(function ($router) {
         Route::get('/org_token/{org_token}/{uuid}', [OrganisationController::class, 'show_token']);
         Route::get('/users/{uuid}', [OrganisationController::class, 'users']);
         Route::post('/update-details', [OrganisationController::class, 'updateDetails']);
+        Route::post('/upload-logo', [OrganisationController::class, 'updateLogo']);
         Route::post('/remove-user', [OrganisationController::class, 'removeUser']);
     });
 

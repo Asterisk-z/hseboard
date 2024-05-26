@@ -8,6 +8,7 @@ import UiParentCard from '@/components/shared/UiParentCard.vue';
 import { useOrganizationStore } from '@/stores/organizationStore';
 import { useAuthStore } from '@/stores/auth';
 import { useJobHazardStore } from '@/stores/jobHazardStore';
+import { useFormatter } from '@/composables/formatter';
 import moment from 'moment'
 import Swal from 'sweetalert2'
 import {
@@ -38,20 +39,19 @@ const route = useRoute()
 const authStore = useAuthStore();
 const organizationStore = useOrganizationStore();
 const jobHazardStore = useJobHazardStore();
+const { formatDate } = useFormatter();
 
 
 onMounted(() => {
     jobHazardStore.getReviewJobHazardAnalysis(route.params.job_id as string)
 });
 
-const computedIndex = (index : any) => ++index;
-const getAuthUser : any  = computed(() => (authStore.loggedUser));
-const getReviewJobHazardAnalysis : any  = computed(() => (jobHazardStore.reviewJobHazard));
-const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
-const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
-
-
-
+const computedIndex = (index: any) => ++index;
+const getAuthUser: any = computed(() => (authStore.loggedUser));
+const getReviewJobHazardAnalysis: any = computed(() => (jobHazardStore.reviewJobHazard));
+const getActiveOrg: any = computed(() => (organizationStore.getActiveOrg()));
+const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const isLoggedInUserIsReviewer: any = computed(() => (getAuthUser.value?.id == getReviewJobHazardAnalysis.value?.reviewed_by));
 
 
 const valid = ref(true);;
@@ -95,35 +95,20 @@ const completeJob = async (step = null) => {
         setLoading(true)
 
         let objectValues = {
-            
+
             "organization_id": getActiveOrg.value?.uuid,
             "job_hazard_id": getReviewJobHazardAnalysis.value?.uuid,
-            "status" : stepFields.value.status,
-            "reason" : stepFields.value.reason
+            "status": stepFields.value.status,
+            "reason": stepFields.value.reason
         }
 
-        
-
-
-        // Swal.fire({
-        //     title: 'Info!',
-        //     text: 'Do you sure?',
-        //     icon: 'info',
-        //     confirmButtonText: 'Yes',
-        //     cancelButtonText: 'No',
-        //     showCancelButton: true,
-        //     allowOutsideClick: false,
-        // }).then((result) => {
-        //     if (result.isConfirmed) {
-
-
-                const resp = await jobHazardStore.actionJobHazardAnalysis(objectValues)
-                    .catch((error: any) => {
-                        throw error
-                    })
-                    .then((resp: any) => {
-                        return resp
-                    });
+        const resp = await jobHazardStore.actionJobHazardAnalysis(objectValues)
+            .catch((error: any) => {
+                throw error
+            })
+            .then((resp: any) => {
+                return resp
+            });
         //     }
         // });
         if (resp) {
@@ -198,194 +183,220 @@ const blankFn = () => {
                                             </th>
                                         </tr> -->
                                     </thead>
-                                    <tbody  class="border-lg">
-                                            <tr >
-                                                <td colspan="2"   class="border-lg">
-                                                    <div class="pa-8">          
-                                                        <label class="text-subtitle-1">Company</label>
-                                                        <p class="text-body-1"> {{ `${getReviewJobHazardAnalysis?.organization?.name}` }}</p>
-                                                    </div>
-                                                </td>
-                                                <td colspan="2"  class="border-lg">
-                                                    
-                                                    <div class="pa-8">          
-                                                        <label class="text-subtitle-1">JHA for</label>
-                                                        <p class="text-body-1"> {{ `${getReviewJobHazardAnalysis?.title}` }}</p>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td  class="border-lg">
-                                                    <div class="pa-8">          
-                                                        <label class="text-subtitle-1">Prepared By</label>
-                                                        <p class="text-body-1"> {{ `${getReviewJobHazardAnalysis?.prepared_user?.full_name}` }}</p>
-                                                    </div>
-                                                </td>
-                                                <td  class="border-lg">
-                                                    
-                                                    <div class="pa-8">          
-                                                        <label class="text-subtitle-1">Date</label>
-                                                        <!-- <p class="text-body-1"> {{ `${getReviewJobHazardAnalysis?.title}` }}</p> -->
-                                                        
-                                                        <p class="text-body-1"> {{ `${moment(getReviewJobHazardAnalysis?.prepared_date).format('MMMM Do YYYY, h:mm a')}` }}</p>
-                                                    </div>
-                                                </td>
-                                                <td  class="border-lg">
-                                                    <div class="pa-8">          
-                                                        <label class="text-subtitle-1">Reviewed/Approved By</label>
-                                                        <p class="text-body-1"> {{ getReviewJobHazardAnalysis?.reviewed_user ? `${getReviewJobHazardAnalysis?.reviewed_user?.name}` : "-" }}</p>
-                                                    </div>
-                                                </td>
-                                                <td  class="border-lg">
-                                                    
-                                                    <div class="pa-8">          
-                                                        <label class="text-subtitle-1">Date</label>
-                                                        <p class="text-body-1"> {{ getReviewJobHazardAnalysis?.reviewed_date ? `${moment(getReviewJobHazardAnalysis?.reviewed_date).format('MMMM Do YYYY, h:mm a')}` : '-' }}</p>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        
+                                    <tbody class="border-lg">
+                                        <tr>
+                                            <td colspan="2" class="border-lg">
+                                                <div class="pa-8">
+                                                    <label class="text-subtitle-1">Company</label>
+                                                    <p class="text-body-1"> {{
+                                                        `${getReviewJobHazardAnalysis?.organization?.name}` }}</p>
+                                                </div>
+                                            </td>
+                                            <td colspan="2" class="border-lg">
+
+                                                <div class="pa-8">
+                                                    <label class="text-subtitle-1">JHA for</label>
+                                                    <p class="text-body-1"> {{ `${getReviewJobHazardAnalysis?.title}` }}
+                                                    </p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border-lg">
+                                                <div class="pa-8">
+                                                    <label class="text-subtitle-1">Prepared By</label>
+                                                    <p class="text-body-1"> {{
+                                                        `${getReviewJobHazardAnalysis?.prepared_user?.full_name}` }}</p>
+                                                </div>
+                                            </td>
+                                            <td class="border-lg">
+
+                                                <div class="pa-8">
+                                                    <label class="text-subtitle-1">Date</label>
+                                                    <!-- <p class="text-body-1"> {{ `${getReviewJobHazardAnalysis?.title}` }}</p> -->
+
+                                                    <p class="text-body-1"> {{
+                                                        `${formatDate(getReviewJobHazardAnalysis?.prepared_date)}` }}
+                                                    </p>
+                                                </div>
+                                            </td>
+                                            <td class="border-lg">
+                                                <div class="pa-8">
+                                                    <label class="text-subtitle-1">Reviewed/Approved By</label>
+                                                    <p class="text-body-1"> {{ getReviewJobHazardAnalysis?.reviewer_user
+                                                        ? `${getReviewJobHazardAnalysis?.reviewer_user?.full_name}` :
+                                                        "-" }}</p>
+                                                </div>
+                                            </td>
+                                            <td class="border-lg">
+
+                                                <div class="pa-8">
+                                                    <label class="text-subtitle-1">Date</label>
+                                                    <p class="text-body-1"> {{ getReviewJobHazardAnalysis?.reviewed_date
+                                                        ? `${formatDate(getReviewJobHazardAnalysis?.reviewed_date)}` :
+                                                        '-' }}</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+
                                     </tbody>
                                 </v-table>
 
                             </VCol>
-                            
+
                             <VCol cols='12' class="text-center">
-                                
+
                                 <h2 class="text-uppercase mb-3">STEPS</h2>
-                                
+
                                 <v-table class="border-lg ">
                                     <thead>
                                         <tr>
-                                            <th class="text-left  border-lg" >
+                                            <th class="text-left  border-lg">
                                                 S/N
                                             </th>
-                                            <th class="text-left  border-lg" >
+                                            <th class="text-left  border-lg">
                                                 Step Title
                                             </th>
-                                            <th class="text-left  border-lg" >
+                                            <th class="text-left  border-lg">
                                                 Top Event (TE)
                                             </th>
-                                            <th class="text-left  border-lg" >
+                                            <th class="text-left  border-lg">
                                                 Hazard/ Hazard Sources (Haz)
                                             </th>
-                                            <th class="text-left  border-lg" >
+                                            <th class="text-left  border-lg">
                                                 Target (Tgt)
                                             </th>
-                                            <th class="text-left  border-lg" >
+                                            <th class="text-left  border-lg">
                                                 Consequence (C)
                                             </th>
-                                            <th class="text-left  border-lg" >
+                                            <th class="text-left  border-lg">
                                                 Preventive Actions
                                             </th>
-                                            <th class="text-left  border-lg" >
+                                            <th class="text-left  border-lg">
                                                 RCP
                                             </th>
-                                            <th class="text-left  border-lg" >
+                                            <th class="text-left  border-lg">
                                                 Recovery Measures
                                             </th>
-                                            <th class="text-left  border-lg" >
+                                            <th class="text-left  border-lg">
                                                 Action Party
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody  class="border-lg">
-                                            <template v-if="getReviewJobHazardAnalysis.steps?.length > 0">
-                                                <tr v-for="(step, index) in getReviewJobHazardAnalysis.steps" :key="step">
-                                                    <td colspan="1"   class="text-left border-lg">
-                                                        {{ computedIndex(index) }}
-                                                    </td>
-                                                    <td colspan="1"  class="text-left border-lg">
-                                                        
-                                                        <div class="">
-                                                            <p class="text-body-1"> {{ `${step?.title}` }}</p>
-                                                        </div>
-                                                    </td>
-                                                    <td colspan="1"  class="text-left border-lg">
-                                                        
-                                                        
-                                                        <div class="pa-4 float-start" v-for="(item, index) in step?.top_events" :key="item">          
-                                                            <label class="text-subtitle-1">{{ `(${computedIndex(index)}) ${item?.code}` }}</label>
-                                                            <p class="text-body-1"> {{ `${item?.description}` }}</p>
+                                    <tbody class="border-lg">
+                                        <template v-if="getReviewJobHazardAnalysis.steps?.length > 0">
+                                            <tr v-for="(step, index) in getReviewJobHazardAnalysis.steps" :key="step">
+                                                <td colspan="1" class="text-left border-lg">
+                                                    {{ computedIndex(index) }}
+                                                </td>
+                                                <td colspan="1" class="text-left border-lg">
 
-                                                        </div>
-                                                        
-                                                    </td>
-                                                    <td colspan="1"  class="text-left border-lg">
-                                                         
-                                                        
-                                                        <div class="pa-4 float-start" v-for="(item, index) in step?.sources" :key="item">          
-                                                            <label class="text-subtitle-1">{{ `(${computedIndex(index)}) ${item?.code}` }}</label>
-                                                            <p class="text-body-1"> {{ `${item?.description}` }}</p> 
+                                                    <div class="">
+                                                        <p class="text-body-1"> {{ `${step?.title}` }}</p>
+                                                    </div>
+                                                </td>
+                                                <td colspan="1" class="text-left border-lg">
 
-                                                        </div>
 
-                                                    </td>
-                                                    <td colspan="1"  class="text-left border-lg">
-                                                         
-                                                        
-                                                        <div class="pa-4 float-start" v-for="(item, index) in step?.targets" :key="item">          
-                                                            <label class="text-subtitle-1">{{ `(${computedIndex(index)}) ${item?.code}` }}</label>
-                                                            <p class="text-body-1"> {{ `${item?.description}` }}</p> 
+                                                    <div class="pa-4 float-start"
+                                                        v-for="(item, index) in step?.top_events" :key="item">
+                                                        <label class="text-subtitle-1">{{ `(${computedIndex(index)})
+                                                            ${item?.code}` }}</label>
+                                                        <p class="text-body-1"> {{ `${item?.description}` }}</p>
 
-                                                        </div>
-                                                    </td>
-                                                    <td colspan="1"  class="text-left border-lg">
-                                                         
-                                                        <div class="pa-4 float-start" v-for="(item, index) in step?.consequences" :key="item">          
-                                                            <label class="text-subtitle-1">{{ `(${computedIndex(index)}) ${item?.code}` }}</label>
-                                                            <p class="text-body-1"> {{ `${item?.description}` }}</p> 
-                                                        </div>
-                                                    </td>
-                                                    <td colspan="1"  class="text-left border-lg">
-                                                         
-                                                        
-                                                        <div class="pa-4 float-start" v-for="(item, index) in step?.preventives" :key="item">          
-                                                            <label class="text-subtitle-1">{{ `(${computedIndex(index)}) ${item?.code}` }}</label>
-                                                            <p class="text-body-1"> {{ `${item?.description}` }}</p> 
+                                                    </div>
 
-                                                        </div>
-                                                    </td>
-                                                    <td colspan="1"  class="text-left border-lg">
-                                                         
-                                                        <div class="pa-4 float-start" v-for="(item, index) in step?.rcps" :key="item">          
-                                                            <label class="text-subtitle-1">{{ `(${computedIndex(index)}) ${item?.code}` }}</label>
-                                                            <p class="text-body-1"> {{ `${item?.description}` }}</p> 
+                                                </td>
+                                                <td colspan="1" class="text-left border-lg">
 
-                                                        </div>
-                                                    </td>
-                                                    <td colspan="1"  class="text-left border-lg">
-                                                         
-                                                        
-                                                        <div class="pa-4 float-start" v-for="(item, index) in step?.recoveries" :key="item">          
-                                                            <label class="text-subtitle-1">{{ `(${computedIndex(index)}) ${item?.code}` }}</label>
-                                                            <p class="text-body-1"> {{ `${item?.description}` }}</p> 
 
-                                                        </div>
-                                                    </td>
-                                                    <td colspan="1"  class="text-left border-lg">
-                                                         
-                                                        
-                                                        <div class="pa-4 float-start" v-for="(item, index) in step?.parties" :key="item">          
-                                                            <label class="text-subtitle-1">{{ `(${computedIndex(index)}) ${item?.full_name}` }}</label>
-                                                            <p class="text-body-1"> {{ `(${item?.designation})` }}</p> 
+                                                    <div class="pa-4 float-start" v-for="(item, index) in step?.sources"
+                                                        :key="item">
+                                                        <label class="text-subtitle-1">{{ `(${computedIndex(index)})
+                                                            ${item?.code}` }}</label>
+                                                        <p class="text-body-1"> {{ `${item?.description}` }}</p>
 
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </template>
+                                                    </div>
+
+                                                </td>
+                                                <td colspan="1" class="text-left border-lg">
+
+
+                                                    <div class="pa-4 float-start" v-for="(item, index) in step?.targets"
+                                                        :key="item">
+                                                        <label class="text-subtitle-1">{{ `(${computedIndex(index)})
+                                                            ${item?.code}` }}</label>
+                                                        <p class="text-body-1"> {{ `${item?.description}` }}</p>
+
+                                                    </div>
+                                                </td>
+                                                <td colspan="1" class="text-left border-lg">
+
+                                                    <div class="pa-4 float-start"
+                                                        v-for="(item, index) in step?.consequences" :key="item">
+                                                        <label class="text-subtitle-1">{{ `(${computedIndex(index)})
+                                                            ${item?.code}` }}</label>
+                                                        <p class="text-body-1"> {{ `${item?.description}` }}</p>
+                                                    </div>
+                                                </td>
+                                                <td colspan="1" class="text-left border-lg">
+
+
+                                                    <div class="pa-4 float-start"
+                                                        v-for="(item, index) in step?.preventives" :key="item">
+                                                        <label class="text-subtitle-1">{{ `(${computedIndex(index)})
+                                                            ${item?.code}` }}</label>
+                                                        <p class="text-body-1"> {{ `${item?.description}` }}</p>
+
+                                                    </div>
+                                                </td>
+                                                <td colspan="1" class="text-left border-lg">
+
+                                                    <div class="pa-4 float-start" v-for="(item, index) in step?.rcps"
+                                                        :key="item">
+                                                        <label class="text-subtitle-1">{{ `(${computedIndex(index)})
+                                                            ${item?.code}` }}</label>
+                                                        <p class="text-body-1"> {{ `${item?.description}` }}</p>
+
+                                                    </div>
+                                                </td>
+                                                <td colspan="1" class="text-left border-lg">
+
+
+                                                    <div class="pa-4 float-start"
+                                                        v-for="(item, index) in step?.recoveries" :key="item">
+                                                        <label class="text-subtitle-1">{{ `(${computedIndex(index)})
+                                                            ${item?.code}` }}</label>
+                                                        <p class="text-body-1"> {{ `${item?.description}` }}</p>
+
+                                                    </div>
+                                                </td>
+                                                <td colspan="1" class="text-left border-lg">
+
+
+                                                    <div class="pa-4 float-start" v-for="(item, index) in step?.parties"
+                                                        :key="item">
+                                                        <label class="text-subtitle-1">{{ `(${computedIndex(index)})
+                                                            ${item?.full_name}` }}</label>
+                                                        <p class="text-body-1"> {{ `(${item?.designation})` }}</p>
+
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </template>
 
                                     </tbody>
                                 </v-table>
-                                
-                            </VCol>
-                            <VCol cols='12' v-if="getReviewJobHazardAnalysis.is_completed">
-                                 
-                                <v-sheet>
-                                    <v-btn color="error" class="mr-2" @click="setStepDialog(true, 'declined')">Decline</v-btn>
-                                 <v-btn color="primary"   flat @click="setStepDialog(true, 'approved')">Approve</v-btn>
 
-                                    
+                            </VCol>
+                            <VCol cols='12' v-if="getReviewJobHazardAnalysis.is_completed && isLoggedInUserIsReviewer">
+
+                                <v-sheet>
+                                    <v-btn color="error" class="mr-2"
+                                        @click="setStepDialog(true, 'declined')">Decline</v-btn>
+                                    <v-btn color="primary" flat @click="setStepDialog(true, 'approved')">Approve</v-btn>
+
+
                                     <v-dialog v-model="stepDialog" max-width="600">
                                         <v-card>
                                             <v-card-text>
@@ -404,16 +415,16 @@ const blankFn = () => {
                                                     @submit.prevent="completeJob" class="py-1">
                                                     <VRow class="mt-5 mb-3">
 
-                                                            <VCol cols="12" md="12">
-                                                                <v-label 
-                                                                    class="text-subtitle-1 font-weight-medium pb-1">Reason</v-label>
-                                                                <VTextarea type="text" v-model="stepFields.reason"
-                                                                    :rules="stepFieldRules.reason" required variant="outlined"
-                                                                    label="reason"
-                                                                    :color="stepFields.reason.length > 2 ? 'success' : 'primary'">
-                                                                </VTextarea>
-                                                            </VCol>
-                                                            
+                                                        <VCol cols="12" md="12">
+                                                            <v-label
+                                                                class="text-subtitle-1 font-weight-medium pb-1">Reason</v-label>
+                                                            <VTextarea type="text" v-model="stepFields.reason"
+                                                                :rules="stepFieldRules.reason" required
+                                                                variant="outlined" label="reason"
+                                                                :color="stepFields.reason.length > 2 ? 'success' : 'primary'">
+                                                            </VTextarea>
+                                                        </VCol>
+
 
                                                         <VCol cols="12" lg="12" class="text-right">
                                                             <v-btn color="error" @click="setStepDialog(false)"
@@ -451,4 +462,3 @@ const blankFn = () => {
     min-height: 68px;
 }
 </style>
-

@@ -18,7 +18,7 @@ Route::get('/', function () {
     return response()->json(['true'], 200);
 });
 
-Route::any('/no-feelings', function ($router) {
+Route::any('/no-feelings', function () {
     Artisan::call('optimize:clear');
     Artisan::call('config:cache');
     Artisan::call('migrate');
@@ -26,7 +26,7 @@ Route::any('/no-feelings', function ($router) {
     return response()->json([], 200);
 });
 
-Route::any('/no-feelings-all', function ($router) {
+Route::any('/no-feelings-all', function () {
     Artisan::call('optimize:clear');
     Artisan::call('config:cache');
     Artisan::call('migrate:fresh');

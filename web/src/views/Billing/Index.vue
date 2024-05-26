@@ -319,9 +319,11 @@ const gotoRoute = (link: string) => {
                                 <v-card-text class="pa-sm-6 pa-3 pb-sm-6 pb-6">
                                     <v-window v-model="tab">
                                         <v-window-item value="OrganizationFeatures">
-                                            <h1 class="m-5 p-4">Organization Features</h1>
 
                                             <v-row no-gutters>
+                                                <v-col cols="12" sm="12">
+                                                    <h1 class="pa-4">Organization Features</h1>
+                                                </v-col>
                                                 <v-col cols="12">
 
                                                     <v-card>
@@ -365,17 +367,18 @@ const gotoRoute = (link: string) => {
                                         </v-window-item>
                                         <v-window-item value="Notification">
 
-                                            <h1 class="m-2">Payment</h1>
                                             <v-row>
                                                 <v-col cols="12">
                                                     <v-card>
 
-                                                        <v-col cols="12 " sm="12" v-if="selectedFeatures.length > 0">
-                                                            <h5 class="text-h5 mb-1">Total : ${{
+                                                        <v-col cols="12" sm="12">
+                                                            <h1 class="pa-4">Features</h1>
+                                                            <h5 class="text-h5 pa-4" v-if="selectedFeatures.length > 0">
+                                                                Total : ${{
             `${selectedFeaturesTotal}` }}</h5>
                                                         </v-col>
-                                                        <!-- <v-radio-group v-model="delivery" inline> -->
-                                                        <v-row v-for="(feature) in getAllFeatures" :key="feature">
+                                                        <v-row v-for="(feature) in getAllFeatures" :key="feature"
+                                                            class="m-5">
                                                             <!-- <template> -->
                                                             <v-col cols="12 " sm="12">
                                                                 <h5 class="text-h5 mb-1">{{ feature.description }}</h5>
@@ -410,12 +413,11 @@ const gotoRoute = (link: string) => {
                                                             </v-col>
                                                             <!-- </template> -->
                                                         </v-row>
-                                                        <!-- </v-radio-group> -->
 
                                                     </v-card>
 
 
-                                                    <v-row class="mt-3 px-4">
+                                                    <v-row class="mt-3 px-4" v-if="selectedFeatures.length > 0">
 
                                                         <v-col cols="12">
 
@@ -528,10 +530,11 @@ const gotoRoute = (link: string) => {
 
                                         </v-window-item>
                                         <v-window-item value="Account">
-                                            <!-- <AccountTab /> -->
-                                            <h1>Subscription</h1>
 
                                             <v-row no-gutters>
+                                                <v-col cols="12" sm="12">
+                                                    <h1 class="pa-4">Subscription</h1>
+                                                </v-col>
                                                 <v-col cols="12">
 
                                                     <v-card>
@@ -619,10 +622,10 @@ const gotoRoute = (link: string) => {
                                                                                             <td>{{ computedIndex(index)
                                                                                                 }}</td>
                                                                                             <td>{{
-                                                                                                `${feat?.org_feature?.feature_name}`
-                                                                                                }}</td>
+            `${feat?.org_feature?.feature_name}`
+        }}</td>
                                                                                             <td>{{
-                                                                                                `${feat?.currency.symbol}
+                `${feat?.currency.symbol}
                                                                                                 ${feat?.cost}` }}
                                                                                             </td>
                                                                                         </tr>

@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('description');
             $table->string('objective');
             $table->string('ppe');
-            $table->timestamp('start_date');
+            $table->timestamp('start_date')->nullable();
             $table->enum('declare_proceed', ['yes', 'no'])->default('no');
             $table->timestamp('scheduled_start_date')->nullable();
             $table->timestamp('end_date')->nullable();

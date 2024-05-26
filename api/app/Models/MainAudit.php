@@ -125,7 +125,7 @@ class MainAudit extends Model
     }
     public function findings()
     {
-        return $this->hasOne(MainAuditFinding::class, 'main_audit_id', 'id');
+        return $this->hasMany(MainAuditFinding::class, 'main_audit_id', 'id');
     }
 
     public function actions()

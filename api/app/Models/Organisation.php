@@ -4,14 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Organisation extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    protected $with = ['industry', 'country'];
+    protected $with = ['industry', 'country', 'media'];
     // protected $appends = ['user'];
-
+    public function media(): MorphOne
+    {
+        return $this->morphOne(Media::class, 'model');
+    }
     public function industry()
     {
         return $this->belongsTo(Industry::class);

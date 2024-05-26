@@ -8,6 +8,7 @@ import UiParentCard from '@/components/shared/UiParentCard.vue';
 import { useOrganizationStore } from '@/stores/organizationStore';
 import { useAccountStore } from '@/stores/accountStore';
 import { useAuthStore } from '@/stores/auth';
+import { useFormatter } from '@/composables/formatter';
 import moment from 'moment'
 import Swal from 'sweetalert2'
 import {
@@ -35,13 +36,12 @@ const route = useRoute()
 const authStore = useAuthStore();
 const organizationStore = useOrganizationStore();
 const accountStore = useAccountStore();
+const { formatDate } = useFormatter();
 
 
 onMounted(() => {
     organizationStore.getOrganizations()
 });
-
-
 
 const getAuthUser: any = computed(() => (authStore.loggedUser));
 const getOrganizations: any = computed(() => (organizationStore.organization));
@@ -60,23 +60,45 @@ const setDialog = (value: boolean) => {
     dialog.value = value;
 }
 
+const logoDialog = ref(false);
+const setLogoDialog = (value: boolean) => {
+    logoDialog.value = value;
+}
+
+
 const fields = ref({
-    lastName: "",
-    firstName: "",
+    rcNumber: "",
+    ispon: "",
     email: "",
     phone: "",
     businessName: "",
     address: "",
     bio: "",
+    images: []
 });
 
+const files = ref(null as any)
+const previewImage = ref(null as any)
+
+const selectImage = (image: any) => {
+
+    fields.value.images = image.target.files;
+    files.value = image.target.files;
+    previewImage.value = [];
+
+    for (let index = 0; index < files.value.length; index++) {
+        const element = files.value[index];
+        previewImage.value.push(URL.createObjectURL(element) as string)
+    }
+
+}
 
 const fieldRules: any = ref({
-    lastName: [
-        (v: string) => !!v || 'Last Name is required',
+    rcNumber: [
+        (v: string) => !!v || 'Field is required',
     ],
-    firstName: [
-        (v: string) => !!v || 'First Name is required',
+    ispon: [
+        (v: string) => !!v || 'Field is required',
     ],
     email: [
         (v: string) => !!v || 'Email  is required',
@@ -102,6 +124,8 @@ watch(
         fields.value.businessName = getOrganizations.value.name
         fields.value.address = getOrganizations.value.address
         fields.value.bio = getOrganizations.value.bio
+        fields.value.rcNumber = getOrganizations.value.rcNumber
+        fields.value.ispon = getOrganizations.value.ispon
 
 
     }
@@ -111,10 +135,6 @@ const resetToken = async () => {
 
 
     try {
-
-        let objectValues = {
-            "organization_id": getActiveOrg.value?.uuid,
-        }
 
         Swal.fire({
             title: 'Info!',
@@ -163,6 +183,8 @@ const save = async (e: any) => {
             "businessName": values?.businessName,
             "address": values?.address,
             "bio": values?.bio,
+            "rcNumber": values?.rcNumber,
+            "ispon": values?.ispon,
         }
 
         const resp = await organizationStore.updateDetails(objectValues)
@@ -200,6 +222,48 @@ const save = async (e: any) => {
 
 }
 
+const uploadLogo = async (e: any) => {
+    e.preventDefault();
+
+    try {
+        setLoading(true)
+
+        const formData = new FormData();
+        formData.append('image', files.value[0])
+
+        const resp = await organizationStore.uploadLogo(formData)
+            .catch((error: any) => {
+                console.log(error)
+                throw error
+            })
+            .then((resp: any) => {
+                return resp
+            });
+
+        if (resp?.message == 'success') {
+            setLoading(false)
+            setLogoDialog(false)
+
+            fields.value.images = [];
+            files.value = []
+            previewImage.value = []
+            // observationStore.getObservations();
+        }
+
+        setLoading(false)
+        setLogoDialog(false)
+
+
+
+    } catch (error) {
+        console.log(error)
+        setLoading(false)
+        setLogoDialog(false)
+    }
+
+}
+
+
 </script>
 
 <template>
@@ -212,10 +276,69 @@ const save = async (e: any) => {
                 <UiParentCard variant="outlined">
                     <v-card-text class="text-right">
                         <template v-if="isLoggedInUserOwnsActionOrg">
+                            <v-btn color="primary" class="mr-2" @click="setLogoDialog(true)">Update Logo</v-btn>
                             <v-btn color="primary" class="mr-2" @click="resetToken()">Reset Token</v-btn>
                             <v-btn color="primary" @click="setDialog(true)">Update Information</v-btn>
                         </template>
                         <v-sheet>
+                            <v-dialog v-model="logoDialog" max-width="600">
+                                <v-card>
+                                    <v-card-text>
+                                        <div class="d-flex justify-space-between">
+                                            <h3 class="text-h3">Organization Logo</h3>
+                                            <v-btn icon @click="setLogoDialog(false)" size="small" flat>
+                                                <XIcon size="16" />
+                                            </v-btn>
+                                        </div>
+                                    </v-card-text>
+                                    <v-divider></v-divider>
+
+                                    <v-card-text>
+
+                                        <VForm v-model="valid" ref="formContainer" fast-fail lazy-validation
+                                            @submit.prevent="uploadLogo" class="py-1">
+                                            <VRow class="mt-5 mb-3">
+
+                                                <VCol cols="12" md="12">
+
+                                                    <v-file-input :show-size="1000" color="deep-purple-accent-4"
+                                                        label="Logo" placeholder="Select your logo"
+                                                        prepend-icon="mdi-paperclip" variant="outlined" accept="image/*"
+                                                        @change="selectImage">
+                                                    </v-file-input>
+
+                                                    <div v-if="previewImage">
+                                                        <VRow>
+                                                            <VCol cols="4" v-for="image in previewImage" :key="image">
+
+                                                                <div>
+                                                                    <img class="preview my-3" :src="image" alt=""
+                                                                        style="max-width: 200px;" />
+                                                                </div>
+                                                            </VCol>
+                                                        </VRow>
+                                                    </div>
+                                                </VCol>
+
+                                                <VCol cols="12" lg="12" class="text-right">
+                                                    <v-btn color="error" @click="setLogoDialog(false)"
+                                                        variant="text">Cancel</v-btn>
+
+                                                    <v-btn color="primary" type="submit" :loading="loading"
+                                                        :disabled="!valid" @click="uploadLogo">
+                                                        <span v-if="!loading">
+                                                            Upload
+                                                        </span>
+                                                        <clip-loader v-else :loading="loading" color="white"
+                                                            :size="'25px'"></clip-loader>
+                                                    </v-btn>
+
+                                                </VCol>
+                                            </VRow>
+                                        </VForm>
+                                    </v-card-text>
+                                </v-card>
+                            </v-dialog>
                             <v-dialog v-model="dialog" max-width="600">
                                 <v-card>
                                     <v-card-text>
@@ -234,6 +357,24 @@ const save = async (e: any) => {
                                             @submit.prevent="save" class="py-1">
                                             <VRow class="mt-5 mb-3">
 
+                                                <VCol cols="12" md="12">
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">RC
+                                                        Number</v-label>
+                                                    <VTextField type="text" v-model="fields.rcNumber"
+                                                        :rules="fieldRules.rcNumber" required variant="outlined"
+                                                        label="RC Number"
+                                                        :color="fields.rcNumber.length > 2 ? 'success' : 'primary'">
+                                                    </VTextField>
+                                                </VCol>
+                                                <VCol cols="12" md="12">
+                                                    <v-label
+                                                        class="text-subtitle-1 font-weight-medium pb-1">ISPON</v-label>
+                                                    <VTextField type="text" v-model="fields.ispon"
+                                                        :rules="fieldRules.ispon" required variant="outlined"
+                                                        label="ISPON"
+                                                        :color="fields.ispon.length > 2 ? 'success' : 'primary'">
+                                                    </VTextField>
+                                                </VCol>
                                                 <VCol cols="12" md="12">
                                                     <v-label class="text-subtitle-1 font-weight-medium pb-1">Business
                                                         Name</v-label>
@@ -262,17 +403,6 @@ const save = async (e: any) => {
                                                     </VTextField>
                                                 </VCol>
 
-                                                <!-- <VCol cols="12" md="6">
-                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">Phone
-                                                        Number</v-label>
-                                                    <VTextField type="number" v-model="fields.phone"
-                                                        :rules="fieldRules.phone" required variant="outlined"
-                                                        label="Phone Number"
-                                                        :color="fields.phone.length > 2 ? 'success' : 'primary'">
-                                                    </VTextField>
-                                                </VCol> -->
-
-
 
                                                 <VCol cols="12" lg="12" class="text-right">
                                                     <v-btn color="error" @click="setDialog(false)"
@@ -297,11 +427,18 @@ const save = async (e: any) => {
                     </v-card-text>
                     <v-card-text class="">
                         <VRow v-if="getOrganizations">
+                            <VCol cols='12' md="12" class="text-center" v-if="getOrganizations?.media">
+
+                                <a :href="getOrganizations?.media?.fullUrl" target="_blank">
+                                    <v-avatar size="140">
+                                        <img :src="getOrganizations?.media?.fullUrl" height="140" alt="image" />
+                                    </v-avatar>
+                                </a>
+                            </VCol>
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">Business Name</label>
                                 <p class="text-body-1"> {{ `${getOrganizations?.name ? getOrganizations?.name : ''}` }}
                                 </p>
-                                <!-- <p class="text-body-1"> {{ `${moment(getCompletedInspection?.inspection?.start_date).format('MMMM Do YYYY, h:mm a')}` }}</p> -->
                             </VCol>
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">Address</label>
@@ -315,23 +452,29 @@ const save = async (e: any) => {
                             </VCol>
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">Industry</label>
-                                <p class="text-body-1"> {{ `${getOrganizations?.industry?.name ?
+                                <p class="text-body-1"> {{ `${getOrganizations?.industry ?
             getOrganizations?.industry?.name
             : ''}` }}</p>
                             </VCol>
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">Country</label>
-                                <p class="text-body-1"> {{ `${getOrganizations?.country?.name ?
+                                <p class="text-body-1"> {{ `${getOrganizations ?
             getOrganizations?.country?.name :
             ''}` }}</p>
                             </VCol>
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">Creation Date</label>
                                 <p class="text-body-1"> {{
-            `${getOrganizations?.created_at ? moment(getOrganizations?.created_at).format(`MMMM
-                                    Do
-                                    YYYY, h:
-                                    mm a`) : ''}` }}</p>
+            `${getOrganizations ? formatDate(getOrganizations?.createdAt) : ''}` }}
+                                </p>
+                            </VCol>
+                            <VCol cols='12' md="4">
+                                <label class="text-subtitle-1">RC Number</label>
+                                <p class="text-body-1"> {{ `${getOrganizations?.rcNumber}` }}</p>
+                            </VCol>
+                            <VCol cols='12' md="4">
+                                <label class="text-subtitle-1">ISPON</label>
+                                <p class="text-body-1"> {{ `${getOrganizations?.ispon}` }}</p>
                             </VCol>
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">Invite Token</label>

@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -40,8 +41,12 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     protected $appends = ['organizations', 'privilege', 'full_name', 'is_email_verified'];
-    protected $with = ['accountRole'];
+    protected $with = ['accountRole', 'media'];
 
+    public function media(): MorphOne
+    {
+        return $this->morphOne(Media::class, 'model');
+    }
     public function getJWTIdentifier()
     {
         return $this->getKey();

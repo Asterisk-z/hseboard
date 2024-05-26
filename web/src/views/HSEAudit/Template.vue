@@ -174,15 +174,6 @@ const save = async (e: any) => {
 
         const values = { ...fields.value }
 
-
-        // let formData = new FormData()
-        // formData.append('title', values?.title)
-        // formData.append('audit_type_id', values?.audit_type_id)
-        // formData.append('questions', newRow.value)
-        // formData.append('description', values?.description)
-        // formData.append('file', values?.file[0])
-        // formData.append('organization_id', getActiveOrg.value?.uuid)
-
         let objectValues = {
             'title': values?.title,
             'audit_type_id': values?.audit_type_id,
@@ -208,6 +199,8 @@ const save = async (e: any) => {
             fields.value.title = "";
             fields.value.description = "";
             fields.value.file = "";
+            files.value = [];
+            questions.value = [];
             auditTemplateStore.getAuditTemplates();
         }
 
@@ -231,7 +224,7 @@ const removeDocument = async (document: any) => {
         setLoading(true)
 
         let objectValues = {
-            "document_id": document?.id,
+            "template_id": document?.id,
         }
 
         const resp = await auditTemplateStore.removeAuditTemplate(objectValues)
@@ -351,6 +344,12 @@ const getLink = (id: string) => {
                                                     </VSelect>
                                                 </VCol>
 
+                                                <VCol cols="12" md="12" v-if="fields.audit_type_id && link">
+                                                    <a class="mr-2" :href="link" target="_blank">
+                                                        <v-btn color="primary"> Download Sample Template</v-btn>
+                                                    </a>
+                                                </VCol>
+
                                                 <VCol cols="12" md="12">
                                                     <v-label
                                                         class="text-subtitle-1 font-weight-medium pb-1">Title</v-label>
@@ -369,12 +368,6 @@ const getLink = (id: string) => {
                                                         :rules="fieldRules.description" required
                                                         :color="fields.description.length > 10 ? 'success' : 'primary'">
                                                     </VTextarea>
-                                                </VCol>
-
-                                                <VCol cols="12" md="12" v-if="fields.audit_type_id && link">
-                                                    <a class="btn btn-primary mr-2" :href="link"
-                                                        target="_blank">Download
-                                                        Sample Template</a>
                                                 </VCol>
 
                                                 <VCol cols="12" md="12">

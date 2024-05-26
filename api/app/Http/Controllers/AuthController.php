@@ -12,6 +12,7 @@ use App\Models\Organisation;
 use App\Models\OrganisationUser;
 use App\Models\User;
 use App\Notifications\InfoNotification;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -41,6 +42,11 @@ class AuthController extends Controller
             ]);
 
             if (AccountType::isCorporate($data['accountType'])) {
+
+                if (Organisation::where('rc_number', $data['rcNumber'])->orWhere('name', $data['orgName'])->count() > 0) {
+                    DB::rollBack();
+                    return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Invalid signature.");
+                }
 
                 $organization = Organisation::create([
                     'name' => strtolower($data['orgName']),
@@ -97,7 +103,8 @@ class AuthController extends Controller
     {
         $credentials = request(['email', 'password']);
         // logger(auth()->attempt($credentials));
-        if (!$token = auth()->setTTL(30000)->attempt($credentials)) {
+        // $token = auth()->setTTL(3000)->attempt($credentials)
+        if (!$token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Invalid Login details'], 401);
         }
 
@@ -112,6 +119,8 @@ class AuthController extends Controller
         //     return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Account Not Verified, Contact Admin info@hseboard.com.");
         // }
 
+        logAction(auth()->user()->email, auth()->user()->full_name . ' Login successful', 'Login Successful', $request->ip());
+
         return $this->respondWithToken($token);
 
     }
@@ -123,6 +132,7 @@ class AuthController extends Controller
 
     public function refresh()
     {
+        // return $this->respondWithToken(auth()->refresh());
         return $this->respondWithToken(auth()->setTTL(30000)->refresh());
     }
 
@@ -314,4 +324,31 @@ class AuthController extends Controller
         return successResponse("Updated successfully.");
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateLogo(Request $request)
+    {
+        $request->validate([
+            'image' => ['required', 'file'],
+        ]);
+
+        try {
+
+            storeMedia(request('image'), User::class, auth()->user()->id, 'profile_photo', auth()->user()->media ? auth()->user()->media->id : null);
+
+            logAction(auth()->user()->email, 'User Photo updated successfully ', 'User Photo', $request->ip());
+
+            return successResponse('User Photo updated successful ', []);
+
+        } catch (Exception $e) {
+            logger($e);
+            return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Something Went Wrong");
+
+        }
+
+    }
 }

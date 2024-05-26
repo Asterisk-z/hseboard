@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('permit_to_work_reminders', function (Blueprint $table) {
             $table->id();
             $table->integer('permit_to_work_id')->nullable();
-            $table->timestamp('date_time');
+            $table->timestamp('date_time')->nullable();
             $table->timestamps();
         });
     }

@@ -239,28 +239,42 @@ const goToRoute = (url: string) => {
                                             <!-- {{ selectedItem }} -->
 
                                             <VCol cols="12" lg="12" v-if="!subViewDialog">
-                                                <v-list lines="one" v-if="selectedItem">
-
-                                                    <!-- <v-list-item
-                                                        :title="`Title : ${selectedItem?.title}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`Description : ${selectedItem?.description}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`Assignee : ${selectedItem?.assignee?.firstName} ${selectedItem?.assignee?.lastName}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`Assignor : ${selectedItem?.creator?.firstName} ${selectedItem?.creator?.lastName}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`Status : ${selectedItem?.status}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`Start Date time : ${selectedItem?.start_datetime}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`End Date time : ${selectedItem?.end_datetime}`"></v-list-item>
-                                                    <v-list-item
-                                                        :title="`Priority : ${selectedItem?.priority?.description}`"></v-list-item>
-                                                    <v-list-item v-if="selectedItem?.statusMessage"
-                                                        :title="`Status Reason : ${selectedItem?.statusMessage}`"></v-list-item> -->
-
-                                                </v-list>
+                                                <!-- {{ selectedItem }} -->
+                                                <v-table v-if="selectedItem">
+                                                    <thead>
+                                                        <tr>
+                                                            <th></th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <th>Audit Title</th>
+                                                            <th>{{ `${selectedItem?.audit_title}` }}</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Audit Type</th>
+                                                            <th>{{ `${selectedItem?.audit_type?.description}` }}</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Auditee</th>
+                                                            <th>{{ `${selectedItem?.recipient_organization?.name}` }}
+                                                            </th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Auditor</th>
+                                                            <th>{{ `${selectedItem?.organization?.name}` }}</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Status</th>
+                                                            <th>{{ `${selectedItem?.status}` }}</th>
+                                                        </tr>
+                                                        <tr v-if="selectedItem?.status_reason">
+                                                            <th>Comment</th>
+                                                            <th>{{ `${selectedItem?.status_reason}` }}</th>
+                                                        </tr>
+                                                    </tbody>
+                                                </v-table>
                                             </VCol>
 
                                             <VCol cols="12" lg="12" class="text-right">
@@ -324,7 +338,7 @@ const goToRoute = (url: string) => {
                                             View Action
                                         </v-list-item-title>
                                     </v-list-item>
-                                    <template v-if="isLoggedInUserOwnsActionOrg && item.selectable.is_pending">
+                                    <!-- <template v-if="isLoggedInUserOwnsActionOrg && item.selectable.is_pending">
                                         <v-list-item @click="selectItem(item, 'edit')">
                                             <v-list-item-title>
                                                 <v-icon class="mr-2" size="small">
@@ -341,7 +355,7 @@ const goToRoute = (url: string) => {
                                                 Delete Action
                                             </v-list-item-title>
                                         </v-list-item>
-                                    </template>
+                                    </template> -->
                                 </v-list>
                             </v-menu>
                         </template>

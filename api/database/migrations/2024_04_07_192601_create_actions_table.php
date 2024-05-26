@@ -25,8 +25,8 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->integer('priority_id');
-            $table->timestamp('start_datetime');
-            $table->timestamp('end_datetime');
+            $table->timestamp('start_datetime')->nullable();
+            $table->timestamp('end_datetime')->nullable();
             $table->enum('status', ['pending', 'accepted', 'rejected', 'ongoing', 'canceled', 'completed'])->default('pending');
             $table->text('statusMessage')->nullable();
             $table->enum('is_del', ['yes', 'no'])->default('no');

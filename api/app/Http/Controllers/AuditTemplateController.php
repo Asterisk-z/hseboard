@@ -108,7 +108,7 @@ class AuditTemplateController extends Controller
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "User not authorized to perform action for organization");
             }
 
-            if (!$organization = AuditType::where('id', $data['audit_type_id'])->where('is_del', 'no')->first()) {
+            if (!$audit_type = AuditType::where('id', $data['audit_type_id'])->where('is_del', 'no')->first()) {
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Audit Template");
             }
 
