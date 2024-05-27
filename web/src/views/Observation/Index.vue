@@ -491,14 +491,14 @@ const startInvestigationAction = async (item: any) => {
                                                     <VSelect v-model="fields.observationTypeId"
                                                         :items="getObservationTypes"
                                                         :rules="fieldRules.observationTypeId" label="Select"
-                                                        :selected="''" item-title="description" item-value="id"
-                                                        single-line variant="outlined" class="text-capitalize">
+                                                        item-title="description" item-value="id" single-line
+                                                        variant="outlined" class="text-capitalize">
                                                     </VSelect>
                                                 </VCol>
                                                 <VCol cols="12" md="6">
                                                     <v-label class="font-weight-medium pb-1">Severity</v-label>
                                                     <VSelect v-model="fields.priorityId" :items="getPriorities"
-                                                        :rules="fieldRules.priorityId" label="Select" :selected="''"
+                                                        :rules="fieldRules.priorityId" label="Select"
                                                         item-title="description" item-value="id" single-line
                                                         variant="outlined" class="text-capitalize">
                                                     </VSelect>
@@ -517,8 +517,8 @@ const startInvestigationAction = async (item: any) => {
                                                     <v-label class="font-weight-medium pb-1">Send to
                                                         Organization?</v-label>
                                                     <VSelect v-model="fields.sendToOrg" :items="['Yes', 'No']"
-                                                        :rules="fieldRules.sendToOrg" label="Select" :selected="''"
-                                                        single-line variant="outlined" class="text-capitalize">
+                                                        :rules="fieldRules.sendToOrg" label="Select" single-line
+                                                        variant="outlined" class="text-capitalize">
                                                     </VSelect>
                                                 </VCol>
                                                 <VCol cols="12" md="12">
@@ -638,14 +638,14 @@ const startInvestigationAction = async (item: any) => {
                                                     <VSelect v-model="editFields.observationTypeId"
                                                         :items="getObservationTypes"
                                                         :rules="fieldRules.observationTypeId" label="Select"
-                                                        :selected="''" item-title="description" item-value="id"
-                                                        single-line variant="outlined" class="text-capitalize">
+                                                        item-title="description" item-value="id" single-line
+                                                        variant="outlined" class="text-capitalize">
                                                     </VSelect>
                                                 </VCol>
                                                 <VCol cols="12" md="6">
                                                     <v-label class="font-weight-medium pb-1">Severity</v-label>
                                                     <VSelect v-model="editFields.priorityId" :items="getPriorities"
-                                                        :rules="fieldRules.priorityId" label="Select" :selected="''"
+                                                        :rules="fieldRules.priorityId" label="Select"
                                                         item-title="description" item-value="id" single-line
                                                         variant="outlined" class="text-capitalize">
                                                     </VSelect>
@@ -828,7 +828,7 @@ const startInvestigationAction = async (item: any) => {
                                             </VCol>
 
                                             <VCol cols="12" lg="12" class="text-right"
-                                                v-if="selectedItem?.is_pending_investigation">
+                                                v-if="selectedItem?.is_pending_investigation && selectedItem?.organization_id">
                                                 <v-btn color="primary" class="mr-3"
                                                     @click="startInvestigation(selectedItem)">Start
                                                     Investigation</v-btn>

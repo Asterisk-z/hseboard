@@ -32,7 +32,7 @@ const validate = async (values: any, { setErrors }: any) => {
 
         setInterval(() => {
             window.location.href = `${import.meta.env.VITE_API_WEB}dashboard`
-        }, 2000)
+        }, 3000)
 
     }
 }

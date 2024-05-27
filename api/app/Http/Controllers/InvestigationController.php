@@ -318,9 +318,9 @@ class InvestigationController extends Controller
         $data = $request->validate([
             'organization_id' => ['required', 'string'],
             'investigation_id' => ['required', 'string'],
-            'lead_investigator' => ['required'],
-            'team_members' => ['required', 'array'],
-            'team_members.*' => ['required'],
+            'lead_investigator' => ['nullable'],
+            'team_members' => ['nullable', 'array'],
+            'team_members.*' => ['nullable'],
             'group_name' => ['required', 'string'],
         ]);
 
@@ -330,7 +330,7 @@ class InvestigationController extends Controller
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Investigation");
             }
 
-            if ($lead_investigator = User::where('id', $data['lead_investigator'])->first()) {
+            if ($lead_investigator = User::where('id', request('lead_investigator'))->first()) {
                 $lead = $investigation->lead ? $investigation->lead->id : null;
 
                 InvestigationMember::updateOrCreate(
@@ -395,9 +395,9 @@ class InvestigationController extends Controller
         $data = $request->validate([
             'organization_id' => ['required', 'string'],
             'investigation_id' => ['required', 'string'],
-            // 'lead_investigator' => ['required'],
-            'team_members' => ['required', 'array'],
-            'team_members.*' => ['required'],
+            'lead_investigator' => ['nullable'],
+            'team_members' => ['nullable', 'array'],
+            'team_members.*' => ['nullable'],
         ]);
 
         try {
@@ -410,25 +410,25 @@ class InvestigationController extends Controller
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Organization");
             }
 
-            // if ($lead_investigator = User::where('id', $data['lead_investigator'])->first()) {
-            //     $lead = $investigation->lead ? $investigation->lead->id : null;
+            if ($lead_investigator = User::where('id', request('lead_investigator'))->first()) {
+                $lead = $investigation->lead ? $investigation->lead->id : null;
 
-            //     InvestigationMember::updateOrCreate(
-            //         ['investigation_id' => $investigation->id, 'position' => 'lead'],
-            //         [
-            //             'investigator_id' => auth()->user()->id,
-            //             'investigation_id' => $investigation->id,
-            //             'member_id' => $lead_investigator->id,
-            //             'position' => 'lead',
-            //         ]);
+                InvestigationMember::updateOrCreate(
+                    ['investigation_id' => $investigation->id, 'position' => 'lead'],
+                    [
+                        'investigator_id' => auth()->user()->id,
+                        'investigation_id' => $investigation->id,
+                        'member_id' => $lead_investigator->id,
+                        'position' => 'lead',
+                    ]);
 
-            //     if ($lean_member = InvestigationMember::where('investigation_id', $investigation->id)->where('position', 'member')->where('member_id', $lead_investigator->id)->first()) {
+                if ($lean_member = InvestigationMember::where('investigation_id', $investigation->id)->where('position', 'member')->where('member_id', $lead_investigator->id)->first()) {
 
-            //         $lean_member->delete();
+                    $lean_member->delete();
 
-            //     }
+                }
 
-            // }
+            }
 
             $team_members = request('team_members');
 
@@ -632,6 +632,8 @@ class InvestigationController extends Controller
             'investigation_id' => ['required', 'string'],
             'type' => ['required', 'string'],
             'detail' => ['required', 'string'],
+            'files' => ['sometimes', 'array'],
+            'files.*' => ['sometimes', 'file'],
         ]);
 
         try {
@@ -640,13 +642,21 @@ class InvestigationController extends Controller
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Investigation");
             }
 
-            InvestigationFinding::updateOrCreate(
+            $finding = InvestigationFinding::updateOrCreate(
                 ['investigation_id' => $investigation->id, 'user_id' => auth()->user()->id, 'description' => request('detail')], [
                     'user_id' => auth()->user()->id,
                     'investigation_id' => $investigation->id,
                     'type' => request('type'),
                     'description' => request('detail'),
                 ]);
+
+            if (request('files')) {
+                $files = request('files');
+                foreach ($files as $file) {
+                    storeMedia($file, InvestigationFinding::class, $finding->id, 'findings');
+
+                }
+            }
 
             // logAction(auth()->user()->email, 'You started an investigation ', 'Start Investigation', $request->ip());
 

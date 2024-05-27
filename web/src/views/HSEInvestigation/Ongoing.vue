@@ -44,7 +44,9 @@ const getPriorities: any = computed(() => (openLinks.priorities));
 const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 const isLoggedInUserOwnInvestigationOrganization: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id && getAuthUser.value?.id == getInvestigation.value.organization?.user_id));
 const isLoggedInUserIsLead: any = computed(() => (getAuthUser.value?.id == getInvestigation.value?.lead?.member?.id));
-
+const isLoggedInUserIsMember: any = computed(() => (getInvestigation.value?.all_members?.map((item: any) => item?.member_id).includes(getAuthUser.value?.id)));
+// 
+// console.log(isLoggedInUserIsMember.value)
 
 const page = ref({ title: 'Investigation' });
 const breadcrumbs = ref([
@@ -170,240 +172,8 @@ const fields = ref({
     organization_id: getActiveOrg.value?.uuid,
 });
 
-const filteredMember: any = computed(() => (getMembers.value?.filter((member: any) => (member.id != fields.value?.leadInvestigator))));
-
 const members_ids: any = computed(() => (getInvestigation.value?.all_members.map((member: any) => (member.member_id))));
 const filteredNonMember: any = computed(() => (getMembers.value?.filter((member: any) => (!members_ids.value?.includes(member.id)))));
-
-
-const fieldRules: any = ref({
-    leadInvestigator: [
-        (v: number) => !!v || 'Field is Required',
-    ],
-    teamMember: [
-        (v: number) => !!v || 'Field is Required',
-    ],
-    orgToken: [
-        (v: number) => !!v || 'Field is Required',
-    ],
-    groupChatName: [
-        (v: string) => !!v || 'Field is Required',
-    ],
-})
-
-
-
-const save = async (e: any) => {
-    e.preventDefault();
-
-    try {
-        setLoading(true)
-
-        const values = { ...fields.value }
-
-
-
-        let objectValues = {
-            "organization_id": getActiveOrg.value?.uuid,
-            "investigation_id": getInvestigation.value?.uuid,
-            "lead_investigator": values?.leadInvestigator,
-            "team_members": values?.teamMember,
-            'group_name': values?.groupChatName,
-        }
-
-        const resp = await investigationStore.setInvestigationMember(objectValues)
-            .catch((error: any) => {
-                console.log(error)
-                throw error
-            })
-            .then((resp: any) => {
-                return resp
-            });
-
-        if (resp?.message == 'success') {
-            setLoading(false)
-            setAddMemberDialog(false)
-            investigationStore.getInvestigation(route.params.observation_id as string);
-        }
-
-        setLoading(false)
-        setAddMemberDialog(false)
-
-        fields.value.leadInvestigator = "";
-        fields.value.teamMember = [];
-        fields.value.groupChatName = "";
-
-
-    } catch (error) {
-        console.log(error)
-        setLoading(false)
-        setAddMemberDialog(false)
-    }
-
-}
-
-
-
-const fetchOrganization = async (token: string) => {
-
-    try {
-
-        const resp = await organizationStore.getTokenOrganizations(fields.value.orgToken)
-            .catch((error: any) => {
-                console.log(error)
-                throw error
-            })
-            .then((resp: any) => {
-                return resp
-            });
-
-        if (resp) {
-
-            fields.value.organization = resp
-            fetchOrgUser(resp.uuid)
-        } else {
-
-            fields.value.organization = {
-                uuid: '',
-                name: '',
-                token: '',
-            }
-        }
-
-
-    } catch (error) {
-
-    }
-}
-
-
-const fetchOrgUser = async (token: string) => {
-
-    try {
-
-        console.log(fields.value)
-        const resp = await organizationStore.getOrganizationUsers(token)
-            .catch((error: any) => {
-                console.log(error)
-                throw error
-            })
-            .then((resp: any) => {
-                return resp
-            });
-
-        if (resp) {
-
-            fields.value.externalOrgMembers = resp
-
-        } else {
-
-            fields.value.externalOrgMembers = []
-        }
-
-
-    } catch (error) {
-
-    }
-}
-
-const saveExternal = async (e: any) => {
-    e.preventDefault();
-
-    try {
-        setLoading(true)
-
-        const values = { ...fields.value }
-
-
-
-        let objectValues = {
-            "investigation_id": getInvestigation.value?.uuid,
-            "team_members": values?.externalTeamMembers,
-            'organization_id': values?.organization?.uuid,
-        }
-
-
-
-        const resp = await investigationStore.setExternalInvestigationMember(objectValues)
-            .catch((error: any) => {
-                console.log(error)
-                throw error
-            })
-            .then((resp: any) => {
-                return resp
-            });
-
-        if (resp?.message == 'success') {
-            setLoading(false)
-            setAddExternalMemberDialog(false)
-            investigationStore.getInvestigation(route.params.observation_id as string);
-        }
-
-        setLoading(false)
-        setAddExternalMemberDialog(false)
-
-        fields.value.orgToken = "";
-        fields.value.externalTeamMembers = [];
-        fields.value.organization = {
-            uuid: '',
-            name: '',
-            token: '',
-        }
-
-
-    } catch (error) {
-        console.log(error)
-        setLoading(false)
-        setAddExternalMemberDialog(false)
-    }
-
-}
-
-const removeMember = async (member: any) => {
-
-    try {
-        setLoading(true)
-
-        let objectValues = {
-            "organization_id": getActiveOrg.value?.uuid,
-            "investigation_id": getInvestigation.value?.uuid,
-            "team_member": member
-        }
-
-        Swal.fire({
-            title: 'Info!',
-            text: 'Do you want to start investigation?',
-            icon: 'info',
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No',
-            showCancelButton: true,
-            allowOutsideClick: false,
-        }).then((result) => {
-            if (result.isConfirmed) {
-
-
-                investigationStore.removeMember(objectValues)
-                    .catch((error: any) => {
-                        throw error
-                    })
-                    .then((resp: any) => {
-                        investigationStore.getInvestigation(route.params.observation_id as string);
-                        return resp
-                    });
-
-
-            }
-        });
-
-
-        setLoading(false)
-
-    } catch (error) {
-        console.log(error)
-        setLoading(false)
-    }
-
-}
 
 const stepTwoFields = ref({
     question: "",
@@ -433,12 +203,12 @@ const sendQuestion = async (e: any) => {
         setLoading(true)
 
         const values = { ...stepTwoFields.value }
-        // console.log(values)
-        // let teams: any[]
-        let teams: any[] = [...values?.members];
-        if (viewExternalWitnessDialog) {
+        
+        let teams: any[] = values?.members;
 
-            teams = [...teams, ...values?.externalOrgMembers]
+        if (viewExternalWitnessDialog.value) {
+
+            teams = [...teams, ...values?.externalTeamMembers]
 
         }
 
@@ -468,7 +238,8 @@ const sendQuestion = async (e: any) => {
 
         stepTwoFields.value.questions = [];
         stepTwoFields.value.members = [];
-
+        stepTwoFields.value.externalTeamMembers = [];
+        stepTwoFields.value.orgToken = ''
 
     } catch (error) {
         console.log(error)
@@ -478,10 +249,9 @@ const sendQuestion = async (e: any) => {
 }
 
 const fetchWitnessOrganization = async (token: string) => {
-
     try {
 
-        const resp = await organizationStore.getTokenOrganizations(fields.value.orgToken)
+        const resp = await organizationStore.getTokenOrganizations(stepTwoFields.value.orgToken)
             .catch((error: any) => {
                 console.log(error)
                 throw error
@@ -505,7 +275,7 @@ const fetchWitnessOrganization = async (token: string) => {
 
 
     } catch (error) {
-
+        console.log(error)
     }
 }
 
@@ -633,18 +403,20 @@ const sendFindings = async (e: any) => {
 
     try {
         setLoading(true)
-
+        
         const values = { ...stepFourFields.value }
+        const formData = new FormData();
 
+        formData.append('organization_id', getActiveOrg.value?.uuid);
+        formData.append('investigation_id', getInvestigation.value?.uuid);
+        formData.append('type', values?.type);
+        formData.append('detail', values?.detail);
+        
+        files.value.forEach(file => {
+            formData.append('files[]', file);
+        });
 
-        let objectValues = {
-            "organization_id": getActiveOrg.value?.uuid,
-            "investigation_id": getInvestigation.value?.uuid,
-            "type": values?.type,
-            "detail": values?.detail,
-        }
-
-        const resp = await investigationStore.sendInvestigationFindings(objectValues)
+        const resp = await investigationStore.sendInvestigationFindings(formData)
             .catch((error: any) => {
                 console.log(error)
                 throw error
@@ -663,6 +435,7 @@ const sendFindings = async (e: any) => {
         setLoading(false)
         setViewFindingDialog(false)
         stepFourFields.value.detail = ''
+        files.value = []
 
 
     } catch (error) {
@@ -981,7 +754,7 @@ const selectImage = (image: any) => {
 
         <v-row v-if="getInvestigation">
             <v-col cols="12" md="9">
-
+                
                 <UiParentCard variant="outlined">
                     <v-card-text>
                         <v-tabs v-model="tab" color="primary" class="customTab">
@@ -1513,18 +1286,21 @@ const selectImage = (image: any) => {
 
 
                                         <v-col cols="12">
-                                            <v-btn color="primary" @click="selectItem({}, 'viewFinding', 'evidence')"
-                                                class="mr-2">Add
-                                                Evidence</v-btn>
-                                            <v-btn color="primary" @click="selectItem({}, 'viewFinding', 'root')"
-                                                class="mr-2">Add Root
-                                                Cause</v-btn>
-                                            <v-btn color="primary" @click="selectItem({}, 'viewFinding', 'immediate')"
-                                                class="mr-2">Add Immediate
-                                                Cause</v-btn>
-                                            <v-btn color="primary" @click="selectItem({}, 'viewFinding', 'conclusion')"
-                                                class="mr-2">Add
-                                                Conclusion</v-btn>
+                                            <template v-if="isLoggedInUserIsMember">
+                                                <v-btn color="primary" @click="selectItem({}, 'viewFinding', 'evidence')"
+                                                    class="mr-2">Add
+                                                    Evidence</v-btn>
+                                                <v-btn color="primary" @click="selectItem({}, 'viewFinding', 'root')"
+                                                    class="mr-2">Add Root
+                                                    Cause</v-btn>
+                                                <v-btn color="primary" @click="selectItem({}, 'viewFinding', 'immediate')"
+                                                    class="mr-2">Add Immediate
+                                                    Cause</v-btn>
+                                                <v-btn color="primary" @click="selectItem({}, 'viewFinding', 'conclusion')"
+                                                    class="mr-2">Add
+                                                    Conclusion</v-btn>                                                
+                                            </template>
+
 
                                             <v-sheet>
                                                 <v-dialog v-model="viewFindingDialog" max-width="700">
@@ -1643,6 +1419,9 @@ const selectImage = (image: any) => {
                                                         <th class="text-left">
                                                             Type
                                                         </th>
+                                                        <th class="text-left">
+                                                            Evidence
+                                                        </th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1651,8 +1430,30 @@ const selectImage = (image: any) => {
                                                         <td>{{ `${interview?.user?.lastName}
                                                             ${interview?.user?.firstName}` }}</td>
                                                         <td>{{ `${interview?.description}` }}</td>
-                                                        <td>{{ `${interview?.type} ${interview?.type == 'conclusion' ?
+                                                        <td class="text-capitalize">{{ `${interview?.type} ${interview?.type == 'conclusion' ?
             '' : 'Cause'}` }}</td>
+                                                        <td>
+
+                            <v-menu v-if="interview?.media?.length > 0">
+                                <template v-slot:activator="{ props }">
+                                    <v-btn color="primary" dark v-bind="props" flat> Files </v-btn>
+                                </template>
+
+                                <v-list>
+                                    <v-list-item v-for="(media, index) in interview?.media" :key="media">
+                                        <a :href="media?.full_url" target="_blank">
+                                            <v-list-item-title>
+                                                <v-icon class="mr-2" size="small">
+                                                    mdi-eye
+                                                </v-icon>
+                                                {{ `View Evidence ${computedIndex(index)}` }}
+                                            </v-list-item-title>
+                                        </a>
+                                    </v-list-item>
+
+                                </v-list>
+                            </v-menu>
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </v-table>
@@ -1677,7 +1478,7 @@ const selectImage = (image: any) => {
 
                                         <v-col cols="12">
                                             <v-btn color="primary" @click="setViewRecommendationDialog(true)"
-                                                class="mr-2">Add
+                                                class="mr-2" v-if="isLoggedInUserIsMember">Add
                                                 Recommendation</v-btn>
 
 
@@ -1853,7 +1654,7 @@ const selectImage = (image: any) => {
                             </v-window-item>
                             <v-window-item value="tab-6" class="pa-1">
 
-                                <v-btn color="primary" @click="setViewReportDialog(true)" class="mr-2">Add
+                                <v-btn color="primary" @click="setViewReportDialog(true)" class="mr-2" v-if="isLoggedInUserIsLead">Add
                                     Report</v-btn>
 
                                 <v-sheet>

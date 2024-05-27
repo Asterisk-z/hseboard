@@ -75,7 +75,8 @@ type UserType = {
     full_name: string,
 };
 const fields = ref({
-    leadInvestigator: getInvestigation?.lead ?? '',
+    leadInvestigator: getInvestigation.value?.lead?.member?.id ?? '',
+    externalleadInvestigator: getInvestigation.value?.lead?.member?.id ?? '',
     teamMember: [],
     externalTeamMembers: [],
     groupChatName: '',
@@ -87,6 +88,7 @@ const fields = ref({
 });
 
 const filteredMember: any = computed(() => (getMembers.value?.filter((member: any) => (member.id != fields.value?.leadInvestigator))));
+const filteredExternalMember: any = computed(() => (fields.value.externalOrgMembers?.filter((member: any) => (member.id != fields.value?.externalleadInvestigator))));
 
 
 
@@ -195,7 +197,6 @@ const fetchOrgUser = async (token: string) => {
 
     try {
 
-        console.log(fields.value)
         const resp = await organizationStore.getOrganizationUsers(token)
             .catch((error: any) => {
                 console.log(error)
@@ -233,6 +234,7 @@ const saveExternal = async (e: any) => {
         let objectValues = {
             "investigation_id": getInvestigation.value?.uuid,
             "team_members": values?.externalTeamMembers,
+            "lead_investigator": values?.externalleadInvestigator,
             'organization_id': values?.organization?.uuid,
         }
 
@@ -257,6 +259,7 @@ const saveExternal = async (e: any) => {
         setAddExternalMemberDialog(false)
 
         fields.value.orgToken = "";
+        fields.value.externalleadInvestigator = "";
         fields.value.externalTeamMembers = [];
         fields.value.organization = {
             uuid: '',
@@ -286,7 +289,7 @@ const removeMember = async (member: any) => {
 
         Swal.fire({
             title: 'Info!',
-            text: 'Do you want to start investigation?',
+            text: 'Do you want to remove member?',
             icon: 'info',
             confirmButtonText: 'Yes',
             cancelButtonText: 'No',
@@ -317,6 +320,11 @@ const removeMember = async (member: any) => {
         setLoading(false)
     }
 
+}
+
+const clearExternalMembers = () => {
+    fields.value.externalTeamMembers.length = 0
+    fields.value.teamMember.length = 0
 }
 
 
@@ -358,7 +366,7 @@ const removeMember = async (member: any) => {
                                                 a lead
                                                 investigator</v-label>
                                             <VSelect v-model="fields.leadInvestigator" :items="getMembers"
-                                                update:modelValue="fields.teamMember.length = 0"
+                                                @update:modelValue="clearExternalMembers"
                                                 :rules="fieldRules.leadInvestigator" label="Select"
                                                 item-title="lastName" item-value="id"
                                                 :item-props="(item: any) => ({ title: `${item?.lastName} ${item?.firstName}`, subtitle: `${item?.email}` })"
@@ -450,11 +458,11 @@ const removeMember = async (member: any) => {
                                                         <div class="d-flex align-center">
                                                             <div class="pl-4 mt-n1">
                                                                 <h5 class="text-h6">{{
-                    fields.organization?.name
-                }}</h5>
+                                                                    fields.organization?.name
+                                                                    }}</h5>
                                                                 <h5 class="text-h6">{{
-                        fields.organization?.token
-                    }}</h5>
+                                                                    fields.organization?.token
+                                                                    }}</h5>
                                                             </div>
                                                         </div>
                                                     </v-card-item>
@@ -475,15 +483,27 @@ const removeMember = async (member: any) => {
                                             </div>
                                         </VCol>
 
+                                        <VCol cols="12" md="12" v-if="fields.externalOrgMembers?.length > 0">
+                                            <v-label class="font-weight-medium pb-1">Select
+                                                a lead
+                                                investigator</v-label>
+                                            <VSelect v-model="fields.externalleadInvestigator"
+                                                :items="fields.externalOrgMembers"
+                                                @update:modelValue="clearExternalMembers" label="Select"
+                                                item-title="full_name" item-value="id"
+                                                :item-props="(item: any) => ({ title: `${item?.lastName} ${item?.firstName}`, subtitle: `${item?.email}` })"
+                                                single-line variant="outlined" class="text-capitalize">
+                                            </VSelect>
+                                        </VCol>
+
 
                                         <VCol cols="12" md="12" v-if="fields.externalOrgMembers?.length > 0">
                                             <v-label class="font-weight-medium pb-1">Select
                                                 Team Member</v-label>
                                             <VSelect v-model="fields.externalTeamMembers"
-                                                :items="fields.externalOrgMembers"
-                                                :rules="fieldRules.externalTeamMember" label="Select"
-                                                item-title="full_name" item-value="id" single-line variant="outlined"
-                                                class="text-capitalize" chips multiple>
+                                                :items="filteredExternalMember" :rules="fieldRules.externalTeamMember"
+                                                label="Select" item-title="full_name" item-value="id" single-line
+                                                variant="outlined" class="text-capitalize" chips multiple>
 
                                             </VSelect>
                                         </VCol>

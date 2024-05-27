@@ -3,6 +3,8 @@ import { router } from '@/router';
 import { fetchWrapper } from '@/utils/helpers/fetch-wrapper';
 import { toastWrapper } from '@/utils/helpers/toast-wrapper';
 import { useOrganizationStore } from './organizationStore';
+import { useAuthStore } from '@/stores/auth';
+import axios from 'axios';
 
 
 type startInvestigationType = {
@@ -272,13 +274,29 @@ export const useInvestigationStore = defineStore({
         async sendInvestigationFindings(values: any) {
             const organizationStore = useOrganizationStore();
             try {
-                const data = await fetchWrapper
-                    .post(`investigations/send-findings/${organizationStore.active}`, values)
-                    .then((response: any) => {
-                        return response.data
-                    }).catch((error: any) => {
-                        console.log(error)
-                    });
+                // const data = await fetchWrapper
+                //     .post(`investigations/send-findings/${organizationStore.active}`, values)
+                //     .then((response: any) => {
+                //         return response.data
+                //     }).catch((error: any) => {
+                //         console.log(error)
+                //     });
+
+                const user = useAuthStore();
+                const data = await axios({
+                    method: 'post',
+                    url: `${import.meta.env.VITE_API_LINK}investigations/send-findings/${organizationStore.active}`,
+                    data: values,
+                    headers: {
+                        'Content-Type': "multipart/form-data; charset=utf-8; boundary=" + Math.random().toString().substr(2),
+                        "Authorization": `Bearer ${user.accessToken}`,
+                        "Accept": "Application/json",
+                    },
+                }).catch((error: any) => {
+                    throw error;
+                }).then((response: any) => {
+                    return response
+                })
                 return toastWrapper.success(data?.message, data)
             } catch (error: any) {
                 return toastWrapper.error(error, error)
