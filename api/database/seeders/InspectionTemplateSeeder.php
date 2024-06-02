@@ -18,18 +18,8 @@ class InspectionTemplateSeeder extends Seeder
         $audit_types = [
             [
                 'inspection_template_type_id' => 1,
-                'title' => 'Inspection One',
-                'description' => 'Inspection One',
-            ],
-            [
-                'inspection_template_type_id' => 2,
-                'title' => 'Inspection Two',
-                'description' => 'Inspection Two',
-            ],
-            [
-                'inspection_template_type_id' => 3,
-                'title' => 'Inspection Three',
-                'description' => 'Inspection Three',
+                'title' => 'Construction Safety Inspection',
+                'description' => 'Construction Safety Inspection',
             ],
         ];
 

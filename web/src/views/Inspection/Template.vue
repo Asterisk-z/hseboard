@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, nextTick } from 'vue';
+import { ref, onMounted, computed, nextTick, watch } from 'vue';
 import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
 import { VDataTable } from 'vuetify/labs/VDataTable'
 import { useOrganizationStore } from '@/stores/organizationStore';
 import { useInvestigationStore } from '@/stores/investigationStore';
 import { useAuthStore } from '@/stores/auth';
 import { useAuditTemplateStore } from '@/stores/auditTemplateStore'
+import { useInspectionStore } from '@/stores/inspectionStore'
 import moment from 'moment'
 import { router } from '@/router';
 import Swal from 'sweetalert2'
@@ -35,19 +36,31 @@ const breadcrumbs = ref([
 const authStore = useAuthStore();
 const organizationStore = useOrganizationStore();
 const auditTemplateStore = useAuditTemplateStore()
+const inspectionStore = useInspectionStore()
 
 onMounted(() => {
-    auditTemplateStore.getAuditTypes()
-    auditTemplateStore.getAuditTemplates()
+    inspectionStore.getInvestigationTemplateTypes()
+    inspectionStore.getInspectionTemplateForTypeId()
 });
 
 const computedIndex = (index: any) => ++index;
 
 const getActiveOrg: any = computed(() => (organizationStore.getActiveOrg()));
 const getAuthUser: any = computed(() => (authStore.loggedUser));
-const getAuditTemplates: any = computed(() => (auditTemplateStore.auditTemplates));
 const getAuditTypes: any = computed(() => (auditTemplateStore.auditTypes));
+const getAuditTemplates: any = computed(() => (auditTemplateStore.auditTemplates));
+const getInvestigationTemplateTypes: any = computed(() => (inspectionStore.inspectionTemplateTypes));
+const getInspectionTemplateForTypeId: any = computed(() => (inspectionStore.inspectionTypeTemplates));
 const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+
+
+
+const audit_type = ref('');
+watch(getInvestigationTemplateTypes, () => {
+    if (getInvestigationTemplateTypes.value) {
+        audit_type.value = getInvestigationTemplateTypes.value?.sample
+    }
+})
 
 
 const valid = ref(true);
@@ -181,14 +194,13 @@ const save = async (e: any) => {
 
         let objectValues = {
             'title': values?.title,
-            'audit_type_id': values?.audit_type_id,
             'questions': newRow.value,
             'description': values?.description,
             'file': values?.file[0],
             'organization_id': getActiveOrg.value?.uuid,
         }
 
-        const resp = await auditTemplateStore.addAuditTemplate(objectValues)
+        const resp = await inspectionStore.uploadTemplateQuestion(objectValues)
             .catch((error: any) => {
                 console.log(error)
                 throw error
@@ -203,7 +215,7 @@ const save = async (e: any) => {
             setTimeout(() => {
                 // formContainer.value.reset()
             }, 2000)
-            auditTemplateStore.getAuditTemplates();
+            inspectionStore.getInspectionTemplateForTypeId();
         }
 
         setLoading(false)
@@ -229,7 +241,7 @@ const removeDocument = async (document: any) => {
             "document_id": document?.id,
         }
 
-        const resp = await auditTemplateStore.removeAuditTemplate(objectValues)
+        const resp = await inspectionStore.deleteTemplateQuestion(objectValues)
             .catch((error: any) => {
                 throw error
             })
@@ -241,7 +253,7 @@ const removeDocument = async (document: any) => {
             setLoading(false)
             setDeleteDialog(false)
 
-            auditTemplateStore.getAuditTemplates();
+            inspectionStore.getInspectionTemplateForTypeId();
         }
 
         setLoading(false)
@@ -325,14 +337,11 @@ const selectImage = (image: any) => {
                                             @submit.prevent="save" class="py-1" enctype="multipart/form-data">
                                             <VRow class="mt-5 mb-3">
 
-                                                <VCol cols="12" md="12">
-                                                    <v-label class="font-weight-medium pb-1">Inspection Type</v-label>
-                                                    <VSelect v-model="fields.audit_type_id" :items="getAuditTypes"
-                                                        label="Select" single-line variant="outlined"
-                                                        class="text-capitalize"
-                                                        :rules="[(v: any) => !!v || 'You must select to continue!']"
-                                                        item-title='description' item-value="id" required>
-                                                    </VSelect>
+
+                                                <VCol cols="12" md="12" v-if="audit_type">
+                                                    <a class="mr-2" :href="audit_type" target="_blank">
+                                                        <v-btn color="primary"> Download Sample Template</v-btn>
+                                                    </a>
                                                 </VCol>
 
                                                 <VCol cols="12" md="12">
@@ -511,12 +520,13 @@ const selectImage = (image: any) => {
 
 
                     <template v-slot:text>
+
                         <v-text-field v-model="search" label="Search" prepend-inner-icon="mdi-magnify"
                             variant="outlined" hide-details single-line></v-text-field>
                     </template>
 
-                    <VDataTable :headers="headers" :items="getAuditTemplates" :search="search" item-key="name"
-                        items-per-page="5" item-value="fat" show-select>
+                    <VDataTable :headers="headers" :items="getInspectionTemplateForTypeId" :search="search"
+                        item-key="name" items-per-page="5" item-value="fat" show-select>
                         <template v-slot:item.action="{ item }">
                             <div v-if="isLoggedInUserOwnsActionOrg">
                                 <v-btn color="error" @click="selectItem(item, 'delete')"> Delete </v-btn>

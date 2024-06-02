@@ -18,8 +18,8 @@ class InspectionTemplateTypeSeeder extends Seeder
         $audit_types = [
             [
                 'name' => 'inspection_type_one',
-                'sample' => '/public/sample/one.xlsx',
-                'description' => 'Standard Inspection',
+                'sample' => 'sample/inspection.xlsx',
+                'description' => 'Inspection',
             ],
         ];
 

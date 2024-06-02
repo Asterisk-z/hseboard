@@ -17,6 +17,7 @@ use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\IndustryController;
 use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\InspectionTemplateController;
+use App\Http\Controllers\InspectionTemplateQuestionsController;
 use App\Http\Controllers\InspectionTemplateTypeController;
 use App\Http\Controllers\InspectionTypeController;
 use App\Http\Controllers\InvestigationController;
@@ -235,7 +236,9 @@ Route::middleware('auth:api')->group(function ($router) {
     Route::prefix('inspection')->group(function ($router) {
         Route::get('/types', [InspectionTypeController::class, 'index']);
         Route::get('/template-types', [InspectionTemplateTypeController::class, 'index']);
-        Route::get('/templates-type/{organization_id?}/{type_id?}', [InspectionTemplateController::class, 'index_type']);
+        Route::get('/templates-type', [InspectionTemplateController::class, 'index_type']);
+        Route::post('/template/upload', [InspectionTemplateQuestionsController::class, 'store']);
+        Route::post('/template/delete', [InspectionTemplateQuestionsController::class, 'delete']);
         Route::post('/initiate', [InspectionController::class, 'store']);
         Route::get('/all/{organization_id?}', [InspectionController::class, 'index']);
         Route::get('/ongoing/{inspection_id}', [InspectionController::class, 'ongoing']);
@@ -256,8 +259,8 @@ Route::middleware('auth:api')->group(function ($router) {
         Route::post('/action/{organization_id?}', [InspectionController::class, 'actionInspection']);
         Route::get('/completed/{inspection_id}', [InspectionController::class, 'completed']);
 
-        Route::post('/create', [InvestigationController::class, 'store']);
-        Route::post('/delete', [InvestigationController::class, 'delete']);
+        // Route::post('/create', [InvestigationController::class, 'store']);
+        // Route::post('/delete', [InvestigationController::class, 'delete']);
     });
 
     Route::prefix('jha')->group(function ($router) {

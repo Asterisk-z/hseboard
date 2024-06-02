@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\InspectionTemplate;
 use App\Models\Organisation;
 use Exception;
-use Illuminate\Http\Request;
 
 class InspectionTemplateController extends Controller
 {
@@ -22,7 +21,7 @@ class InspectionTemplateController extends Controller
             $stats = InspectionTemplate::where('is_del', 'no');
             // $stats = InspectionTemplate::where('is_del', 'no')->where('inspection_template_type_id', request('type_id'));
 
-            $organization = Organisation::where('uuid', request('organization_id'))->first();
+            $organization = Organisation::where('uuid', auth()->user()->active_organization)->first();
 
             $stats = $stats->where(function ($query) use ($organization) {
 

@@ -88,17 +88,48 @@ export const useInspectionStore = defineStore({
             this.inspectionTypeTemplates = [];
             const organizationStore = useOrganizationStore();
             const data = await fetchWrapper
-                .get(`inspection/templates-type/${organizationStore.active}`)
+                .get(`inspection/templates-type`)
                 .then((response: any) => {
                     return response.data
                 }).catch((error: any) => {
                     console.log(error)
                 });
+            
             this.inspectionTypeTemplates = data;
         },
         async initiateInspection(values: any) {
             try {
                 const data = await fetchWrapper.post(`inspection/initiate`, values)
+                    .catch((error: any) => {
+                        throw error;
+                    }).then((response: any) => {
+                        return response
+                    })
+
+                return toastWrapper.success(data?.message, data)
+            } catch (error: any) {
+                return toastWrapper.error(error, error)
+            }
+
+        },
+        async uploadTemplateQuestion(values: any) {
+            try {
+                const data = await fetchWrapper.post(`inspection/template/upload`, values)
+                    .catch((error: any) => {
+                        throw error;
+                    }).then((response: any) => {
+                        return response
+                    })
+
+                return toastWrapper.success(data?.message, data)
+            } catch (error: any) {
+                return toastWrapper.error(error, error)
+            }
+
+        },
+        async deleteTemplateQuestion(values: any) {
+            try {
+                const data = await fetchWrapper.post(`inspection/template/delete`, values)
                     .catch((error: any) => {
                         throw error;
                     }).then((response: any) => {

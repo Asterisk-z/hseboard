@@ -22,11 +22,11 @@ const getChats = computed(() => {
 const chatItem = getChats;
 const searchValue = ref('');
 const filteredChats = computed(() => {
-    return chatItem.value.filter((chat) => {
+    return chatItem.value.filter((chat: any) => {
         return chat.name.toLowerCase().includes(searchValue.value.toLowerCase());
     });
 });
-const lastActivity = (chat) => last(chat.chatHistory).createdAt;
+// const lastActivity = (chat) => last(chat.chatHistory).createdAt;
 
 const items = ref([{ title: 'Sort by time' }, { title: 'Sort by Unread' }, { title: 'Mark all as read' }]);
 
@@ -64,8 +64,6 @@ const initiateChat = async (e: any) => {
         }
 
         // setLoading(false)
-
-
 
     } catch (error) {
         console.log(error)
@@ -157,7 +155,7 @@ const initiateChat = async (e: any) => {
 
                         <v-list-item-title class="text-subtitle-1 textPrimary w-100 font-weight-semibold">{{
                     member.full_name
-                            }}</v-list-item-title>
+                }}</v-list-item-title>
 
                     </v-list-item>
                 </v-list>

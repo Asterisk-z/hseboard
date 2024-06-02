@@ -18,11 +18,9 @@ class InspectionTemplateTypeController extends Controller
 
         try {
 
-            $stats = InspectionTemplateType::where('is_del', 'no')->orderBy('created_at', 'desc')->get();
+            $stats = InspectionTemplateType::where('is_del', 'no')->orderBy('created_at', 'desc')->first();
 
-            $converted_stats = arrayKeysToCamelCase($stats);
-
-            return successResponse('Inspection Type Fetched Successfully', $converted_stats);
+            return successResponse('Inspection Type Fetched Successfully', $stats);
 
         } catch (Exception $error) {
 
