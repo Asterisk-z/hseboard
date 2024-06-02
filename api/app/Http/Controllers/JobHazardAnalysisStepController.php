@@ -634,7 +634,7 @@ class JobHazardAnalysisStepController extends Controller
                     # code...
                     break;
             }
-            logger($job_hazard_step_item);
+            // logger($job_hazard_step_item);
 
             if ($job_hazard_step_item) {
                 $job_hazard_step_item->is_del = 'yes';

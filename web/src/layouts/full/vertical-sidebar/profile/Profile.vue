@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { ref, onMounted, computed, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 
 const authStore = useAuthStore();
+
+const getAuthUser: any = computed(() => (authStore.loggedUser));
 </script>
 
 <template>
@@ -29,6 +32,7 @@ const authStore = useAuthStore();
     position: relative;
     overflow: hidden;
 }
+
 .line-height-none {
     line-height: normal;
 }

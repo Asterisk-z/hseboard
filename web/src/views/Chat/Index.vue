@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 
 import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
 import AppBaseCard from '@/components/shared/AppBaseCard.vue';
 import ChatListing from '@/components/inbox/ChatListing.vue';
 import ChatDetail from '@/components/inbox/ChatDetail.vue';
 import ChatProfile from '@/components/inbox/ChatProfile.vue';
+import { useChatStore } from '@/stores/chatStore';
 
 const page = ref({ title: 'Home' });
 const breadcrumbs = ref([
@@ -20,6 +21,12 @@ const breadcrumbs = ref([
         href: '#'
     }
 ]);
+
+const chatStore = useChatStore();
+onMounted(() => {
+    chatStore.getConversations();
+});
+
 </script>
 
 <template>

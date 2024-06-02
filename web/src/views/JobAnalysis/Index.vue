@@ -345,7 +345,7 @@ const goToRoute = (url: string) => {
                                                 <v-icon class="mr-2" size="small">
                                                     mdi-pencil
                                                 </v-icon>
-                                                Review Job
+                                                View Job
                                             </v-list-item-title>
                                         </v-list-item>
                                     </template>

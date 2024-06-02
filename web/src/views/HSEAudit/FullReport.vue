@@ -7,7 +7,9 @@ import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
 import UiParentCard from '@/components/shared/UiParentCard.vue';
 import { useOrganizationStore } from '@/stores/organizationStore';
 import { useMainAuditStore } from '@/stores/mainAuditStore';
+import { useFormatter } from '@/composables/formatter';
 import { useAuthStore } from '@/stores/auth';
+import { use } from 
 import moment from 'moment'
 import Swal from 'sweetalert2'
 import {
@@ -38,6 +40,7 @@ const route = useRoute()
 const authStore = useAuthStore();
 const organizationStore = useOrganizationStore();
 const mainAuditStore = useMainAuditStore();
+const { formatDate } = useFormatter();
 
 
 onMounted(() => {
@@ -46,13 +49,13 @@ onMounted(() => {
 
 
 
-const computedIndex = (index : any) => ++index;
+const computedIndex = (index: any) => ++index;
 
-const getAuthUser : any  = computed(() => (authStore.loggedUser));
-const getCompletedMainAudit : any  = computed(() => (mainAuditStore.completedMainAudit));
-const getActiveOrg : any  = computed(() => (organizationStore.getActiveOrg()));
-const isAuditingOrg : any  = computed(() => (getCompletedMainAudit.value?.main_audit?.organization_id == getActiveOrg.value?.id));
-const isLoggedInUserOwnsActionOrg : any  = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
+const getAuthUser: any = computed(() => (authStore.loggedUser));
+const getCompletedMainAudit: any = computed(() => (mainAuditStore.completedMainAudit));
+const getActiveOrg: any = computed(() => (organizationStore.getActiveOrg()));
+const isAuditingOrg: any = computed(() => (getCompletedMainAudit.value?.main_audit?.organization_id == getActiveOrg.value?.id));
+const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
 
 
@@ -67,17 +70,17 @@ const setLoading = (value: boolean) => {
 
 
 
-const getRepresentatives : any  = computed(() => (getCompletedMainAudit.value?.main_audit?.all_representatives));
-const getAuditors : any  = computed(() => (getCompletedMainAudit.value?.main_audit?.all_auditors));
+const getRepresentatives: any = computed(() => (getCompletedMainAudit.value?.main_audit?.all_representatives));
+const getAuditors: any = computed(() => (getCompletedMainAudit.value?.main_audit?.all_auditors));
 
 
 
 
-const getDocuments : any  = computed(() => (getCompletedMainAudit.value?.main_audit?.documents));
+const getDocuments: any = computed(() => (getCompletedMainAudit.value?.main_audit?.documents));
 
 
 
-const getSchedule : any  = computed(() => (getCompletedMainAudit.value?.main_audit?.schedule));
+const getSchedule: any = computed(() => (getCompletedMainAudit.value?.main_audit?.schedule));
 
 
 
@@ -88,24 +91,24 @@ function changeQuestionTab(e: string) {
     questionTab.value = e;
 }
 // console.log(questionTab.value)
-const getQuestions : any  = computed(() => (getCompletedMainAudit.value?.main_audit?.questions));
+const getQuestions: any = computed(() => (getCompletedMainAudit.value?.main_audit?.questions));
 
 const sendCommentDialog = ref(false);
-const setSendCommentDialog = (value: boolean, item_id: string = '', topic_id: string = '', question : { 
-    comment : string,  
-    response : {
-        comment : string
-        } 
-    }  =  { 
-    comment : '',  
-    response : {
-        comment : ''
-        } 
+const setSendCommentDialog = (value: boolean, item_id: string = '', topic_id: string = '', question: {
+    comment: string,
+    response: {
+        comment: string
+    }
+} = {
+        comment: '',
+        response: {
+            comment: ''
+        }
     }) => {
     sendCommentDialog.value = value;
     stepFourFields.value.question_id = item_id
     stepFourFields.value.topic_id = topic_id
-    stepFourFields.value.comments = question?.comment ? question?.comment  : (question?.response?.comment ? question?.response?.comment : "")
+    stepFourFields.value.comments = question?.comment ? question?.comment : (question?.response?.comment ? question?.response?.comment : "")
 }
 
 const stepFourFields = ref({
@@ -117,8 +120,8 @@ const stepFourFields = ref({
 
 
 
-const getFindings : any  = computed(() => (getCompletedMainAudit.value?.main_audit?.findings));
-const getActions : any  = computed(() => (getCompletedMainAudit.value?.main_audit?.actions));
+const getFindings: any = computed(() => (getCompletedMainAudit.value?.main_audit?.findings));
+const getActions: any = computed(() => (getCompletedMainAudit.value?.main_audit?.actions));
 
 
 
@@ -154,30 +157,38 @@ const blankFn = () => {
                 <UiParentCard variant="outlined">
                     <v-card-text class="text-center">
                         <h1 class="text-uppercase mb-3"> {{ getCompletedMainAudit?.main_audit?.audit_title }}</h1>
-                        <h1 class="text-uppercase mb-3"> {{ getCompletedMainAudit?.main_audit?.audit_template?.description }}</h1>
-                        <h2 class="text-uppercase mb-3">Organization : {{ getCompletedMainAudit?.main_audit?.recipient_organization?.name }}</h2>
+                        <h1 class="text-uppercase mb-3"> {{
+            getCompletedMainAudit?.main_audit?.audit_template?.description }}</h1>
+                        <h2 class="text-uppercase mb-3">Organization : {{
+            getCompletedMainAudit?.main_audit?.recipient_organization?.name }}</h2>
                     </v-card-text>
                     <v-card-text class="">
                         <VRow>
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">Start Time</label>
-                                <p class="text-body-1"> {{ `${moment(getCompletedMainAudit?.main_audit?.start_date).format('MMMM Do YYYY, h:mm a')}` }}</p>
+                                <p class="text-body-1"> {{
+            `${formatDate(getCompletedMainAudit?.main_audit?.start_date)}` }}</p>
                             </VCol>
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">End Time</label>
-                                <p class="text-body-1"> {{ `${moment(getCompletedMainAudit?.main_audit?.end_date).format('MMMM Do YYYY, h:mm a')}` }}</p>
+                                <p class="text-body-1"> {{ `${formatDate(getCompletedMainAudit?.main_audit?.end_date)}`
+                                    }}</p>
                             </VCol>
                             <VCol cols='12' md="4">
-                                <label class="text-subtitle-1">ISPON</label>
-                                <p class="text-body-1">NA</p>
+                                <label class="text-subtitle-1">ISPON Number</label>
+                                <p class="text-body-1">{{
+            getCompletedMainAudit?.main_audit?.recipient_organization?.ispon ?
+                getCompletedMainAudit?.main_audit?.recipient_organization?.ispon : 'NA' }}</p>
                             </VCol>
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">Organization</label>
-                                <p class="text-body-1">{{ getCompletedMainAudit?.main_audit?.recipient_organization?.name }}</p>
+                                <p class="text-body-1">{{
+            getCompletedMainAudit?.main_audit?.recipient_organization?.name }}</p>
                             </VCol>
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">Address</label>
-                                <p class="text-body-1">{{ getCompletedMainAudit?.main_audit?.recipient_organization?.address }}</p>
+                                <p class="text-body-1">{{
+            getCompletedMainAudit?.main_audit?.recipient_organization?.address }}</p>
                             </VCol>
                             <!-- <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">Organization Reps.</label>
@@ -198,33 +209,40 @@ const blankFn = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                            <tr>
-                                            
-                                                <td>
-                                                    <div v-for="(auditor) in getCompletedMainAudit?.main_audit?.all_auditors" :key="auditor" class="text-uppercase mb-3">
-                                                        {{ auditor?.member?.full_name }}
-                                                        {{ ` - ${auditor?.position.split('_').join(' ')}`  }}
-                                                    </div>
-                                                </td>
-                                            
-                                                <td>
-                                                    <div v-for="(representative) in getCompletedMainAudit?.main_audit?.all_representatives" :key="representative" class="text-uppercase mb-3">
-                                                        {{ representative?.member?.full_name }}
-                                                        {{ ` - ${representative?.position.split('_').join(' ')}`  }}
-                                                    </div>
-                                                </td>
+                                        <tr>
 
-                                            </tr>
-                                        
+                                            <td>
+                                                <div v-for="(auditor) in getCompletedMainAudit?.main_audit?.all_auditors"
+                                                    :key="auditor" class="text-uppercase mb-3">
+                                                    {{ auditor?.member?.full_name }}
+                                                    {{ ` - ${auditor?.position.split('_').join(' ')}` }}
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div v-for="(representative) in getCompletedMainAudit?.main_audit?.all_representatives"
+                                                    :key="representative" class="text-uppercase mb-3">
+                                                    {{ representative?.member?.full_name }}
+                                                    {{ ` - ${representative?.position.split('_').join(' ')}` }}
+                                                </div>
+                                            </td>
+
+                                        </tr>
+
                                     </tbody>
                                 </v-table>
                             </VCol>
                             <VCol cols='12'>
                                 <p>
-                                    This general audit checklist may be used for all ISPON audit exercises to assess performance of Health, Safety and Environmental Management System (HSE-MS) and establish compliance with minimum safety requirements in an organization. The exercise shall cover all areas of the facility. Issues shall be summarized on the last page. Recommendations will be made and documented on the summary page. All recommendations are expected to be completed within the time advised by the Auditor.
+                                    This general audit checklist may be used for all ISPON audit exercises to assess
+                                    performance of Health, Safety and Environmental Management System (HSE-MS) and
+                                    establish compliance with minimum safety requirements in an organization. The
+                                    exercise shall cover all areas of the facility. Issues shall be summarized on the
+                                    last page. Recommendations will be made and documented on the summary page. All
+                                    recommendations are expected to be completed within the time advised by the Auditor.
                                 </p>
                             </VCol>
-                            
+
                             <VCol cols="12">
                                 <h2 class="text-uppercase mb-3">Questions.</h2>
                                 <v-table>
@@ -233,16 +251,16 @@ const blankFn = () => {
                                             <th class="text-left">
                                                 Questions
                                             </th>
-                                            <th class="text-left"  width="5%">
+                                            <th class="text-left" width="5%">
                                                 Yes
                                             </th>
-                                            <th class="text-left"  width="5%">
+                                            <th class="text-left" width="5%">
                                                 NC Minor
                                             </th>
-                                            <th class="text-left"  width="5%">
+                                            <th class="text-left" width="5%">
                                                 NC Major
                                             </th>
-                                            <th class="text-left"  width="5%">
+                                            <th class="text-left" width="5%">
                                                 NA
                                             </th>
                                             <th class="text-left">
@@ -251,42 +269,47 @@ const blankFn = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <template  v-for="(title_question) in getQuestions" >
+                                        <template v-for="(title_question) in getQuestions">
                                             <tr v-for="(question) in title_question.questions" :key="question">
-                                            
+
                                                 <td>{{ `${question?.question}` }}</td>
                                                 <td>
-                                                    <template  v-if="question?.answer ? question?.answer == 'yes' : question?.response?.answer == 'yes'">
-                                                        <CheckIcon stroke-width="1.5" width="20"  />
+                                                    <template
+                                                        v-if="question?.answer ? question?.answer == 'yes' : question?.response?.answer == 'yes'">
+                                                        <CheckIcon stroke-width="1.5" width="20" />
                                                     </template>
                                                 </td>
                                                 <td>
-                                                    <template  v-if="question?.answer ? question?.answer == 'nc_minor' : question?.response?.answer == 'nc_minor'">
-                                                        <CheckIcon stroke-width="1.5" width="20"  />
+                                                    <template
+                                                        v-if="question?.answer ? question?.answer == 'nc_minor' : question?.response?.answer == 'nc_minor'">
+                                                        <CheckIcon stroke-width="1.5" width="20" />
                                                     </template>
-                                                                        
+
                                                 </td>
                                                 <td>
-                                                    <template  v-if="question?.answer ? question?.answer == 'nc_major' : question?.response?.answer == 'nc_major'">
-                                                        <CheckIcon stroke-width="1.5" width="20"  />
+                                                    <template
+                                                        v-if="question?.answer ? question?.answer == 'nc_major' : question?.response?.answer == 'nc_major'">
+                                                        <CheckIcon stroke-width="1.5" width="20" />
                                                     </template>
-                                                    
+
                                                 </td>
                                                 <td>
-                                                    <template  v-if="question?.answer ? question?.answer == 'na' : question?.response?.answer == 'na'">
-                                                        <CheckIcon stroke-width="1.5" width="20"  />
+                                                    <template
+                                                        v-if="question?.answer ? question?.answer == 'na' : question?.response?.answer == 'na'">
+                                                        <CheckIcon stroke-width="1.5" width="20" />
                                                     </template>
                                                 </td>
                                                 <td>
-                                                    {{ `${question?.response?.comment ? question?.response?.comment : ""}` }}
+                                                    {{ `${question?.response?.comment ? question?.response?.comment :
+            ""}` }}
                                                 </td>
-                                            </tr>                                  
+                                            </tr>
                                         </template>
-                                        
+
                                     </tbody>
                                 </v-table>
                             </VCol>
-                            
+
                             <VCol cols='12' class="text-center">
                                 <h2 class="text-uppercase mb-3">AUDIT SUMMARY</h2>
                                 <p>Audit Score (%): (Total Score -Total Non Conformance / Maximum Score ) * 100</p>
@@ -294,108 +317,108 @@ const blankFn = () => {
                                 <p>Total score = number of YES</p>
                                 <p>Total Non Conformance (NC) = Minor NC + Major NC</p>
                                 <p>Maximum Score = Total Score + Minor NC + Major NC</p>
-                                
+
                                 <v-table>
                                     <thead>
                                         <tr>
                                             <th class="text-left">
-                                                
+
                                             </th>
                                             <th class="text-left">
-                                                
+
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                            <tr>
-                                                <td>Total Questions</td>
-                                                <td>{{ getCompletedMainAudit?.stats?.total_questions }}</td>
+                                        <tr>
+                                            <td>Total Questions</td>
+                                            <td>{{ getCompletedMainAudit?.stats?.total_questions }}</td>
 
-                                            </tr>
-                                            <tr>
-                                                <td>Total Yes</td>
-                                                <td>{{ getCompletedMainAudit?.stats?.number_of_yeses }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Total Yes</td>
+                                            <td>{{ getCompletedMainAudit?.stats?.number_of_yeses }}</td>
 
-                                            </tr>
-                                            <tr>
-                                                <td>Total Minor (NC)</td>
-                                                <td>{{ getCompletedMainAudit?.stats?.number_of_nc_minor }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Total Minor (NC)</td>
+                                            <td>{{ getCompletedMainAudit?.stats?.number_of_nc_minor }}</td>
 
-                                            </tr>
-                                            <tr>
-                                                <td>Total Major (NC)</td>
-                                                <td>{{ getCompletedMainAudit?.stats?.number_of_nc_major }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Total Major (NC)</td>
+                                            <td>{{ getCompletedMainAudit?.stats?.number_of_nc_major }}</td>
 
-                                            </tr>
-                                            <tr>
-                                                <td>Total Non Conformance</td>
-                                                <td>{{ getCompletedMainAudit?.stats?.number_of_na }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Total Non Conformance</td>
+                                            <td>{{ getCompletedMainAudit?.stats?.number_of_na }}</td>
 
-                                            </tr>
-                                            <tr>
-                                                <td>Maximum Score</td>
-                                                <td>{{ getCompletedMainAudit?.stats?.maximum_score }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Maximum Score</td>
+                                            <td>{{ getCompletedMainAudit?.stats?.maximum_score }}</td>
 
-                                            </tr>
-                                            <tr>
-                                                <td>Audit score</td>
-                                                <td>{{ getCompletedMainAudit?.stats?.audit_score }}%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Audit score</td>
+                                            <td>{{ getCompletedMainAudit?.stats?.audit_score }}%</td>
 
-                                            </tr>
-                                            <tr>
-                                                <td>Audit rating</td>
-                                                <td> <span>{{ getCompletedMainAudit?.stats?.audit_rate }}</span> ( {{ getCompletedMainAudit?.stats?.audit_score }} %)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Audit rating</td>
+                                            <td> <span>{{ getCompletedMainAudit?.stats?.audit_rate }}</span> ( {{
+            getCompletedMainAudit?.stats?.audit_score }} %)</td>
 
-                                            </tr>
-                                        
+                                        </tr>
+
                                     </tbody>
                                 </v-table>
 
                             </VCol>
                             <VCol cols='12' class="text-center">
                                 <h2 class="text-uppercase mb-3">AUDIT FINDING</h2>
-                                <p>{{ `${getFindings?.description}`  }}</p>
+                                <p>{{ `${getFindings?.description}` }}</p>
                             </VCol>
                             <VCol cols='12' class="text-center">
                                 <h2 class="text-uppercase mb-3">AUDIT RECOMMENDATION</h2>
-                                
-                                            <v-table>
-                                                <thead>
-                                                    <tr>
 
-                                                        <th class="text-left">
-                                                            #
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Title
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Assignor
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Assignee
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Status
-                                                        </th>
-                                                        <th class="text-left">
-                                                            Priority
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr v-for="(actions, index) in getActions"
-                                                        :key="actions">
-                                                        <td>{{ computedIndex(index) }}</td>
-                                                        <td>{{ `${actions?.title}` }}</td>
-                                                        <td>{{ `${actions?.description}` }}</td>
-                                                        <td>{{ `${actions?.assignee?.lastName}
-                                                            ${actions?.assignee?.firstName}` }}</td>
-                                                        <td>{{ `${actions?.status}` }}</td>
-                                                        <td>{{ `${actions?.priority?.description}` }}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </v-table>
+                                <v-table>
+                                    <thead>
+                                        <tr>
+
+                                            <th class="text-left">
+                                                #
+                                            </th>
+                                            <th class="text-left">
+                                                Title
+                                            </th>
+                                            <th class="text-left">
+                                                Assignor
+                                            </th>
+                                            <th class="text-left">
+                                                Assignee
+                                            </th>
+                                            <th class="text-left">
+                                                Status
+                                            </th>
+                                            <th class="text-left">
+                                                Priority
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(actions, index) in getActions" :key="actions">
+                                            <td>{{ computedIndex(index) }}</td>
+                                            <td>{{ `${actions?.title}` }}</td>
+                                            <td>{{ `${actions?.description}` }}</td>
+                                            <td>{{ `${actions?.assignee?.lastName}
+                                                ${actions?.assignee?.firstName}` }}</td>
+                                            <td>{{ `${actions?.status}` }}</td>
+                                            <td>{{ `${actions?.priority?.description}` }}</td>
+                                        </tr>
+                                    </tbody>
+                                </v-table>
                             </VCol>
                         </VRow>
                     </v-card-text>
@@ -411,4 +434,3 @@ const blankFn = () => {
     min-height: 68px;
 }
 </style>
-

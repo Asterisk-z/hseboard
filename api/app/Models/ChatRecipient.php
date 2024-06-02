@@ -5,14 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class JobHazardAnalysisStepTopEvent extends Model
+class ChatRecipient extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    protected $appends = ['codeText'];
 
-    public function getCodeTextAttribute()
+    protected $with = ['user'];
+
+    public function user()
     {
-        return "{$this->code}{$this->id}";
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 }

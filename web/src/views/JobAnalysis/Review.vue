@@ -186,10 +186,18 @@ const blankFn = () => {
                                     <tbody class="border-lg">
                                         <tr>
                                             <td colspan="2" class="border-lg">
-                                                <div class="pa-8">
-                                                    <label class="text-subtitle-1">Company</label>
-                                                    <p class="text-body-1"> {{
-                                                        `${getReviewJobHazardAnalysis?.organization?.name}` }}</p>
+                                                <div class="pa-8 d-flex  align-center">
+                                                    <v-avatar size="80"
+                                                        v-if="getReviewJobHazardAnalysis?.organization?.media">
+                                                        <img :src="getReviewJobHazardAnalysis?.organization?.media?.full_url"
+                                                            height="80" alt="image" />
+                                                    </v-avatar>
+                                                    <div>
+                                                        <label class="text-subtitle-1">Company</label>
+                                                        <p class="text-body-1"> {{
+                                                            `${getReviewJobHazardAnalysis?.organization?.name}` }}</p>
+                                                    </div>
+
                                                 </div>
                                             </td>
                                             <td colspan="2" class="border-lg">

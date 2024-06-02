@@ -49,7 +49,18 @@ onMounted(() => {
     teamMemberStore.getTeamMembersExcept()
 });
 
-
+const range = (start: number, stop: number, step: number = 1) => {
+    // return Array.from({ length: end - start + 1 }, (_, i) => i)
+    return Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + i * step);
+}
+const consequences = ref(0);
+const parties = ref(0);
+const preventives = ref(0);
+const rcps = ref(0);
+const recoveries = ref(0);
+const sources = ref(0);
+const targets = ref(0);
+const top_events = ref(0);
 
 const computedIndex = (index: any) => ++index;
 
@@ -59,8 +70,80 @@ const getTeamMembersExcept: any = computed(() => (teamMemberStore.membersExceptM
 const getActiveOrg: any = computed(() => (organizationStore.getActiveOrg()));
 const isLoggedInUserOwnsActionOrg: any = computed(() => (getAuthUser.value?.id == getActiveOrg.value?.user_id));
 
-const valid = ref(true);;
-const formContainer = ref()
+const consequencesArr: any = computed(() => (range(1, consequences.value)));
+const partiesArr: any = computed(() => (range(1, parties.value)));
+const preventivesArr: any = computed(() => (range(1, preventives.value)));
+const rcpsArr: any = computed(() => (range(1, rcps.value)));
+const recoveriesArr: any = computed(() => (range(1, recoveries.value)));
+const sourcesArr: any = computed(() => (range(1, sources.value)));
+const targetsArr: any = computed(() => (range(1, targets.value)));
+const top_eventsArr: any = computed(() => (range(1, top_events.value)));
+
+
+
+watch(getOngoingJobHazardAnalysis, () => {
+    if (getOngoingJobHazardAnalysis.value) {
+        consequences.value = 0
+        parties.value = 0
+        preventives.value = 0
+        rcps.value = 0
+        recoveries.value = 0
+        sources.value = 0
+        targets.value = 0
+        top_events.value = 0
+        getOngoingJobHazardAnalysis.value.steps?.forEach((item: any, index: any) => {
+            // console.log(item)
+            // console.log(index)
+            item?.consequences?.forEach((stepItem: any, stepIndex: any) => {
+                getOngoingJobHazardAnalysis.value.steps[index].consequences[stepIndex].codeText = `${getOngoingJobHazardAnalysis.value.steps[index].consequences[stepIndex].code}${++consequences.value}`
+            })
+            item?.parties?.forEach((stepItem: any, stepIndex: any) => {
+                getOngoingJobHazardAnalysis.value.steps[index].parties[stepIndex].codeText = `${getOngoingJobHazardAnalysis.value.steps[index].parties[stepIndex].code}${++parties.value}`
+            })
+            item?.preventives?.forEach((stepItem: any, stepIndex: any) => {
+                getOngoingJobHazardAnalysis.value.steps[index].preventives[stepIndex].codeText = `${getOngoingJobHazardAnalysis.value.steps[index].preventives[stepIndex].code}${++preventives.value}`
+            })
+            item?.rcps?.forEach((stepItem: any, stepIndex: any) => {
+                getOngoingJobHazardAnalysis.value.steps[index].rcps[stepIndex].codeText = `${getOngoingJobHazardAnalysis.value.steps[index].rcps[stepIndex].code}${++rcps.value}`
+            })
+            item?.recoveries?.forEach((stepItem: any, stepIndex: any) => {
+                getOngoingJobHazardAnalysis.value.steps[index].recoveries[stepIndex].codeText = `${getOngoingJobHazardAnalysis.value.steps[index].recoveries[stepIndex].code}${++recoveries.value}`
+            })
+            item?.sources?.forEach((stepItem: any, stepIndex: any) => {
+                getOngoingJobHazardAnalysis.value.steps[index].sources[stepIndex].codeText = `${getOngoingJobHazardAnalysis.value.steps[index].sources[stepIndex].code}${++sources.value}`
+            })
+            item?.targets?.forEach((stepItem: any, stepIndex: any) => {
+                getOngoingJobHazardAnalysis.value.steps[index].targets[stepIndex].codeText = `${getOngoingJobHazardAnalysis.value.steps[index].targets[stepIndex].code}${++targets.value}`
+            })
+            item?.top_events?.forEach((stepItem: any, stepIndex: any) => {
+                getOngoingJobHazardAnalysis.value.steps[index].top_events[stepIndex].codeText = `${getOngoingJobHazardAnalysis.value.steps[index].top_events[stepIndex].code}${++top_events.value}`
+            })
+
+
+            // getOngoingJobHazardAnalysis.value.steps[index].consequences.codeText = ++consequences.value
+            // jobHazardStore.ongoingJobHazard.steps[index].consequences.codeText = ++consequences.value
+            // item.consequences?.coding = consequences.value =
+            // consequences.value = item.consequences.length + consequences.value;
+            // parties.value = item.parties.length + parties.value;
+            // preventives.value = item.preventives.length + preventives.value;
+            // rcps.value = item.rcps.length + rcps.value;
+            // recoveries.value = item.recoveries.length + recoveries.value;
+            // sources.value = item.sources.length + sources.value;
+            // targets.value = item.targets.length + targets.value;
+            // top_events.value = item.top_events.length + top_events.value;
+        })
+        console.log(getOngoingJobHazardAnalysis.value.steps)
+    }
+
+})
+
+watch(top_eventsArr, () => {
+
+    // console.log(top_eventsArr.value)
+})
+
+const valid = ref(true);
+const formContainer = ref('')
 const loading = ref(false);
 
 const setLoading = (value: boolean) => {
@@ -91,6 +174,9 @@ const stepFields = ref({
 });
 
 const stepFieldRules: any = ref({
+    step: [
+        (v: string) => !!v || 'Step  is required',
+    ],
     code: [
         (v: string) => !!v || 'Code  is required',
     ],
@@ -114,6 +200,28 @@ const setStepDialog = (value: boolean, step = '', section: string = '', title: [
     stepFields.value.section = section
 
     stepFields.value.step = step
+    stepTitle.value = title
+    if (item && Object.keys(item).length > 0) {
+        stepFields.value.code = item?.code || '';
+        stepFields.value.description = item?.description || '';
+        stepFields.value.itemId = item?.id || '';
+    } else {
+        stepFields.value.code = title[0]
+        stepFields.value.description = ''
+        stepFields.value.itemId = ''
+    }
+
+}
+
+const newStepDialog = ref(false);
+const setNewStepDialog = (value: boolean, section: string = '', title: [string, string] = ['Code', 'Description'], item: {
+    code?: string,
+    description?: string,
+    id?: string,
+} = {}) => {
+    newStepDialog.value = value;
+    stepFields.value.section = section
+
     stepTitle.value = title
     if (item && Object.keys(item).length > 0) {
         stepFields.value.code = item?.code || '';
@@ -238,6 +346,7 @@ const safeData = async (e: any) => {
         jobHazardStore.getOngoingJobHazardAnalysis(route.params.job_id as string)
 
         setLoading(false)
+        setNewStepDialog(false)
         setStepDialog(false)
 
         stepFields.value.code = "";
@@ -252,6 +361,7 @@ const safeData = async (e: any) => {
     } catch (error) {
         console.log(error)
         setLoading(false)
+        setNewStepDialog(false)
         setStepDialog(false)
     }
 
@@ -503,10 +613,18 @@ const blankFn = () => {
                                     <tbody class="border-lg">
                                         <tr>
                                             <td colspan="2" class="border-lg">
-                                                <div class="pa-8">
-                                                    <label class="text-subtitle-1">Company</label>
-                                                    <p class="text-body-1"> {{
-                                                        `${getOngoingJobHazardAnalysis?.organization?.name}` }}</p>
+                                                <div class="pa-8 d-flex  align-center">
+                                                    <v-avatar size="80"
+                                                        v-if="getOngoingJobHazardAnalysis?.organization?.media">
+                                                        <img :src="getOngoingJobHazardAnalysis?.organization?.media?.full_url"
+                                                            height="80" alt="image" />
+                                                    </v-avatar>
+                                                    <div>
+                                                        <label class="text-subtitle-1">Company</label>
+                                                        <p class="text-body-1"> {{
+            `${getOngoingJobHazardAnalysis?.organization?.name}` }}</p>
+                                                    </div>
+
                                                 </div>
                                             </td>
                                             <td colspan="2" class="border-lg">
@@ -523,7 +641,7 @@ const blankFn = () => {
                                                 <div class="pa-8">
                                                     <label class="text-subtitle-1">Prepared By</label>
                                                     <p class="text-body-1"> {{
-                                                        `${getOngoingJobHazardAnalysis?.prepared_user?.full_name}` }}
+            `${getOngoingJobHazardAnalysis?.prepared_user?.full_name}` }}
                                                     </p>
                                                 </div>
                                             </td>
@@ -534,7 +652,7 @@ const blankFn = () => {
                                                     <!-- <p class="text-body-1"> {{ `${getOngoingJobHazardAnalysis?.title}` }}</p> -->
 
                                                     <p class="text-body-1"> {{
-                                                        `${formatDate(getOngoingJobHazardAnalysis?.prepared_date)}` }}
+            `${formatDate(getOngoingJobHazardAnalysis?.prepared_date)}` }}
                                                     </p>
                                                 </div>
                                             </td>
@@ -542,8 +660,9 @@ const blankFn = () => {
                                                 <div class="pa-8">
                                                     <label class="text-subtitle-1">Reviewed/Approved By</label>
                                                     <p class="text-body-1"> {{
-                                                        getOngoingJobHazardAnalysis?.reviewer_user ?
-                                                        `${getOngoingJobHazardAnalysis?.reviewer_user?.full_name}` : "-" }}
+            getOngoingJobHazardAnalysis?.reviewer_user ?
+                `${getOngoingJobHazardAnalysis?.reviewer_user?.full_name}` : "-"
+        }}
                                                     </p>
                                                 </div>
                                             </td>
@@ -552,8 +671,8 @@ const blankFn = () => {
                                                 <div class="pa-8">
                                                     <label class="text-subtitle-1">Date</label>
                                                     <p class="text-body-1"> {{
-                                                        getOngoingJobHazardAnalysis?.reviewed_date ?
-                                                        `${formatDate(getOngoingJobHazardAnalysis?.reviewed_date)}` : `
+                getOngoingJobHazardAnalysis?.reviewed_date ?
+                    `${formatDate(getOngoingJobHazardAnalysis?.reviewed_date)}` : `
                                                         - ` }}</p>
                                                 </div>
                                             </td>
@@ -660,7 +779,7 @@ const blankFn = () => {
                                                             <VCol cols="12" md="12">
                                                                 <v-label
                                                                     class="text-subtitle-1 font-weight-medium pb-1">{{
-                                                                    stepTitle[0] }}</v-label>
+            stepTitle[0] }}</v-label>
                                                                 <VTextField type="text" v-model="stepFields.code"
                                                                     :rules="stepFieldRules.code" required
                                                                     variant="outlined" label="code" readonly
@@ -671,7 +790,7 @@ const blankFn = () => {
                                                             <VCol cols="12" md="12">
                                                                 <v-label
                                                                     class="text-subtitle-1 font-weight-medium pb-1">{{
-                                                                    stepTitle[1] }}</v-label>
+            stepTitle[1] }}</v-label>
                                                                 <VTextarea type="text" v-model="stepFields.description"
                                                                     :rules="stepFieldRules.description" required
                                                                     variant="outlined" label="Description"
@@ -700,6 +819,100 @@ const blankFn = () => {
                                         </v-card>
                                     </v-dialog>
 
+                                    <v-dialog v-model="newStepDialog" max-width="600">
+                                        <v-card>
+                                            <v-card-text>
+                                                <div class="d-flex justify-space-between">
+                                                    <h3 class="text-h3">Job Hazard Analysis Step</h3>
+                                                    <v-btn icon @click="setNewStepDialog(false)" size="small" flat>
+                                                        <XIcon size="16" />
+                                                    </v-btn>
+                                                </div>
+                                            </v-card-text>
+                                            <v-divider></v-divider>
+
+                                            <v-card-text>
+
+                                                <VForm v-model="valid" ref="formContainer" fast-fail lazy-validation
+                                                    @submit.prevent="safeData" class="py-1">
+                                                    <VRow class="mt-5 mb-3">
+                                                        <template v-if="stepFields?.section == 'parties'">
+
+                                                            <VCol cols="12" md="12">
+                                                                <v-label
+                                                                    class="text-subtitle-1 font-weight-medium pb-1">Full
+                                                                    name</v-label>
+                                                                <VTextField type="text" v-model="stepFields.name"
+                                                                    :rules="stepFieldRules.code" required
+                                                                    variant="outlined" label="name"
+                                                                    :color="stepFields.name.length > 2 ? 'success' : 'primary'">
+                                                                </VTextField>
+                                                            </VCol>
+                                                            <VCol cols="12" md="12">
+                                                                <v-label
+                                                                    class="text-subtitle-1 font-weight-medium pb-1">Designation</v-label>
+                                                                <VTextField type="text" v-model="stepFields.designation"
+                                                                    :rules="stepFieldRules.code" required
+                                                                    variant="outlined" label="designation"
+                                                                    :color="stepFields.designation.length > 2 ? 'success' : 'primary'">
+                                                                </VTextField>
+                                                            </VCol>
+                                                        </template>
+                                                        <template v-else>
+
+                                                            <VCol cols="12" md="12">
+                                                                <v-label class="font-weight-medium pb-1">Select
+                                                                    Step</v-label>
+                                                                <VSelect v-model="stepFields.step"
+                                                                    :items="getOngoingJobHazardAnalysis.steps"
+                                                                    :rules="stepFieldRules.step" label="Select"
+                                                                    item-title="title" item-value="id" single-line
+                                                                    variant="outlined" class="text-capitalize">
+                                                                </VSelect>
+                                                            </VCol>
+
+                                                            <VCol cols="12" md="12">
+                                                                <v-label
+                                                                    class="text-subtitle-1 font-weight-medium pb-1">{{
+            stepTitle[0] }}</v-label>
+                                                                <VTextField type="text" v-model="stepFields.code"
+                                                                    :rules="stepFieldRules.code" required
+                                                                    variant="outlined" label="code" readonly
+                                                                    :color="stepFields.code.length > 2 ? 'success' : 'primary'">
+                                                                </VTextField>
+                                                            </VCol>
+
+                                                            <VCol cols="12" md="12">
+                                                                <v-label
+                                                                    class="text-subtitle-1 font-weight-medium pb-1">{{
+            stepTitle[1] }}</v-label>
+                                                                <VTextarea type="text" v-model="stepFields.description"
+                                                                    :rules="stepFieldRules.description" required
+                                                                    variant="outlined" label="Description"
+                                                                    :color="stepFields.description.length > 2 ? 'success' : 'primary'">
+                                                                </VTextarea>
+                                                            </VCol>
+                                                        </template>
+
+                                                        <VCol cols="12" lg="12" class="text-right">
+                                                            <v-btn color="error" @click="setNewStepDialog(false)"
+                                                                variant="text">Cancel</v-btn>
+
+                                                            <v-btn color="primary" type="submit" :loading="loading"
+                                                                :disabled="!valid" @click="safeData">
+                                                                <span v-if="!loading">
+                                                                    Submit
+                                                                </span>
+                                                                <clip-loader v-else :loading="loading" color="white"
+                                                                    :size="'25px'"></clip-loader>
+                                                            </v-btn>
+
+                                                        </VCol>
+                                                    </VRow>
+                                                </VForm>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-dialog>
                                 </v-sheet>
                             </VCol>
                             <VCol cols='12' class="text-center">
@@ -717,24 +930,49 @@ const blankFn = () => {
                                             </th>
                                             <th class="text-left  border-lg">
                                                 Top Event (TE)
+
+                                                <v-btn color="primary" size='small' flat
+                                                    @click="setNewStepDialog(true, 'top_events', [`TE`, 'Top Event'])">Add
+                                                    top
+                                                    event</v-btn>
                                             </th>
                                             <th class="text-left  border-lg">
                                                 Hazard/ Hazard Sources (Haz)
+                                                <v-btn color="primary" size='small' flat
+                                                    @click="setNewStepDialog(true, 'sources', [`Haz`, 'Hazard/Hazard Source'])">Add
+                                                    hazard
+                                                    source</v-btn>
                                             </th>
                                             <th class="text-left  border-lg">
                                                 Target (Tgt)
+                                                <v-btn color="primary" size='small' flat
+                                                    @click="setNewStepDialog(true, 'targets', [`Tgt`, 'Target'])">Add
+                                                    target</v-btn>
                                             </th>
                                             <th class="text-left  border-lg">
                                                 Consequence (C)
+                                                <v-btn color="primary" size='small' flat
+                                                    @click="setNewStepDialog(true, 'consequences', [`TE`, 'Consequence'])">Add
+                                                    consequence</v-btn>
                                             </th>
                                             <th class="text-left  border-lg">
                                                 Preventive Actions
+                                                <v-btn color="primary" size='small' flat
+                                                    @click="setNewStepDialog(true, 'preventives', [`TE`, 'Preventive Action'])">Add
+                                                    preventive action</v-btn>
                                             </th>
                                             <th class="text-left  border-lg">
                                                 RCP
+                                                <v-btn color="primary" size='small' flat
+                                                    @click="setNewStepDialog(true, 'rcps', [`TE`, 'Risk Control Priority'])">Add
+                                                    risk control
+                                                    priority</v-btn>
                                             </th>
                                             <th class="text-left  border-lg">
                                                 Recovery Measures
+                                                <v-btn color="primary" size='small' flat
+                                                    @click="setNewStepDialog(true, 'recoveries', [`C`, 'Recovery Measures'])">Add
+                                                    recovery measure</v-btn>
                                             </th>
                                             <th class="text-left  border-lg">
                                                 Action Party
@@ -746,9 +984,10 @@ const blankFn = () => {
                                     </thead>
                                     <tbody class="border-lg">
                                         <template v-if="getOngoingJobHazardAnalysis.steps?.length > 0">
-                                            <tr v-for="(step, index) in getOngoingJobHazardAnalysis.steps" :key="step">
+                                            <tr v-for="(step, stepIndex) in getOngoingJobHazardAnalysis.steps"
+                                                :key="step">
                                                 <td colspan="1" class="text-left border-lg">
-                                                    {{ computedIndex(index) }}
+                                                    {{ computedIndex(stepIndex) }}
                                                 </td>
                                                 <td colspan="1" class="text-left border-lg">
 
@@ -758,19 +997,14 @@ const blankFn = () => {
                                                 </td>
                                                 <td colspan="1" class="text-left border-lg">
 
-                                                    <v-btn color="primary" size='small' flat
-                                                        @click="setStepDialog(true, step?.id, 'top_events', [`TE${step?.top_events?.length + 1}`, 'Top Event'])">Add
-                                                        top
-                                                        event</v-btn>
-
                                                     <div class="pa-4 float-start"
                                                         v-for="(item, index) in step?.top_events" :key="item">
-                                                        <label class="text-subtitle-1">{{ `(${computedIndex(index)})
-                                                            ${item?.code}` }}</label>
+                                                        <label class="text-subtitle-1">{{
+            `${item?.codeText}` }}</label>
                                                         <p class="text-body-1"> {{ `${item?.description}` }}</p>
                                                         <div class="d-flex flex-row gap-2">
                                                             <v-btn color="info" size='small' flat
-                                                                @click="setStepDialog(true, step?.id, 'top_events', [`TE${step?.top_events?.length + 1}`, 'Top Event'], item?.id)">Edit</v-btn>
+                                                                @click="setStepDialog(true, step?.id, 'top_events', [`TE`, 'Top Event'], item)">Edit</v-btn>
                                                             <v-btn color="error" size='small' flat
                                                                 @click="deleteItem(step?.id, 'top_events', item?.id)">Delete</v-btn>
                                                         </div>
@@ -780,19 +1014,14 @@ const blankFn = () => {
                                                 </td>
                                                 <td colspan="1" class="text-left border-lg">
 
-                                                    <v-btn color="primary" size='small' flat
-                                                        @click="setStepDialog(true, step?.id, 'sources', [`Haz${step?.sources?.length + 1}`, 'Hazard/Hazard Source'])">Add
-                                                        hazard
-                                                        source</v-btn>
-
                                                     <div class="pa-4 float-start" v-for="(item, index) in step?.sources"
                                                         :key="item">
-                                                        <label class="text-subtitle-1">{{ `(${computedIndex(index)})
-                                                            ${item?.code}` }}</label>
+                                                        <label class="text-subtitle-1">{{
+            `${item?.codeText}` }}</label>
                                                         <p class="text-body-1"> {{ `${item?.description}` }}</p>
                                                         <div class="d-flex flex-row gap-2">
                                                             <v-btn color="info" size='small' flat
-                                                                @click="setStepDialog(true, step?.id, 'sources', [`Haz${step?.sources?.length + 1}`, 'Hazard/Hazard Source'], item?.id)">Edit</v-btn>
+                                                                @click="setStepDialog(true, step?.id, 'sources', [`Haz`, 'Hazard/Hazard Source'], item)">Edit</v-btn>
                                                             <v-btn color="error" size='small' flat
                                                                 @click="deleteItem(step?.id, 'sources', item?.id)">Delete</v-btn>
                                                         </div>
@@ -802,18 +1031,14 @@ const blankFn = () => {
                                                 </td>
                                                 <td colspan="1" class="text-left border-lg">
 
-                                                    <v-btn color="primary" size='small' flat
-                                                        @click="setStepDialog(true, step?.id, 'targets', [`Tgt${step?.targets?.length + 1}`, 'Target'])">Add
-                                                        target</v-btn>
-
                                                     <div class="pa-4 float-start" v-for="(item, index) in step?.targets"
                                                         :key="item">
-                                                        <label class="text-subtitle-1">{{ `(${computedIndex(index)})
-                                                            ${item?.code}` }}</label>
+                                                        <label class="text-subtitle-1">{{
+            `${item?.codeText}` }}</label>
                                                         <p class="text-body-1"> {{ `${item?.description}` }}</p>
                                                         <div class="d-flex flex-row gap-2">
                                                             <v-btn color="info" size='small' flat
-                                                                @click="setStepDialog(true, step?.id, 'targets', [`Tgt${step?.targets?.length + 1}`, 'Target'], item?.id)">Edit</v-btn>
+                                                                @click="setStepDialog(true, step?.id, 'targets', [`Tgt`, 'Target'], item)">Edit</v-btn>
                                                             <v-btn color="error" size='small' flat
                                                                 @click="deleteItem(step?.id, 'targets', item?.id)">Delete</v-btn>
                                                         </div>
@@ -822,18 +1047,15 @@ const blankFn = () => {
                                                 </td>
                                                 <td colspan="1" class="text-left border-lg">
 
-                                                    <v-btn color="primary" size='small' flat
-                                                        @click="setStepDialog(true, step?.id, 'consequences', [`TE${step?.consequences?.length + 1}`, 'Consequence'])">Add
-                                                        consequence</v-btn>
 
                                                     <div class="pa-4 float-start"
                                                         v-for="(item, index) in step?.consequences" :key="item">
-                                                        <label class="text-subtitle-1">{{ `(${computedIndex(index)})
-                                                            ${item?.code}` }}</label>
+                                                        <label class="text-subtitle-1">{{
+            `${item?.codeText}` }}</label>
                                                         <p class="text-body-1"> {{ `${item?.description}` }}</p>
                                                         <div class="d-flex flex-row gap-2">
                                                             <v-btn color="info" size='small' flat
-                                                                @click="setStepDialog(true, step?.id, 'consequences', [`TE${step?.consequences?.length + 1}`, 'Consequence'], item?.id)">Edit</v-btn>
+                                                                @click="setStepDialog(true, step?.id, 'consequences', [`TE`, 'Consequence'], item)">Edit</v-btn>
                                                             <v-btn color="error" size='small' flat
                                                                 @click="deleteItem(step?.id, 'consequences', item?.id)">Delete</v-btn>
                                                         </div>
@@ -842,18 +1064,15 @@ const blankFn = () => {
                                                 </td>
                                                 <td colspan="1" class="text-left border-lg">
 
-                                                    <v-btn color="primary" size='small' flat
-                                                        @click="setStepDialog(true, step?.id, 'preventives', [`TE${step?.preventives?.length + 1}`, 'Preventive Action'])">Add
-                                                        preventive action</v-btn>
 
                                                     <div class="pa-4 float-start"
                                                         v-for="(item, index) in step?.preventives" :key="item">
-                                                        <label class="text-subtitle-1">{{ `(${computedIndex(index)})
-                                                            ${item?.code}` }}</label>
+                                                        <label class="text-subtitle-1">{{
+            `${item?.codeText}` }}</label>
                                                         <p class="text-body-1"> {{ `${item?.description}` }}</p>
                                                         <div class="d-flex flex-row gap-2">
                                                             <v-btn color="info" size='small' flat
-                                                                @click="setStepDialog(true, step?.id, 'preventives', [`TE${step?.preventives?.length + 1}`, 'Preventive Action'], item?.id)">Edit</v-btn>
+                                                                @click="setStepDialog(true, step?.id, 'preventives', [`TE`, 'Preventive Action'], item)">Edit</v-btn>
                                                             <v-btn color="error" size='small' flat
                                                                 @click="deleteItem(step?.id, 'preventives', item?.id)">Delete</v-btn>
                                                         </div>
@@ -862,19 +1081,15 @@ const blankFn = () => {
                                                 </td>
                                                 <td colspan="1" class="text-left border-lg">
 
-                                                    <v-btn color="primary" size='small' flat
-                                                        @click="setStepDialog(true, step?.id, 'rcps', [`TE${step?.rcps?.length + 1}`, 'Risk Control Priority'])">Add
-                                                        risk control
-                                                        priority</v-btn>
 
                                                     <div class="pa-4 float-start" v-for="(item, index) in step?.rcps"
                                                         :key="item">
-                                                        <label class="text-subtitle-1">{{ `(${computedIndex(index)})
-                                                            ${item?.code}` }}</label>
+                                                        <label class="text-subtitle-1">{{
+            `${item?.codeText}` }}</label>
                                                         <p class="text-body-1"> {{ `${item?.description}` }}</p>
                                                         <div class="d-flex flex-row gap-2">
                                                             <v-btn color="info" size='small' flat
-                                                                @click="setStepDialog(true, step?.id, 'rcps', [`TE${step?.rcps?.length + 1}`, 'Risk Control Priority'], item?.id)">Edit</v-btn>
+                                                                @click="setStepDialog(true, step?.id, 'rcps', [`TE`, 'Risk Control Priority'], item)">Edit</v-btn>
                                                             <v-btn color="error" size='small' flat
                                                                 @click="deleteItem(step?.id, 'rcps', item?.id)">Delete</v-btn>
                                                         </div>
@@ -883,18 +1098,14 @@ const blankFn = () => {
                                                 </td>
                                                 <td colspan="1" class="text-left border-lg">
 
-                                                    <v-btn color="primary" size='small' flat
-                                                        @click="setStepDialog(true, step?.id, 'recoveries', [`C${step?.recoveries?.length + 1}`, 'Recovery Measures'])">Add
-                                                        recovery measure</v-btn>
-
                                                     <div class="pa-4 float-start"
                                                         v-for="(item, index) in step?.recoveries" :key="item">
-                                                        <label class="text-subtitle-1">{{ `(${computedIndex(index)})
-                                                            ${item?.code}` }}</label>
+                                                        <label class="text-subtitle-1">{{
+            `${item?.codeText}` }}</label>
                                                         <p class="text-body-1"> {{ `${item?.description}` }}</p>
                                                         <div class="d-flex flex-row gap-2">
                                                             <v-btn color="info" size='small' flat
-                                                                @click="setStepDialog(true, step?.id, 'recoveries', [`C${step?.recoveries?.length + 1}`, 'Recovery Measures'], item?.id)">Edit</v-btn>
+                                                                @click="setStepDialog(true, step?.id, 'recoveries', [`C`, 'Recovery Measures'], item)">Edit</v-btn>
                                                             <v-btn color="error" size='small' flat
                                                                 @click="deleteItem(step?.id, 'recoveries', item?.id)">Delete</v-btn>
                                                         </div>
@@ -904,7 +1115,7 @@ const blankFn = () => {
                                                 <td colspan="1" class="text-left border-lg">
 
                                                     <v-btn color="primary" size='small' flat
-                                                        @click="setStepDialog(true, step?.id, 'parties', [`TE${step?.parties?.length + 1}`, 'Designation'])">Add</v-btn>
+                                                        @click="setStepDialog(true, step?.id, 'parties', [`TE`, 'Designation'])">Add</v-btn>
 
                                                     <div class="pa-4 float-start" v-for="(item, index) in step?.parties"
                                                         :key="item">
@@ -913,7 +1124,7 @@ const blankFn = () => {
                                                         <p class="text-body-1"> {{ `(${item?.designation})` }}</p>
                                                         <div class="d-flex flex-row gap-2">
                                                             <v-btn color="info" size='small' flat
-                                                                @click="setStepDialog(true, step?.id, 'parties', [`TE${step?.parties?.length + 1}`, 'Designation'], item?.id)">Edit</v-btn>
+                                                                @click="setStepDialog(true, step?.id, 'parties', [`TE`, 'Designation'], item)">Edit</v-btn>
                                                             <v-btn color="error" size='small' flat
                                                                 @click="deleteItem(step?.id, 'parties', item?.id)">Delete</v-btn>
                                                         </div>

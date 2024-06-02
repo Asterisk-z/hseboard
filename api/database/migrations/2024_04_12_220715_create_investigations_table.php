@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();
             $table->string('method')->nullable();
-
+            $table->integer('conversation_id')->nullable();
             $table->enum('is_del', ['yes', 'no'])->default('no');
             $table->timestamps();
         });

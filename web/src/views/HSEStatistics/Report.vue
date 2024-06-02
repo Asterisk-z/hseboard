@@ -65,13 +65,6 @@ const loading = ref(false);
 const setLoading = (value: boolean) => {
     loading.value = value;
 }
-
-
-
-
-
-
-
 const getSchedule: any = computed(() => (getCompletedInspection.value?.inspection?.schedule));
 
 
@@ -167,8 +160,12 @@ const blankFn = () => {
                                     <tbody>
 
                                         <tr>
-                                            <td colspan="2" rowspan="3">{{
-            getCompletedReport?.main_report?.organization?.name }}
+                                            <td colspan="2" rowspan="3">
+                                                <v-avatar size="80"
+                                                    v-if="getCompletedReport?.main_report?.organization?.media">
+                                                    <img :src="getCompletedReport?.main_report?.organization?.media?.full_url"
+                                                        height="80" alt="image" />
+                                                </v-avatar>{{ getCompletedReport?.main_report?.organization?.name }}
                                             </td>
                                             <td>Industry</td>
                                             <td>{{ `${getCompletedReport?.main_report?.organization?.industry?.name}`
@@ -202,7 +199,7 @@ const blankFn = () => {
 
                                         <tr>
                                             <td>1</td>
-                                            <td>No. of workers</td>
+                                            <td>Number of workers</td>
                                             <td>{{ getCompletedReport?.main_report?.number_of_workers }}</td>
                                             <td>{{ getCompletedReport?.main_report?.number_of_workers }}</td>
                                         </tr>

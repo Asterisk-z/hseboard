@@ -9,4 +9,10 @@ class JobHazardAnalysisStepTarget extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $appends = ['codeText'];
+
+    public function getCodeTextAttribute()
+    {
+        return "{$this->code}{$this->id}";
+    }
 }

@@ -3,6 +3,8 @@ import { defineStore } from 'pinia';
 import axios from '@/utils/axios';
 import { uniqueId } from 'lodash';
 import { sub } from 'date-fns';
+import { fetchWrapper } from '@/utils/helpers/fetch-wrapper';
+import { toastWrapper } from '@/utils/helpers/toast-wrapper';
 
 import user1 from '@/assets/images/profile/user-2.jpg';
 import user2 from '@/assets/images/profile/user-3.jpg';
@@ -23,6 +25,8 @@ import { Chance } from 'chance';
 interface sChatType {
     chats: any;
     chatContent: any;
+    conversations: any;
+    activeConversation: any;
 }
 
 type attachType = {
@@ -55,7 +59,9 @@ export const useChatStore = defineStore({
     id: 'chat',
     state: (): sChatType => ({
         chats: [],
-        chatContent: 1
+        chatContent: 0,
+        conversations: null as null || [],
+        activeConversation: null as null || [],
     }),
     getters: {
         // Get Chats from Getters
@@ -64,525 +70,73 @@ export const useChatStore = defineStore({
         // }
     },
     actions: {
-        // Fetch Chat from action
-        async fetchChats() {
+
+        async getConversations() {
+            const data = await fetchWrapper
+                .get(`chat/index`)
+                .then((response: any) => {
+                    return response.data
+                }).catch((error: any) => {
+                    console.log(error)
+                });
+            this.conversations = data;
+        },
+        async initiateConversation(values: any) {
             try {
-                // const data = await axios.get('/api/data/chat/ChatData');
-                const ChatData: ChatType[] = [
-                    {
-                        id: 1,
-                        name: 'James Johnson',
-                        thumb: user1,
-                        recent: false,
-                        chatHistory: [
-                            {
-                                createdAt: sub(new Date(), { hours: 1 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 1,
-                                type: 'text',
-                                attachment: [
-                                    { icon: adobe, file: 'service-task.pdf', fileSize: '2MB' },
-                                    { icon: chrome, file: 'homepage-design.fig', fileSize: '3MB' },
-                                    { icon: figma, file: 'about-us.htmlf', fileSize: '1KB' },
-                                    { icon: java, file: 'work-project.zip', fileSize: '20MB' },
-                                    { icon: zip, file: 'custom.js', fileSize: '2MB' }
-                                ],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 30 }),
-                                msg: chance.sentence({ words: 10 }),
-                                senderId: 1,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 6 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: uniqueId(),
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
+                
+                const data = await fetchWrapper.post(`chat/initiate`, values)
+                    .catch((error: any) => {
+                        throw error;
+                    }).then((response: any) => {
+                        return response
+                    })
 
-                            {
-                                createdAt: sub(new Date(), { minutes: 5 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 1,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 5 }),
-                                msg: background1,
-                                senderId: uniqueId(),
-                                type: 'img',
-                                attachment: [],
-                                id: uniqueId()
-                            }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        name: 'Maria Hernandez',
-                        thumb: user2,
-                        recent: true,
-                        chatHistory: [
-                            {
-                                createdAt: sub(new Date(), { hours: 1 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: uniqueId(),
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 30 }),
-                                msg: chance.sentence({ words: 10 }),
-                                senderId: uniqueId(),
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 6 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 2,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 5 }),
-                                msg: background1,
-                                senderId: 2,
-                                type: 'img',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 1 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: uniqueId(),
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            }
-                        ]
-                    },
-                    {
-                        id: 3,
-                        name: 'David Smith',
-                        thumb: user3,
-                        recent: false,
-                        chatHistory: [
-                            {
-                                createdAt: sub(new Date(), { hours: 10 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 1,
-                                type: 'text',
-                                attachment: [
-                                    { icon: adobe, file: 'service-task.pdf', fileSize: '2MB' },
-                                    { icon: zip, file: 'custom.js', fileSize: '2MB' }
-                                ],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 30 }),
-                                msg: chance.sentence({ words: 10 }),
-                                senderId: 1,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 6 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 3,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 6 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 3,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            }
-                        ]
-                    },
-                    {
-                        id: 4,
-                        name: 'Maria Rodriguez',
-                        thumb: user4,
-                        recent: true,
-                        chatHistory: [
-                            {
-                                createdAt: sub(new Date(), { hours: 1 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 1,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { hours: 10 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 4,
-                                type: 'text',
-                                attachment: [
-                                    { icon: java, file: 'work-project.zip', fileSize: '20MB' },
-                                    { icon: zip, file: 'custom.js', fileSize: '2MB' }
-                                ],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { hours: 11 }),
-                                msg: background1,
-                                senderId: uniqueId(),
-                                type: 'img',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 6 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 4,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 1 }),
-                                msg: chance.sentence({ words: 7 }),
-                                senderId: 3,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            }
-                        ]
-                    },
-                    {
-                        id: 5,
-                        name: 'Robert Smith',
-                        thumb: user5,
-                        recent: true,
-                        chatHistory: [
-                            {
-                                createdAt: sub(new Date(), { hours: 1 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 1,
-                                type: 'text',
-                                attachment: [
-                                    { icon: adobe, file: 'service-task.pdf', fileSize: '2MB' },
-                                    { icon: chrome, file: 'homepage-design.fig', fileSize: '3MB' },
-                                    { icon: figma, file: 'about-us.htmlf', fileSize: '1KB' },
-                                    { icon: java, file: 'work-project.zip', fileSize: '20MB' },
-                                    { icon: zip, file: 'custom.js', fileSize: '2MB' }
-                                ],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 30 }),
-                                msg: chance.sentence({ words: 10 }),
-                                senderId: 1,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 6 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: uniqueId(),
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 5 }),
-                                msg: background1,
-                                senderId: 5,
-                                type: 'img',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 5 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 5,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            }
-                        ]
-                    },
-                    {
-                        id: 6,
-                        name: 'Joseph Sarah',
-                        thumb: user1,
-                        recent: false,
-                        chatHistory: [
-                            {
-                                createdAt: sub(new Date(), { hours: 10 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 1,
-                                type: 'text',
-                                attachment: [
-                                    { icon: chrome, file: 'homepage-design.fig', fileSize: '3MB' },
-                                    { icon: java, file: 'work-project.zip', fileSize: '20MB' },
-                                    { icon: zip, file: 'custom.js', fileSize: '2MB' }
-                                ],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 5 }),
-                                msg: background1,
-                                senderId: uniqueId(),
-                                type: 'img',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 5 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 1,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 2 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 6,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            }
-                        ]
-                    },
-                    {
-                        id: 7,
-                        name: 'Thomas Smith',
-                        thumb: user2,
-                        recent: true,
-                        chatHistory: [
-                            {
-                                createdAt: sub(new Date(), { hours: 10 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 1,
-                                type: 'text',
-                                attachment: [
-                                    { icon: adobe, file: 'service-task.pdf', fileSize: '2MB' },
-                                    { icon: chrome, file: 'homepage-design.fig', fileSize: '3MB' }
-                                ],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { hours: 1 }),
-                                msg: chance.sentence({ words: 10 }),
-                                senderId: 1,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 15 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 7,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 10 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 7,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            }
-                        ]
-                    },
-                    {
-                        id: 8,
-                        name: 'David Elizabeth',
-                        thumb: user3,
-                        recent: false,
-                        chatHistory: [
-                            {
-                                createdAt: sub(new Date(), { hours: 10 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 1,
-                                type: 'text',
-                                attachment: [
-                                    { icon: adobe, file: 'service-task.pdf', fileSize: '2MB' },
-                                    { icon: java, file: 'work-project.zip', fileSize: '20MB' },
-                                    { icon: zip, file: 'custom.js', fileSize: '2MB' }
-                                ],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { hours: 6 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 3,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { hours: 6 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 1,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 1 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 8,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            }
-                        ]
-                    },
-                    {
-                        id: 9,
-                        name: 'Charles Martha',
-                        thumb: user4,
-                        recent: false,
-                        chatHistory: [
-                            {
-                                createdAt: sub(new Date(), { hours: 10 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 1,
-                                type: 'text',
-                                attachment: [
-                                    { icon: java, file: 'work-project.zip', fileSize: '20MB' },
-                                    { icon: zip, file: 'custom.js', fileSize: '2MB' }
-                                ],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { hours: 8 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 3,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { hours: 8 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 3,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 5 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 9,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 2 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 9,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            }
-                        ]
-                    },
-                    {
-                        id: 10,
-                        name: 'Samuel Eliza',
-                        thumb: user5,
-                        recent: false,
-                        chatHistory: [
-                            {
-                                createdAt: sub(new Date(), { hours: 10 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 1,
-                                type: 'text',
-                                attachment: [
-                                    { icon: adobe, file: 'service-task.pdf', fileSize: '2MB' },
-                                    { icon: zip, file: 'custom.js', fileSize: '2MB' }
-                                ],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { hours: 11 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 3,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { hours: 6 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 3,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { hours: 6 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 3,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            },
-                            {
-                                createdAt: sub(new Date(), { minutes: 6 }),
-                                msg: chance.sentence({ words: 5 }),
-                                senderId: 10,
-                                type: 'text',
-                                attachment: [],
-                                id: uniqueId()
-                            }
-                        ]
-                    }
-                ];
-                this.chats = ChatData;
-                // this.chats = data.data;
-            } catch (error) {
-                alert(error);
-                console.log(error);
+                return toastWrapper.success(data?.message, data)
+            } catch (error: any) {
+                return toastWrapper.error(error, error)
             }
-        },
-        //select chat
-        SelectChat(itemID: number) {
-            this.chatContent = itemID;
-        },
-        sendMsg(itemID: number, item: string) {
-            const newMessage = {
-                id: itemID,
-                msg: item,
-                type: 'text',
-                attachments: [],
-                createdAt: sub(new Date(), { seconds: 1 }),
-                senderId: itemID
-            };
 
-            this.chats = this.chats.filter((chat: any) => {
+        },
+        async sendMessage(values: any) {
+            try {
+                const data = await fetchWrapper.post(`chat/send`, values)
+                    .catch((error: any) => {
+                        throw error;
+                    }).then((response: any) => {
+                        return response
+                    })
+
+                return toastWrapper.success(data?.message, data)
+            } catch (error: any) {
+                return toastWrapper.error(error, error)
+            }
+
+        },
+
+
+
+        SelectChat(itemID: number) {
+            let activeConversation = this.conversations.filter((item: any) => item.id == itemID)
+            this.activeConversation = activeConversation?.length > 0 ? activeConversation[0] : null;
+            this.chatContent = activeConversation?.length > 0 ? itemID : 0;
+        },
+        sendMsg(itemID: number, item: string, sender_id: number) {
+
+            const updateMessage = {
+                id: itemID,
+                message: item,
+                created_at: sub(new Date(), { seconds: 1 }),
+                sender_id: sender_id
+            };
+            this.conversations = this.conversations.filter((chat: any) => {
                 return chat.id === itemID
                     ? {
                         ...chat,
-                        ...chat.chatHistory.push(newMessage)
+                        ...chat.messages.push(updateMessage)
                     }
                     : chat;
             });
+         
         }
     }
 });

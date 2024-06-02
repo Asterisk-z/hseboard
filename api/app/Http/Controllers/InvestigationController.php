@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseStatusCodes;
 use App\Models\Action;
+use App\Models\ChatConversion;
+use App\Models\ChatRecipient;
 use App\Models\Investigation;
 use App\Models\InvestigationFinding;
 use App\Models\InvestigationInterview;
@@ -330,6 +332,17 @@ class InvestigationController extends Controller
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Investigation");
             }
 
+            if (request('group_name')) {
+
+                $conversation = ChatConversion::updateOrCreate(
+                    ['id' => $investigation->conversation_id],
+                    [
+                        'name' => request('group_name'),
+                        'is_group' => true,
+                    ]);
+
+            }
+
             if ($lead_investigator = User::where('id', request('lead_investigator'))->first()) {
                 $lead = $investigation->lead ? $investigation->lead->id : null;
 
@@ -341,6 +354,16 @@ class InvestigationController extends Controller
                         'member_id' => $lead_investigator->id,
                         'position' => 'lead',
                     ]);
+                    if($conversation) {
+ChatRecipient::updateOrCreate(
+    ['conversation_id' => $conversation->id, 'user_id' => $lead_investigator->id],
+    [
+        'conversation_id' => $conversation->id,
+        'user_id' => $lead_investigator->id,
+    ]);
+
+                    }
+
 
                 if ($lean_member = InvestigationMember::where('investigation_id', $investigation->id)->where('position', 'member')->where('member_id', $lead_investigator->id)->first()) {
 
@@ -365,11 +388,16 @@ class InvestigationController extends Controller
                             'position' => 'member',
                         ]);
 
+                    if($conversation) {
+                    ChatRecipient::updateOrCreate(
+                        ['conversation_id' => $conversation->id, 'user_id' => $member->id],
+                        [
+                            'conversation_id' => $conversation->id,
+                            'user_id' => $member->id,
+                        ]);
+                    }
+
                 }
-
-            }
-
-            if (request('group_name')) {
 
             }
 
@@ -398,12 +426,24 @@ class InvestigationController extends Controller
             'lead_investigator' => ['nullable'],
             'team_members' => ['nullable', 'array'],
             'team_members.*' => ['nullable'],
+            'group_name' => ['required', 'string'],
         ]);
 
         try {
 
             if (!$investigation = Investigation::where('uuid', $data['investigation_id'])->where('end_date', null)->first()) {
                 return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Investigation");
+            }
+
+            if (request('group_name')) {
+
+                $conversation = ChatConversion::updateOrCreate(
+                    ['id' => $investigation->conversation_id],
+                    [
+                        'name' => request('group_name'),
+                        'is_group' => true,
+                    ]);
+
             }
 
             if (!$organization = Organisation::where('uuid', $data['organization_id'])->first()) {
@@ -421,6 +461,15 @@ class InvestigationController extends Controller
                         'member_id' => $lead_investigator->id,
                         'position' => 'lead',
                     ]);
+                    if($conversation) {
+ChatRecipient::updateOrCreate(
+    ['conversation_id' => $conversation->id, 'user_id' => $lead_investigator->id],
+    [
+        'conversation_id' => $conversation->id,
+        'user_id' => $lead_investigator->id,
+    ]);
+
+                    }
 
                 if ($lean_member = InvestigationMember::where('investigation_id', $investigation->id)->where('position', 'member')->where('member_id', $lead_investigator->id)->first()) {
 
@@ -445,6 +494,14 @@ class InvestigationController extends Controller
                                 'member_id' => $member->id,
                                 'position' => 'member',
                             ]);
+                    if($conversation) {
+                    ChatRecipient::updateOrCreate(
+                        ['conversation_id' => $conversation->id, 'user_id' => $member->id],
+                        [
+                            'conversation_id' => $conversation->id,
+                            'user_id' => $member->id,
+                        ]);
+                    }
 
                     }
                 }
@@ -486,6 +543,16 @@ class InvestigationController extends Controller
             }
 
             if ($member = InvestigationMember::where('investigation_id', $investigation->id)->where('member_id', request('team_member'))->first()) {
+   if ( $conversation = ChatConversion::where('id', $investigation->conversation_id)->first()) {
+
+
+                if ($chat = ChatRecipient::where('conversation_id', $conversation->id)->where('user_id', request('team_member'))->first()) {
+
+                    $chat->delete();
+
+                }
+
+            }
 
                 $member->delete();
 

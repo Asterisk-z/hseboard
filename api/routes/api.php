@@ -9,6 +9,7 @@ use App\Http\Controllers\AuditOptionController;
 use App\Http\Controllers\AuditTemplateController;
 use App\Http\Controllers\AuditTypeController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\DashboardController;
@@ -117,6 +118,12 @@ Route::middleware('auth:api')->group(function ($router) {
         Route::post('/verify-email', [UsersController::class, 'verify']);
         Route::post('/send-message', [UsersController::class, 'sendMessage']);
         Route::post('/update', [UsersController::class, 'update']);
+    });
+
+    Route::prefix('chat')->group(function ($router) {
+        Route::get('/index', [ChatController::class, 'index']);
+        Route::post('/initiate', [ChatController::class, 'initiate']);
+        Route::post('/send', [ChatController::class, 'send']);
     });
 
     Route::prefix('observations')->group(function ($router) {

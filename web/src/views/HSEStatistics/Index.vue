@@ -16,12 +16,12 @@ const breadcrumbs = ref([
     {
         text: 'Dashboard',
         disabled: false,
-        href: 'dashboard'
+        href: '/dashboard'
     },
     {
         text: 'HSE Statistics',
         disabled: true,
-        href: '#'
+        href: '/hse-statistics'
     }
 ]);
 

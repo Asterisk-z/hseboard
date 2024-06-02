@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue';
+import user1 from '@/assets/images/profile/user-1.jpg';
 import { MailIcon } from 'vue-tabler-icons';
 import { profileDD } from '@/_mockApis/headerData';
 
@@ -17,8 +18,11 @@ const getAuthUser: any = computed(() => (authStore.loggedUser));
     <v-menu :close-on-content-click="false">
         <template v-slot:activator="{ props }">
             <v-btn class="custom-hover-primary" variant="text" v-bind="props" icon>
-                <v-avatar size="35">
-                    <img src="@/assets/images/profile/user-1.jpg" width="35" alt="Julia" />
+                <v-avatar size="35" v-if="getAuthUser?.media">
+                    <img :src="getAuthUser?.media?.full_url" width="35" />
+                </v-avatar>
+                <v-avatar size="35" v-else>
+                    <img :src="user1" width="35" />
                 </v-avatar>
             </v-btn>
         </template>
@@ -26,15 +30,21 @@ const getAuthUser: any = computed(() => (authStore.loggedUser));
             <div class="px-8 pt-6">
                 <h6 class="text-h5 font-weight-medium">Profile</h6>
                 <div class="d-flex align-center mt-4 pb-6">
-                    <v-avatar size="80">
-                        <img src="@/assets/images/profile/user-1.jpg" width="80" />
+                    <v-avatar size="80" v-if="getAuthUser?.media">
+                        <img :src="getAuthUser?.media?.full_url" width="80" />
                     </v-avatar>
+                    <v-avatar size="80" v-else>
+                        <img :src="user1" width="80" />
+                    </v-avatar>
+
                     <div class="ml-3">
                         <h6 class="text-h6 mb-n1">{{ `${getAuthUser?.full_name}` }}</h6>
-                        <span class="text-subtitle-1 font-weight-regular textSecondary">{{ `${getAuthUser?.account_role?.description}` }}</span>
+                        <span class="text-subtitle-1 font-weight-regular textSecondary">{{
+        `${getAuthUser?.account_role?.description}` }}</span>
                         <div class="d-flex align-center mt-1">
                             <MailIcon size="18" stroke-width="1.5" />
-                            <span class="text-subtitle-1 font-weight-regular textSecondary ml-2">{{ `${getAuthUser?.email}` }}</span>
+                            <span class="text-subtitle-1 font-weight-regular textSecondary ml-2">{{
+        `${getAuthUser?.email}` }}</span>
                         </div>
                     </div>
                 </div>

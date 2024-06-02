@@ -236,6 +236,7 @@ const saveExternal = async (e: any) => {
             "team_members": values?.externalTeamMembers,
             "lead_investigator": values?.externalleadInvestigator,
             'organization_id': values?.organization?.uuid,
+            'group_name': values?.groupChatName,
         }
 
 
@@ -458,11 +459,11 @@ const clearExternalMembers = () => {
                                                         <div class="d-flex align-center">
                                                             <div class="pl-4 mt-n1">
                                                                 <h5 class="text-h6">{{
-                                                                    fields.organization?.name
-                                                                    }}</h5>
+                    fields.organization?.name
+                }}</h5>
                                                                 <h5 class="text-h6">{{
-                                                                    fields.organization?.token
-                                                                    }}</h5>
+                        fields.organization?.token
+                    }}</h5>
                                                             </div>
                                                         </div>
                                                     </v-card-item>
@@ -506,6 +507,16 @@ const clearExternalMembers = () => {
                                                 variant="outlined" class="text-capitalize" chips multiple>
 
                                             </VSelect>
+                                        </VCol>
+
+                                        <VCol cols="12" md="12">
+                                            <v-label class="text-subtitle-1 font-weight-medium pb-1">Group
+                                                Chat Name</v-label>
+                                            <VTextField type="text" v-model="fields.groupChatName"
+                                                :rules="fieldRules.groupChatName" required variant="outlined"
+                                                label="Group Chat Name"
+                                                :color="fields.groupChatName.length > 2 ? 'success' : 'primary'">
+                                            </VTextField>
                                         </VCol>
 
                                         <VCol cols="12" lg="12" class="text-right">

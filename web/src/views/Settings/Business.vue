@@ -15,9 +15,6 @@ import {
     CheckIcon,
 } from 'vue-tabler-icons';
 
-
-
-
 const page = ref({ title: 'Business Setting' });
 const breadcrumbs = ref([
     {
@@ -367,8 +364,8 @@ const uploadLogo = async (e: any) => {
                                                     </VTextField>
                                                 </VCol>
                                                 <VCol cols="12" md="12">
-                                                    <v-label
-                                                        class="text-subtitle-1 font-weight-medium pb-1">ISPON</v-label>
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">ISPON
+                                                        Number</v-label>
                                                     <VTextField type="text" v-model="fields.ispon"
                                                         :rules="fieldRules.ispon" required variant="outlined"
                                                         label="ISPON"
@@ -470,11 +467,14 @@ const uploadLogo = async (e: any) => {
                             </VCol>
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">RC Number</label>
-                                <p class="text-body-1"> {{ `${getOrganizations?.rcNumber}` }}</p>
+                                <p class="text-body-1"> {{ `${getOrganizations?.rcNumber ? getOrganizations?.rcNumber :
+            ''}`
+                                    }}</p>
                             </VCol>
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">ISPON</label>
-                                <p class="text-body-1"> {{ `${getOrganizations?.ispon}` }}</p>
+                                <p class="text-body-1"> {{ `${getOrganizations?.ispon ? getOrganizations?.ispon : ''}`
+                                    }}</p>
                             </VCol>
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">Invite Token</label>
