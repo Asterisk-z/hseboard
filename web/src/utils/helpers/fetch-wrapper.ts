@@ -1,4 +1,5 @@
 import { useAuthStore } from '@/stores/auth';
+import { toastWrapper } from '@/utils/helpers/toast-wrapper';
 import { router } from '@/router';
 import axiosServices from '../axios';
 
@@ -80,6 +81,18 @@ function handleResponse(response: any) {
                 // auto logout if 401 Unauthorized or 403 Forbidden response returned from api
                 // logout();
                 clearSession()
+            }
+
+            if ([426].includes(response.status) && user) {
+                // auto logout if 401 Unauthorized or 403 Forbidden response returned from api
+                // logout();
+                // console.log("response")
+                // console.log(response)
+                // console.log("data")
+                // console.log(data)
+                // console.log("end")
+                toastWrapper.error(data?.message)
+                
             }
 
             const error = (data && data.message) || response.statusText;

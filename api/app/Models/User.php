@@ -4,11 +4,11 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -41,7 +41,7 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     protected $appends = ['organizations', 'privilege', 'full_name', 'is_email_verified'];
-    protected $with = ['accountRole', 'media'];
+    protected $with = ['accountRole', 'media', 'activeOrg'];
 
     public function media(): MorphOne
     {
@@ -85,6 +85,11 @@ class User extends Authenticatable implements JWTSubject
     public function accountRole()
     {
         return $this->hasOne(AccountRole::class, 'id', 'account_role_id');
+    }
+
+    public function activeOrg()
+    {
+        return $this->hasOne(Organisation::class, 'uuid', 'active_organization');
     }
 
 }

@@ -29,7 +29,7 @@ class SubscriptionController extends Controller
 
             $stats = Subscription::query();
 
-            $organization = Organisation::where('uuid', request('organization_id'))->first();
+            $organization = Organisation::where('uuid', auth()->user()->active_organization)->first();
 
             $stats = $stats->where(function ($query) use ($organization) {
                 $query->orWhere('user_id', auth()->user()->id);

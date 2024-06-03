@@ -9,7 +9,7 @@ class OrganizationFeature extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    protected $appends = ['is_active', 'feature_name'];
+    protected $appends = ['is_active', 'feature_name', 'feature_code'];
 
     public function getIsActiveAttribute()
     {
@@ -20,5 +20,11 @@ class OrganizationFeature extends Model
     {
         $feature = Feature::where('id', $this->feature_id)->first('description');
         return $feature->description;
+    }
+
+    public function getFeatureCodeAttribute()
+    {
+        $feature = Feature::where('id', $this->feature_id)->first('name');
+        return $feature->name;
     }
 }

@@ -26,7 +26,7 @@ class FeatureController extends Controller
     public function features()
     {
 
-        if (!$organization = Organisation::where('uuid', request('organization_id'))->first()) {
+        if (!$organization = Organisation::where('uuid', auth()->user()->active_organization)->first()) {
             return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Organization");
         }
 

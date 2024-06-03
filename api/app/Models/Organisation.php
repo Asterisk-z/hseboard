@@ -11,7 +11,8 @@ class Organisation extends Model
     use HasFactory;
     protected $guarded = [];
     protected $with = ['industry', 'country', 'media'];
-    // protected $appends = ['user'];
+    protected $appends = ['privilege'];
+
     public function media(): MorphOne
     {
         return $this->morphOne(Media::class, 'model');
@@ -30,11 +31,13 @@ class Organisation extends Model
     //     return $this->belongsTo(User::class, 'user_id', 'id');
     // }
 
-    // public function getUserAttribute()
-    // {
-    //     return User::where('id', $this->user_id)->first();
+    public function getPrivilegeAttribute()
+    {
+        // $sub
 
-    // }
+        return OrganizationFeature::where('organization_id', $this->id)->where('end_date', '>', now())->get();
+
+    }
     public static function all_users_except_active_user($model)
     {
         $id = $model ? $model->id : '';

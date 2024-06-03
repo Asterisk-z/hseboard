@@ -135,7 +135,7 @@ Route::middleware('auth:api')->group(function ($router) {
     });
 
     Route::prefix('actions')->group(function ($router) {
-        Route::get('/all', [ActionController::class, 'index']);
+        Route::get('/all', [ActionController::class, 'index'])->middleware('featureAccess:create_actions');
         Route::post('/create', [ActionController::class, 'store']);
         Route::post('/update', [ActionController::class, 'update']);
         Route::post('/delete', [ActionController::class, 'delete']);

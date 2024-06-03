@@ -274,15 +274,15 @@ const unlocked_headers = ref([
         title: 'Status',
         value: (item: any): string => `${item.isActive}`
     },
-    // {
-    //     key: 'amount',
-    //     title: 'Amount',
-    //     value: (item: any): string => `${item?.currency?.symbol} ${item.amount}`
-    // },
     {
-        key: 'created_at',
+        key: 'endDate',
+        title: 'Expiry Date',
+        value: (item: any): string => `${moment(item.endDate).format('MMMM Do YYYY, h:mm a')}`
+    },
+    {
+        key: 'createdAt',
         title: 'Date Created',
-        value: (item: any): string => `${moment(item.created_at).format('MMMM Do YYYY, h:mm a')}`
+        value: (item: any): string => `${moment(item.createdAt).format('MMMM Do YYYY, h:mm a')}`
     }
 ]);
 
@@ -622,10 +622,10 @@ const gotoRoute = (link: string) => {
                                                                                             <td>{{ computedIndex(index)
                                                                                                 }}</td>
                                                                                             <td>{{
-            `${feat?.org_feature?.feature_name}`
-        }}</td>
+                                                                                                `${feat?.org_feature?.feature_name}`
+                                                                                                }}</td>
                                                                                             <td>{{
-                `${feat?.currency.symbol}
+                                                                                                `${feat?.currency.symbol}
                                                                                                 ${feat?.cost}` }}
                                                                                             </td>
                                                                                         </tr>
