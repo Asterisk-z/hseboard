@@ -332,6 +332,21 @@ export const useInvestigationStore = defineStore({
             }
 
         },
+        async startReInvestigation(values: startInvestigationType) {
+            try {
+                const data = await fetchWrapper.post(`investigations/reinvestigate`, values)
+                    .catch((error: any) => {
+                        throw error;
+                    }).then((response: any) => {
+                        return response
+                    })
+
+                return toastWrapper.success(data?.message, data)
+            } catch (error: any) {
+                return toastWrapper.error(error, error)
+            }
+
+        },
         async addInvestigation(values: InvestigationType) {
             try {
                 const data = await fetchWrapper.post(`investigations/create`, values)

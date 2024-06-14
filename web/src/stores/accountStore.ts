@@ -98,6 +98,7 @@ export const useAccountStore = defineStore({
                 }).catch((error: any) => {
                     throw error;
                 }).then((response: any) => {
+                    user.refresh('account-setting');
                     return response
                 })
 

@@ -74,6 +74,10 @@ export const useAuthStore = defineStore({
                     localStorage.removeItem('hse_reset_tok_passer')
                     localStorage.removeItem('hse_reset_email')
                     router.push(this.returnUrl || '/dashboard');
+
+                    setTimeout(() => {
+                        window.location.href = `${import.meta.env.VITE_API_WEB}dashboard`
+                    }, 4000)
                 }
 
                 return toastWrapper.success(data?.message, data)
@@ -81,7 +85,7 @@ export const useAuthStore = defineStore({
                 return toastWrapper.error(error, error)
             }
         },
-        async refresh() {
+        async refresh(page: string = 'dashboard') {
             try {
                 const data = await fetchWrapper.post(`auth/refresh`, { })
                     .catch((error: any) => {
@@ -102,17 +106,17 @@ export const useAuthStore = defineStore({
                     this.user = btoa(JSON.stringify(data.user))
                     this.hse_tok_passer = data.access_token
                     // user.accessToken
-                    // setTimeout(() => {
-                    //   auth.refresh();
-                    // }, 10000)
-                    window.location.href = `${import.meta.env.VITE_API_WEB}dashboard`
+                    setTimeout(() => {
+
+                        window.location.href = `${import.meta.env.VITE_API_WEB}${page}`
+
+                    }, 4000)
+                    
                 }
 
                 // return toastWrapper.success(data?.message, data)
             } catch (error: any) {
-                toastWrapper.error(error, error)
-                router.push(this.returnUrl || '/auth/login');
-                // return toastWrapper.error(error, error)
+                this.clearSession()
             }
         },
         async register(values: registerType) {
@@ -183,17 +187,6 @@ export const useAuthStore = defineStore({
             }
 
         },
-
-        async old_login(username: string, password: string) {
-            const user = await fetchWrapper.post(`${baseUrl}/authenticate`, { username, password });
-
-            // update pinia state
-            this.user = user;
-            // store user details and jwt in local storage to keep user logged in between page refreshes
-            localStorage.setItem('user', JSON.stringify(user));
-            // redirect to previous url or default to home page
-            router.push(this.returnUrl || '/dashboard');
-        },
         async logout() {
 
             try {
@@ -214,8 +207,6 @@ export const useAuthStore = defineStore({
         },
         clearSession() {
 
-            this.user = null;
-            this.hse_tok_passer = null;
             localStorage.removeItem("hse_tok_passer");
             localStorage.removeItem("logger");
             localStorage.removeItem("user_mail");
@@ -225,6 +216,8 @@ export const useAuthStore = defineStore({
             localStorage.removeItem('loggerOrg')
             localStorage.removeItem('loggerActiveOrg')
             localStorage.removeItem("id");
+            this.user = null;
+            this.hse_tok_passer = null;
             router.push('/auth/login');
             window.location.href = `${import.meta.env.VITE_API_WEB}auth/login`
                 

@@ -453,6 +453,70 @@ const startInvestigationAction = async (item: any) => {
 
 }
 
+const startReInvestigation = async (item: any) => {
+    // e.preventDefault();
+
+    try {
+        setLoading(true)
+        setViewDialog(false)
+
+        let objectValues = {
+            "organization_id": getActiveOrg.value?.uuid,
+            "observation_id": item?.uuid,
+        }
+        Swal.fire({
+            title: 'Info!',
+            text: 'Do you want to start Re-investigation?',
+            icon: 'info',
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+            showCancelButton: true,
+            allowOutsideClick: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                startReInvestigationAction(objectValues)
+            }
+        });
+
+        setLoading(false)
+        setEditDialog(false)
+
+
+
+    } catch (error) {
+        console.log(error)
+        setLoading(false)
+        setEditDialog(false)
+    }
+
+}
+const startReInvestigationAction = async (item: any) => {
+    // e.preventDefault();
+
+    try {
+
+        const resp = await investigationStore.startReInvestigation(item)
+            .catch((error: any) => {
+                throw error
+            })
+            .then((resp: any) => {
+                return resp
+            });
+
+        if (resp?.message == 'success') {
+
+            router.push(`/hse-investigating/${item.observation_id} `)
+        }
+
+
+
+
+    } catch (error) {
+
+    }
+
+}
 </script>
 
 <template>
@@ -832,6 +896,14 @@ const startInvestigationAction = async (item: any) => {
                                                 <v-btn color="primary" class="mr-3"
                                                     @click="startInvestigation(selectedItem)">Start
                                                     Investigation</v-btn>
+                                                <!-- <v-btn color="primary" class="mr-3" @click="setViewDialog(false)">Verify</v-btn> -->
+
+                                            </VCol>
+                                            <VCol cols="12" lg="12" class="text-right"
+                                                v-if="selectedItem?.is_done_investigation && selectedItem?.organization_id">
+                                                <v-btn color="primary" class="mr-3"
+                                                    @click="startReInvestigation(selectedItem)">Start
+                                                    Re-Investigation</v-btn>
                                                 <!-- <v-btn color="primary" class="mr-3" @click="setViewDialog(false)">Verify</v-btn> -->
 
                                             </VCol>

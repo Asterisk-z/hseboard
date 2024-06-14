@@ -1,8 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { AppsIcon, CalendarIcon, MailIcon, MessagesIcon } from 'vue-tabler-icons';
 import AppsLink from './AppsLink.vue';
-import QuickLinks from './QuickLinks.vue';
+import { useOrganizationStore } from '@/stores/organizationStore';
+import { useAuthStore } from '@/stores/auth';
+
+const organizationStore = useOrganizationStore();
+const authStore = useAuthStore();
+
 
 const open = ref(['Apps']);
 </script>

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('user_id');
             $table->integer('organization_id')->nullable();
             $table->integer('priority_id');
-            $table->enum('status', ['pending investigation', 'being investigated', 'done investigation'])->default('pending investigation');
+            $table->enum('status', ['pending investigation', 'being investigated', 'reinvestigating', 'done investigation'])->default('pending investigation');
             $table->text('description');
             $table->text('address');
             $table->text('location_details');

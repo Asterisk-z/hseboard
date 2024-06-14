@@ -36,7 +36,6 @@ const reportStore = useReportStore();
 onMounted(() => {
     teamMemberStore.getTeamMembersExcept();
     openLinks.getPriorities();
-    actionStore.getActions();
     reportStore.getReports()
 });
 

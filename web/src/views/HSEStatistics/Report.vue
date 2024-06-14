@@ -165,7 +165,9 @@ const blankFn = () => {
                                                     v-if="getCompletedReport?.main_report?.organization?.media">
                                                     <img :src="getCompletedReport?.main_report?.organization?.media?.full_url"
                                                         height="80" alt="image" />
-                                                </v-avatar>{{ getCompletedReport?.main_report?.organization?.name }}
+                                                </v-avatar>
+                                                <span class="text-capitalize text-h5">{{
+                                                    getCompletedReport?.main_report?.organization?.name }}</span>
                                             </td>
                                             <td>Industry</td>
                                             <td>{{ `${getCompletedReport?.main_report?.organization?.industry?.name}`

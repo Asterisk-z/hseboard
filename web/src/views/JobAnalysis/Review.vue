@@ -194,8 +194,8 @@ const blankFn = () => {
                                                     </v-avatar>
                                                     <div>
                                                         <label class="text-subtitle-1">Company</label>
-                                                        <p class="text-body-1"> {{
-                                                            `${getReviewJobHazardAnalysis?.organization?.name}` }}</p>
+                                                        <p class="text-body-1 text-capitalize"> {{
+            `${getReviewJobHazardAnalysis?.organization?.name}` }}</p>
                                                     </div>
 
                                                 </div>
@@ -214,7 +214,7 @@ const blankFn = () => {
                                                 <div class="pa-8">
                                                     <label class="text-subtitle-1">Prepared By</label>
                                                     <p class="text-body-1"> {{
-                                                        `${getReviewJobHazardAnalysis?.prepared_user?.full_name}` }}</p>
+            `${getReviewJobHazardAnalysis?.prepared_user?.full_name}` }}</p>
                                                 </div>
                                             </td>
                                             <td class="border-lg">
@@ -224,7 +224,7 @@ const blankFn = () => {
                                                     <!-- <p class="text-body-1"> {{ `${getReviewJobHazardAnalysis?.title}` }}</p> -->
 
                                                     <p class="text-body-1"> {{
-                                                        `${formatDate(getReviewJobHazardAnalysis?.prepared_date)}` }}
+            `${formatDate(getReviewJobHazardAnalysis?.prepared_date)}` }}
                                                     </p>
                                                 </div>
                                             </td>
@@ -232,8 +232,8 @@ const blankFn = () => {
                                                 <div class="pa-8">
                                                     <label class="text-subtitle-1">Reviewed/Approved By</label>
                                                     <p class="text-body-1"> {{ getReviewJobHazardAnalysis?.reviewer_user
-                                                        ? `${getReviewJobHazardAnalysis?.reviewer_user?.full_name}` :
-                                                        "-" }}</p>
+            ? `${getReviewJobHazardAnalysis?.reviewer_user?.full_name}` :
+            "-" }}</p>
                                                 </div>
                                             </td>
                                             <td class="border-lg">
@@ -241,8 +241,8 @@ const blankFn = () => {
                                                 <div class="pa-8">
                                                     <label class="text-subtitle-1">Date</label>
                                                     <p class="text-body-1"> {{ getReviewJobHazardAnalysis?.reviewed_date
-                                                        ? `${formatDate(getReviewJobHazardAnalysis?.reviewed_date)}` :
-                                                        '-' }}</p>
+            ? `${formatDate(getReviewJobHazardAnalysis?.reviewed_date)}` :
+            '-' }}</p>
                                                 </div>
                                             </td>
                                         </tr>

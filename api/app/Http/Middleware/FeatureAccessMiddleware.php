@@ -18,8 +18,6 @@ class FeatureAccessMiddleware
     public function handle(Request $request, Closure $next, $feature)
     {
 
-        logger($feature);
-
         abort(Response::HTTP_UPGRADE_REQUIRED, 'You dont have access to this feature');
 
         if (!$organization = auth()->user()->activeOrg) {

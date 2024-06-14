@@ -158,7 +158,7 @@ const ObservationChart = {
                 <UiParentCard title="Simple Title"> Welcome </UiParentCard>
             </v-col> -->
         <v-row class="mt-1">
-            <v-col cols="3">
+            <v-col cols="12" lg="3" md="6" sm="6">
                 <v-card elevation="10">
                     <v-card-item>
                         <div class="d-flex align-center mt-md-6 mt-1">
@@ -173,7 +173,7 @@ const ObservationChart = {
                     </v-card-item>
                 </v-card>
             </v-col>
-            <v-col cols="3" class="d-flex justify-lg-start justify-end">
+            <v-col cols="12" lg="3" md="6" sm="6" class="d-flex justify-lg-start justify-end">
                 <v-card elevation="10">
                     <v-card-item>
                         <div class="d-flex align-center mt-md-6 mt-1">
@@ -188,7 +188,7 @@ const ObservationChart = {
                     </v-card-item>
                 </v-card>
             </v-col>
-            <v-col cols="3">
+            <v-col cols="12" lg="3" md="6" sm="6">
                 <v-card elevation="10">
                     <v-card-item>
                         <div class="d-flex align-center mt-md-6 mt-1">
@@ -203,7 +203,7 @@ const ObservationChart = {
                     </v-card-item>
                 </v-card>
             </v-col>
-            <v-col cols="3" class="d-flex justify-lg-start justify-end">
+            <v-col cols="12" lg="3" md="6" sm="6" class="d-flex justify-lg-start justify-end">
                 <v-card elevation="10">
                     <v-card-item>
                         <div class="d-flex align-center mt-md-6 mt-1">
@@ -221,7 +221,7 @@ const ObservationChart = {
         </v-row>
 
         <v-row>
-            <v-col cols="6">
+            <v-col cols="12" md="8">
 
                 <v-card elevation="10">
                     <v-card-item>
@@ -232,7 +232,7 @@ const ObservationChart = {
                     </v-card-item>
                 </v-card>
             </v-col>
-            <v-col cols="6">
+            <v-col cols="12" md="8">
 
                 <v-card elevation="10">
                     <v-card-item>

@@ -36,6 +36,7 @@
         "vue": "3.2.31",
         "vue-clipboard3": "^2.0.0",
         "vue-draggable-next": "^2.1.1",
+        "vue-flatpickr-component": "^11.0.5",
         "vue-i18n": "^9.2.2",
         "vue-router": "4.0.12",
         "vue-spinner": "^1.0.4",

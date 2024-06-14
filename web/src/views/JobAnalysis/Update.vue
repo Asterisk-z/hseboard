@@ -620,8 +620,9 @@ const blankFn = () => {
                                                             height="80" alt="image" />
                                                     </v-avatar>
                                                     <div>
+
                                                         <label class="text-subtitle-1">Company</label>
-                                                        <p class="text-body-1"> {{
+                                                        <p class="text-body-1 text-capitalize text-h5"> {{
             `${getOngoingJobHazardAnalysis?.organization?.name}` }}</p>
                                                     </div>
 
@@ -740,7 +741,7 @@ const blankFn = () => {
                                         <v-card>
                                             <v-card-text>
                                                 <div class="d-flex justify-space-between">
-                                                    <h3 class="text-h3">Job Hazard Analysis Step</h3>
+                                                    <h3 class="text-h3">{{ `Add ${stepTitle[1]} Step` }}</h3>
                                                     <v-btn icon @click="setStepDialog(false)" size="small" flat>
                                                         <XIcon size="16" />
                                                     </v-btn>
@@ -823,7 +824,7 @@ const blankFn = () => {
                                         <v-card>
                                             <v-card-text>
                                                 <div class="d-flex justify-space-between">
-                                                    <h3 class="text-h3">Job Hazard Analysis Step</h3>
+                                                    <h3 class="text-h3">{{ `Add ${stepTitle[1]} Step` }}</h3>
                                                     <v-btn icon @click="setNewStepDialog(false)" size="small" flat>
                                                         <XIcon size="16" />
                                                     </v-btn>

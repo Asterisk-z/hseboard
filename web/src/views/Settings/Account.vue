@@ -67,6 +67,7 @@ const fields = ref({
     firstName: "",
     email: "",
     phone: "",
+    ispon: "",
     password: "",
     currentPassword: "",
     confirmPassword: "",
@@ -84,6 +85,9 @@ const fieldRules: any = ref({
     ],
     email: [
         (v: string) => !!v || 'Email  is required',
+    ],
+    ispon: [
+        (v: string) => !!v || 'ISPON Number  is required',
     ],
     phone: [
         (v: string) => !!v || 'Phone Number is required',
@@ -141,6 +145,7 @@ const save = async (e: any) => {
             "lastName": values?.lastName,
             "firstName": values?.firstName,
             "email": values?.email,
+            "ispon": values?.ispon,
             "phone": values?.phone,
         }
 
@@ -153,19 +158,10 @@ const save = async (e: any) => {
                 return resp
             });
 
-        if (resp?.message == 'success') {
+        setTimeout(() => {
             setLoading(false)
             setDialog(false)
-
-            accountStore.getUserDetail()
-
-
-        }
-
-        setLoading(false)
-        setDialog(false)
-
-
+        }, 3000)
 
     } catch (error) {
         console.log(error)
@@ -201,7 +197,6 @@ const uploadLogo = async (e: any) => {
             fields.value.images = [];
             files.value = []
             previewImage.value = []
-            // observationStore.getObservations();
         }
 
         setLoading(false)
@@ -224,7 +219,7 @@ watch(
         fields.value.firstName = getUserDetail.value?.firstName
         fields.value.email = getUserDetail.value?.email
         fields.value.phone = getUserDetail.value?.phone
-
+        fields.value.ispon = getUserDetail.value?.ispon
     }
 )
 
@@ -429,6 +424,15 @@ watch(
                                                     </VTextField>
                                                 </VCol>
 
+                                                <VCol cols="12" md="12">
+                                                    <v-label class="text-subtitle-1 font-weight-medium pb-1">ISPON
+                                                        Number</v-label>
+                                                    <VTextField type="text" v-model="fields.ispon"
+                                                        :rules="fieldRules.ispon" required variant="outlined"
+                                                        label="ISPON Number">
+                                                    </VTextField>
+                                                </VCol>
+
 
 
                                                 <VCol cols="12" lg="12" class="text-right">
@@ -483,6 +487,10 @@ watch(
                             <VCol cols='12' md="4">
                                 <label class="text-subtitle-1">Account Role</label>
                                 <p class="text-body-1"> {{ `${getUserDetail?.account_role?.description}` }}</p>
+                            </VCol>
+                            <VCol cols='12' md="4">
+                                <label class="text-subtitle-1">ISPON Number</label>
+                                <p class="text-body-1"> {{ `${getUserDetail?.ispon}` }}</p>
                             </VCol>
                         </VRow>
                     </v-card-text>

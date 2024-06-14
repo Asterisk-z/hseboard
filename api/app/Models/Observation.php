@@ -15,11 +15,12 @@ class Observation extends Model
     const status = [
         'PEI' => 'pending investigation',
         'BEI' => 'being investigated',
+        'REI' => 'reinvestigating',
         'DOI' => 'done investigation',
     ];
 
     protected $with = ['observer', 'observation_type', 'media'];
-    protected $appends = ['is_pending_investigation', 'is_being_investigated', 'is_done_investigation'];
+    protected $appends = ['is_pending_investigation', 'is_being_investigated', 'is_done_investigation', 'is_reinvestigating'];
 
     public function media(): MorphMany
     {
@@ -44,6 +45,11 @@ class Observation extends Model
     public function getIsBeingInvestigatedAttribute()
     {
         return $this->status == self::status['BEI'] ? true : false;
+    }
+
+    public function getIsReinvestigatingAttribute()
+    {
+        return $this->status == self::status['REI'] ? true : false;
     }
 
     public function getIsDoneInvestigationAttribute()

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseStatusCodes;
 use App\Models\Observation;
+use App\Models\ObservationType;
 use App\Models\Organisation;
 use App\Models\Statistics;
 use Carbon\Carbon;
@@ -224,29 +225,31 @@ class StatisticsController extends Controller
                 $percentage_of_hours_on_overtime = 0;
             }
 
-            $unsafe_acts_observations = Observation::whereBetween('created_at', [$statistics->start_date, $statistics->end_date])->where('organization_id', $statistics->organization_id)->where('observation_type_id', 1)->get()->count();
+            $observation_query = Observation::query()->whereBetween('incident_datetime', [Carbon::create($statistics->start_date), Carbon::create($statistics->end_date)->endOfDay()]);
 
-            $unsafe_conditions_observations = Observation::whereBetween('created_at', [$statistics->start_date, $statistics->end_date])->where('organization_id', $statistics->organization_id)->where('observation_type_id', 2)->get()->count();
+            $unsafe_acts_observations = Observation::whereBetween('incident_datetime', [Carbon::create($statistics->start_date), Carbon::create($statistics->end_date)->endOfDay()])->where('organization_id', $statistics->organization_id)->where('observation_type_id', ObservationType::UNSAFE_ACT)->count();
 
-            $near_miss_observations = Observation::whereBetween('created_at', [$statistics->start_date, $statistics->end_date])->where('organization_id', $statistics->organization_id)->where('observation_type_id', 3)->get()->count();
+            $unsafe_conditions_observations = Observation::whereBetween('incident_datetime', [Carbon::create($statistics->start_date), Carbon::create($statistics->end_date)->endOfDay()])->where('organization_id', $statistics->organization_id)->where('observation_type_id', ObservationType::UNSAFE_CONDITION)->count();
 
-            $first_aid_case_observations = Observation::whereBetween('created_at', [$statistics->start_date, $statistics->end_date])->where('organization_id', $statistics->organization_id)->where('observation_type_id', 4)->get()->sum('number_of_workers_affected');
+            $near_miss_observations = Observation::whereBetween('incident_datetime', [Carbon::create($statistics->start_date), Carbon::create($statistics->end_date)->endOfDay()])->where('organization_id', $statistics->organization_id)->where('observation_type_id', ObservationType::NEAR_MISS)->count();
 
-            $restricted_work_case_observations = Observation::whereBetween('created_at', [$statistics->start_date, $statistics->end_date])->where('organization_id', $statistics->organization_id)->where('observation_type_id', 5)->get()->sum('number_of_workers_affected');
+            $first_aid_case_observations = Observation::whereBetween('incident_datetime', [Carbon::create($statistics->start_date), Carbon::create($statistics->end_date)->endOfDay()])->where('organization_id', $statistics->organization_id)->where('observation_type_id', ObservationType::FIRST_AID)->sum('affected_workers');
 
-            $road_traffic_accident_observations = Observation::whereBetween('created_at', [$statistics->start_date, $statistics->end_date])->where('organization_id', $statistics->organization_id)->where('observation_type_id', 6)->get()->count();
+            $restricted_work_case_observations = Observation::whereBetween('incident_datetime', [Carbon::create($statistics->start_date), Carbon::create($statistics->end_date)->endOfDay()])->where('organization_id', $statistics->organization_id)->where('observation_type_id', ObservationType::RESTRICTED_WORK)->sum('affected_workers');
 
-            $medical_case_treatment_observations = Observation::whereBetween('created_at', [$statistics->start_date, $statistics->end_date])->where('organization_id', $statistics->organization_id)->where('observation_type_id', 7)->get()->sum('number_of_workers_affected');
+            $road_traffic_accident_observations = Observation::whereBetween('incident_datetime', [Carbon::create($statistics->start_date), Carbon::create($statistics->end_date)->endOfDay()])->where('organization_id', $statistics->organization_id)->where('observation_type_id', ObservationType::ROAD_TRAFFIC_ACCIDENT)->count();
 
-            $lost_workday_case_observations = Observation::whereBetween('created_at', [$statistics->start_date, $statistics->end_date])->where('organization_id', $statistics->organization_id)->where('observation_type_id', 8)->get()->sum('number_of_workers_affected');
+            $medical_case_treatment_observations = Observation::whereBetween('incident_datetime', [Carbon::create($statistics->start_date), Carbon::create($statistics->end_date)->endOfDay()])->where('organization_id', $statistics->organization_id)->where('observation_type_id', ObservationType::MEDICAL_TREATMENT)->sum('affected_workers');
 
-            $dangerous_occurance_observations = Observation::whereBetween('created_at', [$statistics->start_date, $statistics->end_date])->where('organization_id', $statistics->organization_id)->where('observation_type_id', 9)->get()->count();
+            $lost_workday_case_observations = Observation::whereBetween('incident_datetime', [Carbon::create($statistics->start_date), Carbon::create($statistics->end_date)->endOfDay()])->where('organization_id', $statistics->organization_id)->where('observation_type_id', ObservationType::LOST_WORKDAY)->sum('affected_workers');
 
-            $permanent_partial_disability_observations = Observation::whereBetween('created_at', [$statistics->start_date, $statistics->end_date])->where('organization_id', $statistics->organization_id)->where('observation_type_id', 10)->get()->sum('number_of_workers_affected');
+            $dangerous_occurance_observations = Observation::whereBetween('incident_datetime', [Carbon::create($statistics->start_date), Carbon::create($statistics->end_date)->endOfDay()])->where('organization_id', $statistics->organization_id)->where('observation_type_id', ObservationType::DANGEROUS_OCCURANCE)->count();
 
-            $permamnent_total_disabilities_observations = Observation::whereBetween('created_at', [$statistics->start_date, $statistics->end_date])->where('organization_id', $statistics->organization_id)->where('observation_type_id', 11)->get()->sum('number_of_workers_affected');
+            $permanent_partial_disability_observations = Observation::whereBetween('incident_datetime', [Carbon::create($statistics->start_date), Carbon::create($statistics->end_date)->endOfDay()])->where('organization_id', $statistics->organization_id)->where('observation_type_id', ObservationType::PERMANENT_PARTIAL_DISABILITY)->sum('affected_workers');
 
-            $fatality_observations = Observation::whereBetween('created_at', [$statistics->start_date, $statistics->end_date])->where('organization_id', $statistics->organization_id)->where('observation_type_id', 12)->get()->sum('number_of_workers_affected');
+            $permamnent_total_disabilities_observations = Observation::whereBetween('incident_datetime', [Carbon::create($statistics->start_date), Carbon::create($statistics->end_date)->endOfDay()])->where('organization_id', $statistics->organization_id)->where('observation_type_id', ObservationType::PERMANENT_TOTAL_DISABILITY)->sum('affected_workers');
+
+            $fatality_observations = Observation::whereBetween('incident_datetime', [Carbon::create($statistics->start_date), Carbon::create($statistics->end_date)->endOfDay()])->where('organization_id', $statistics->organization_id)->where('observation_type_id', ObservationType::FATALITY)->sum('affected_workers');
 
             $stats['main_report'] = $statistics;
             $stats['stats'] = [];
@@ -255,7 +258,7 @@ class StatisticsController extends Controller
             $stats['stats']['leave_hours'] = $leave_hours;
             $stats['stats']['overtime'] = $overtime;
             $stats['stats']['actual_man_hours'] = $actual_man_hours;
-            $stats['stats']['percentage_of_hours_on_overtime'] = number_format($percentage_of_hours_on_overtime, 2);
+            $stats['stats']['percentage_of_hours_on_overtime'] = number_format($percentage_of_hours_on_overtime, 0);
             $stats['stats']['unsafe_acts_observations'] = $unsafe_acts_observations;
             $stats['stats']['unsafe_conditions_observations'] = $unsafe_conditions_observations;
             $stats['stats']['near_miss_observations'] = $near_miss_observations;

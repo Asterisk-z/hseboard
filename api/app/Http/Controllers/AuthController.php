@@ -310,6 +310,7 @@ class AuthController extends Controller
             'firstName' => 'required|string',
             'lastName' => 'required|string',
             'email' => 'required|email|exists:users,email',
+            'ispon' => 'nullable|string',
             'phone' => 'required|string',
         ]);
 
@@ -317,6 +318,7 @@ class AuthController extends Controller
         $user->firstName = $request->firstName;
         $user->lastName = $request->lastName;
         $user->email = $request->email;
+        $user->ispon = $request->ispon ? $request->ispon : $user->ispon;
         $user->phone = $request->phone;
         $user->save();
 

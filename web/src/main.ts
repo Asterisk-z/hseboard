@@ -28,6 +28,7 @@ import 'vue3-easy-data-table/dist/style.css';
 import { createI18n } from 'vue-i18n';
 import messages from '@/utils/locales/messages';
 
+
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
 import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 import Vue3Toasity, { type ToastContainerOptions } from 'vue3-toastify';
@@ -35,6 +36,8 @@ import 'vue3-toastify/dist/index.css';
 import '@/assets/css/toast-wrapper.css'
 import GoogleSignInPlugin from "vue3-google-signin"
 
+import flatPickr from 'vue-flatpickr-component';
+import 'flatpickr/dist/flatpickr.css';
 const i18n = createI18n({
     locale: 'en',
     messages: messages,
@@ -70,3 +73,4 @@ app.use(GoogleSignInPlugin, {
 app.component('pulse-loader', PulseLoader)
 app.component('clip-loader', ClipLoader).mount('#app');
 app.component('VueDatePicker', VueDatePicker);
+app.component('flat-pickr', flatPickr);

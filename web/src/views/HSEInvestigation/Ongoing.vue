@@ -203,7 +203,7 @@ const sendQuestion = async (e: any) => {
         setLoading(true)
 
         const values = { ...stepTwoFields.value }
-        
+
         let teams: any[] = values?.members;
 
         if (viewExternalWitnessDialog.value) {
@@ -403,7 +403,7 @@ const sendFindings = async (e: any) => {
 
     try {
         setLoading(true)
-        
+
         const values = { ...stepFourFields.value }
         const formData = new FormData();
 
@@ -411,7 +411,7 @@ const sendFindings = async (e: any) => {
         formData.append('investigation_id', getInvestigation.value?.uuid);
         formData.append('type', values?.type);
         formData.append('detail', values?.detail);
-        
+
         files.value.forEach(file => {
             formData.append('files[]', file);
         });
@@ -745,6 +745,7 @@ const selectImage = (image: any) => {
     }
 
 }
+const date = ref(null);
 
 </script>
 
@@ -754,7 +755,7 @@ const selectImage = (image: any) => {
 
         <v-row v-if="getInvestigation">
             <v-col cols="12" md="9">
-                
+
                 <UiParentCard variant="outlined">
                     <v-card-text>
                         <v-tabs v-model="tab" color="primary" class="customTab">
@@ -1171,6 +1172,10 @@ const selectImage = (image: any) => {
                                                                             v-model="stepThreeFields.date_times"
                                                                             :min-date="new Date()" multi-dates required>
                                                                         </VueDatePicker>
+                                                                        <flat-pickr v-model="date" :config="{
+            enableTime: true,
+            dateFormat: 'd-m-Y H:i'
+        }" id="datetime-input" class="form-control" placeholder="Date Time" />
                                                                     </VCol>
 
                                                                     <VCol cols="12" md="12"
@@ -1287,18 +1292,20 @@ const selectImage = (image: any) => {
 
                                         <v-col cols="12">
                                             <template v-if="isLoggedInUserIsMember">
-                                                <v-btn color="primary" @click="selectItem({}, 'viewFinding', 'evidence')"
-                                                    class="mr-2">Add
+                                                <v-btn color="primary"
+                                                    @click="selectItem({}, 'viewFinding', 'evidence')" class="mr-2">Add
                                                     Evidence</v-btn>
                                                 <v-btn color="primary" @click="selectItem({}, 'viewFinding', 'root')"
                                                     class="mr-2">Add Root
                                                     Cause</v-btn>
-                                                <v-btn color="primary" @click="selectItem({}, 'viewFinding', 'immediate')"
-                                                    class="mr-2">Add Immediate
+                                                <v-btn color="primary"
+                                                    @click="selectItem({}, 'viewFinding', 'immediate')" class="mr-2">Add
+                                                    Immediate
                                                     Cause</v-btn>
-                                                <v-btn color="primary" @click="selectItem({}, 'viewFinding', 'conclusion')"
+                                                <v-btn color="primary"
+                                                    @click="selectItem({}, 'viewFinding', 'conclusion')"
                                                     class="mr-2">Add
-                                                    Conclusion</v-btn>                                                
+                                                    Conclusion</v-btn>
                                             </template>
 
 
@@ -1430,29 +1437,34 @@ const selectImage = (image: any) => {
                                                         <td>{{ `${interview?.user?.lastName}
                                                             ${interview?.user?.firstName}` }}</td>
                                                         <td>{{ `${interview?.description}` }}</td>
-                                                        <td class="text-capitalize">{{ `${interview?.type} ${interview?.type == 'conclusion' ?
-            '' : 'Cause'}` }}</td>
+                                                        <td class="text-capitalize">{{ `${interview?.type}
+                                                            ${interview?.type == 'conclusion' ?
+                '' : 'Cause'}` }}</td>
                                                         <td>
 
-                            <v-menu v-if="interview?.media?.length > 0">
-                                <template v-slot:activator="{ props }">
-                                    <v-btn color="primary" dark v-bind="props" flat> Files </v-btn>
-                                </template>
+                                                            <v-menu v-if="interview?.media?.length > 0">
+                                                                <template v-slot:activator="{ props }">
+                                                                    <v-btn color="primary" dark v-bind="props" flat>
+                                                                        Files </v-btn>
+                                                                </template>
 
-                                <v-list>
-                                    <v-list-item v-for="(media, index) in interview?.media" :key="media">
-                                        <a :href="media?.full_url" target="_blank">
-                                            <v-list-item-title>
-                                                <v-icon class="mr-2" size="small">
-                                                    mdi-eye
-                                                </v-icon>
-                                                {{ `View Evidence ${computedIndex(index)}` }}
-                                            </v-list-item-title>
-                                        </a>
-                                    </v-list-item>
+                                                                <v-list>
+                                                                    <v-list-item
+                                                                        v-for="(media, index) in interview?.media"
+                                                                        :key="media">
+                                                                        <a :href="media?.full_url" target="_blank">
+                                                                            <v-list-item-title>
+                                                                                <v-icon class="mr-2" size="small">
+                                                                                    mdi-eye
+                                                                                </v-icon>
+                                                                                {{ `View Evidence
+                                                                                ${computedIndex(index)}` }}
+                                                                            </v-list-item-title>
+                                                                        </a>
+                                                                    </v-list-item>
 
-                                </v-list>
-                            </v-menu>
+                                                                </v-list>
+                                                            </v-menu>
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -1654,7 +1666,8 @@ const selectImage = (image: any) => {
                             </v-window-item>
                             <v-window-item value="tab-6" class="pa-1">
 
-                                <v-btn color="primary" @click="setViewReportDialog(true)" class="mr-2" v-if="isLoggedInUserIsLead">Add
+                                <v-btn color="primary" @click="setViewReportDialog(true)" class="mr-2"
+                                    v-if="isLoggedInUserIsLead">Add
                                     Report</v-btn>
 
                                 <v-sheet>

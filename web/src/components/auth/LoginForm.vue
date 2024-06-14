@@ -30,9 +30,9 @@ const validate = async (values: any, { setErrors }: any) => {
         console.log('redirect to dash')
         // router.push('/dashboard');
 
-        setInterval(() => {
-            window.location.href = `${import.meta.env.VITE_API_WEB}dashboard`
-        }, 3000)
+        // setInterval(() => {
+        //     window.location.href = `${import.meta.env.VITE_API_WEB}dashboard`
+        // }, 3000)
 
     }
 }

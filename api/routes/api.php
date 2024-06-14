@@ -68,7 +68,7 @@ Route::get('countries', [CountryController::class, 'index']);
 Route::get('industries', [IndustryController::class, 'index']);
 Route::get('account-roles', [AccountRoleController::class, 'index']);
 
-Route::middleware('auth:api')->group(function ($router) {
+Route::middleware(['auth:api', 'verifyEmail'])->group(function ($router) {
 
     Route::prefix('dashboard')->group(function ($router) {
         Route::get('/', [DashboardController::class, 'index']);
@@ -135,11 +135,20 @@ Route::middleware('auth:api')->group(function ($router) {
     });
 
     Route::prefix('actions')->group(function ($router) {
-        Route::get('/all', [ActionController::class, 'index'])->middleware('featureAccess:create_actions');
-        Route::post('/create', [ActionController::class, 'store']);
-        Route::post('/update', [ActionController::class, 'update']);
-        Route::post('/delete', [ActionController::class, 'delete']);
-        Route::post('/status-update', [ActionController::class, 'changeStatus']);
+        Route::get('/all', [ActionController::class, 'index']);
+
+        Route::middleware('featureAccess:create_actions')->group(function ($router) {
+            Route::post('/create', [ActionController::class, 'store']);
+            Route::post('/update', [ActionController::class, 'update']);
+            Route::post('/delete', [ActionController::class, 'delete']);
+            Route::post('/status-update', [ActionController::class, 'changeStatus']);
+        });
+    });
+
+    Route::middleware('featureAccess:create_actions')->group(function ($router) {
+        Route::post('investigations/recommendation/{organization_id?}', [InvestigationController::class, 'recommendation']);
+        Route::post('inspection/send-recommendation/{organization_id?}', [InspectionController::class, 'sendRecommendation']);
+        Route::post('main-audit/send-recommendation/{organization_id?}', [MainAuditController::class, 'sendAuditRecommendation']);
     });
 
     Route::prefix('statistic')->group(function ($router) {
@@ -156,12 +165,12 @@ Route::middleware('auth:api')->group(function ($router) {
         Route::post('/witness/respond', [InvestigationController::class, 'witnessRespond']);
         Route::post('/witness/complete-respond', [InvestigationController::class, 'witnessCompleted']);
         Route::post('/start', [InvestigationController::class, 'start']);
+        Route::post('/reinvestigate', [InvestigationController::class, 'reinvestigate']);
         Route::post('/external-member', [InvestigationController::class, 'setExternalTeamMembers']);
         Route::post('/member/{organization_id?}', [InvestigationController::class, 'setTeamMembers']);
         Route::post('/remove-member/{organization_id?}', [InvestigationController::class, 'removeMember']);
         Route::post('/send-questions/{organization_id?}', [InvestigationController::class, 'sendQuestions']);
         Route::post('/send-invites/{organization_id?}', [InvestigationController::class, 'sendInvites']);
-        Route::post('/recommendation/{organization_id?}', [InvestigationController::class, 'recommendation']);
         Route::post('/report/{organization_id?}', [InvestigationController::class, 'sendReport']);
         Route::post('/complete/{organization_id?}', [InvestigationController::class, 'complete']);
         Route::post('/send-findings/{organization_id?}', [InvestigationController::class, 'sendFindings']);
@@ -216,7 +225,6 @@ Route::middleware('auth:api')->group(function ($router) {
         Route::post('/send-response/{organization_id?}', [MainAuditController::class, 'actionSendResponse']);
         Route::post('/send-comment/{organization_id?}', [MainAuditController::class, 'actionSendComment']);
         Route::post('/send-finding/{organization_id?}', [MainAuditController::class, 'sendAuditFinding']);
-        Route::post('/send-recommendation/{organization_id?}', [MainAuditController::class, 'sendAuditRecommendation']);
         Route::post('/complete/{organization_id?}', [MainAuditController::class, 'complete']);
 
         Route::post('/create', [InvestigationController::class, 'store']);
@@ -254,7 +262,6 @@ Route::middleware('auth:api')->group(function ($router) {
         Route::post('/send-response/{organization_id?}', [InspectionController::class, 'actionSendResponse']);
         Route::post('/send-comment/{organization_id?}', [InspectionController::class, 'actionSendComment']);
         Route::post('/send-finding/{organization_id?}', [InspectionController::class, 'sendFinding']);
-        Route::post('/send-recommendation/{organization_id?}', [InspectionController::class, 'sendRecommendation']);
         Route::post('/complete/{organization_id?}', [InspectionController::class, 'complete']);
         Route::post('/action/{organization_id?}', [InspectionController::class, 'actionInspection']);
         Route::get('/completed/{inspection_id}', [InspectionController::class, 'completed']);

@@ -238,6 +238,58 @@ class InvestigationController extends Controller
         }
 
     }
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function reinvestigate(Request $request)
+    {
+
+        $data = $request->validate([
+            'observation_id' => ['required', 'string'],
+            'organization_id' => ['required', 'string'],
+        ]);
+
+        try {
+
+            if (!$organization = Organisation::where('uuid', $data['organization_id'])->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Organization");
+            }
+
+            if ($organization->user_id != auth()->user()->id) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "User not authorized to perform action for organization");
+            }
+            if (!$observation = Observation::where('uuid', $data['observation_id'])->where('organization_id', $organization->id)->where('status', Observation::status['DOI'])->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Unable to find Observation");
+            }
+
+            if (Investigation::where('observation_id', $observation->id)->where('end_date', null)->first()) {
+                return errorResponse(ResponseStatusCodes::BAD_REQUEST, "There is an ongoing investigation for this observation");
+            }
+
+            $investigation = Investigation::create([
+                'organization_id' => $organization->id,
+                'observation_id' => $observation->id,
+                'start_date' => now(),
+                'user_id' => auth()->user()->id,
+            ]);
+
+            $observation->status = Observation::status['REI'];
+            $observation->save();
+
+            logAction(auth()->user()->email, 'You started a Re-investigation ', 'Start Re-Investigation', $request->ip());
+
+            return successResponse('Investigation started Successfully', []);
+
+        } catch (Exception $e) {
+            logger($e);
+            return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Something Went Wrong");
+
+        }
+
+    }
 
     /**
      * Display a listing of the resource.
@@ -354,16 +406,15 @@ class InvestigationController extends Controller
                         'member_id' => $lead_investigator->id,
                         'position' => 'lead',
                     ]);
-                    if($conversation) {
-ChatRecipient::updateOrCreate(
-    ['conversation_id' => $conversation->id, 'user_id' => $lead_investigator->id],
-    [
-        'conversation_id' => $conversation->id,
-        'user_id' => $lead_investigator->id,
-    ]);
+                if ($conversation) {
+                    ChatRecipient::updateOrCreate(
+                        ['conversation_id' => $conversation->id, 'user_id' => $lead_investigator->id],
+                        [
+                            'conversation_id' => $conversation->id,
+                            'user_id' => $lead_investigator->id,
+                        ]);
 
-                    }
-
+                }
 
                 if ($lean_member = InvestigationMember::where('investigation_id', $investigation->id)->where('position', 'member')->where('member_id', $lead_investigator->id)->first()) {
 
@@ -388,13 +439,13 @@ ChatRecipient::updateOrCreate(
                             'position' => 'member',
                         ]);
 
-                    if($conversation) {
-                    ChatRecipient::updateOrCreate(
-                        ['conversation_id' => $conversation->id, 'user_id' => $member->id],
-                        [
-                            'conversation_id' => $conversation->id,
-                            'user_id' => $member->id,
-                        ]);
+                    if ($conversation) {
+                        ChatRecipient::updateOrCreate(
+                            ['conversation_id' => $conversation->id, 'user_id' => $member->id],
+                            [
+                                'conversation_id' => $conversation->id,
+                                'user_id' => $member->id,
+                            ]);
                     }
 
                 }
@@ -461,15 +512,15 @@ ChatRecipient::updateOrCreate(
                         'member_id' => $lead_investigator->id,
                         'position' => 'lead',
                     ]);
-                    if($conversation) {
-ChatRecipient::updateOrCreate(
-    ['conversation_id' => $conversation->id, 'user_id' => $lead_investigator->id],
-    [
-        'conversation_id' => $conversation->id,
-        'user_id' => $lead_investigator->id,
-    ]);
+                if ($conversation) {
+                    ChatRecipient::updateOrCreate(
+                        ['conversation_id' => $conversation->id, 'user_id' => $lead_investigator->id],
+                        [
+                            'conversation_id' => $conversation->id,
+                            'user_id' => $lead_investigator->id,
+                        ]);
 
-                    }
+                }
 
                 if ($lean_member = InvestigationMember::where('investigation_id', $investigation->id)->where('position', 'member')->where('member_id', $lead_investigator->id)->first()) {
 
@@ -494,14 +545,14 @@ ChatRecipient::updateOrCreate(
                                 'member_id' => $member->id,
                                 'position' => 'member',
                             ]);
-                    if($conversation) {
-                    ChatRecipient::updateOrCreate(
-                        ['conversation_id' => $conversation->id, 'user_id' => $member->id],
-                        [
-                            'conversation_id' => $conversation->id,
-                            'user_id' => $member->id,
-                        ]);
-                    }
+                        if ($conversation) {
+                            ChatRecipient::updateOrCreate(
+                                ['conversation_id' => $conversation->id, 'user_id' => $member->id],
+                                [
+                                    'conversation_id' => $conversation->id,
+                                    'user_id' => $member->id,
+                                ]);
+                        }
 
                     }
                 }
@@ -543,16 +594,15 @@ ChatRecipient::updateOrCreate(
             }
 
             if ($member = InvestigationMember::where('investigation_id', $investigation->id)->where('member_id', request('team_member'))->first()) {
-   if ( $conversation = ChatConversion::where('id', $investigation->conversation_id)->first()) {
+                if ($conversation = ChatConversion::where('id', $investigation->conversation_id)->first()) {
 
+                    if ($chat = ChatRecipient::where('conversation_id', $conversation->id)->where('user_id', request('team_member'))->first()) {
 
-                if ($chat = ChatRecipient::where('conversation_id', $conversation->id)->where('user_id', request('team_member'))->first()) {
+                        $chat->delete();
 
-                    $chat->delete();
+                    }
 
                 }
-
-            }
 
                 $member->delete();
 

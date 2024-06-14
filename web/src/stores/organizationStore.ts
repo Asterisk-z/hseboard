@@ -159,6 +159,8 @@ export const useOrganizationStore = defineStore({
                 }).catch((error: any) => {
                     throw error;
                 }).then((response: any) => {
+
+                    user.refresh('business-setting');
                     return response
                 })
 
