@@ -6,6 +6,8 @@ use App\Models\Action;
 use App\Models\Inspection;
 use App\Models\Investigation;
 use App\Models\MainAudit;
+use App\Models\Observation;
+use App\Models\ObservationType;
 use App\Models\Organisation;
 
 class DashboardController extends Controller
@@ -61,16 +63,48 @@ class DashboardController extends Controller
 
             // $converted_actions = arrayKeysToCamelCase($actions);
 
-            return successResponse('Action Fetched Successfully', [
+            $actionsTabs = ['pending', 'accepted', 'rejected', 'ongoing', 'canceled', 'completed'];
+
+            $observationTabs = [
+                ['name' => 'Unsafe Act', 'type' => ObservationType::UNSAFE_ACT],
+                ['name' => 'Unsafe Condition', 'type' => ObservationType::UNSAFE_CONDITION],
+                ['name' => 'Near Miss', 'type' => ObservationType::NEAR_MISS],
+                ['name' => 'Medical Treatment Case', 'type' => ObservationType::MEDICAL_TREATMENT],
+                ['name' => 'Fatality', 'type' => ObservationType::FATALITY],
+                ['name' => 'Dangerous Occurrence', 'type' => ObservationType::DANGEROUS_OCCURANCE],
+            ];
+
+            $observationChart = [];
+
+            foreach ($observationTabs as $observationTab) {
+
+                $observationCount = Observation::where('organization_id', $organization->id)->where('observation_type_id', $observationTab['type'])->count();
+                $observationItem = ["name" => $observationTab['name'], "count" => $observationCount];
+                array_push($observationChart, $observationItem);
+
+            }
+
+            $actionChart = [];
+            foreach ($actionsTabs as $actionsTab) {
+
+                $actionCount = Action::where('organization_id', $organization->id)->where('status', $actionsTab)->count();
+                $actionItem = ["name" => ucfirst($actionsTab), "count" => $actionCount];
+                array_push($actionChart, $actionItem);
+
+            }
+
+            return successResponse('Dashboard Fetched Successfully', [
                 'actions' => $actions,
                 'investigation' => $investigation,
                 'inspection' => $inspection,
+                'observationChart' => $observationChart,
+                'actionChart' => $actionChart,
                 'report' => $report,
             ]);
 
         } catch (\Throwable $th) {
             logger($th);
-            return successResponse('Action Fetched Successfully', []);
+            return successResponse('Dashboard Fetched Successfully', []);
 
         }
     }

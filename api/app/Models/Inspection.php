@@ -11,7 +11,7 @@ class Inspection extends Model
     use HasFactory;
     protected $guarded = [];
     protected $with = ['user', 'recipient_organization', 'organization', 'inspection_template_type', 'all_inspectors', 'all_representatives', 'lead_inspector', 'lead_representative', 'schedule', 'findings', 'actions'];
-    protected $appends = ['is_ongoing', 'is_pending', 'is_accepted', 'is_completed', 'can_proceed', 'questions'];
+    protected $appends = ['is_ongoing', 'is_pending', 'is_accepted', 'is_completed', 'can_proceed', 'questions', 'is_internal'];
 
     public function user()
     {
@@ -42,6 +42,11 @@ class Inspection extends Model
     {
         return $this->status == 'ongoing';
 
+    }
+
+    public function getIsInternalAttribute()
+    {
+        return $this->organization_id == $this->recipient_organization_id;
     }
 
     public function getIsAcceptedAttribute()

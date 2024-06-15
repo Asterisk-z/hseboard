@@ -74,7 +74,7 @@ export const useOrganizationStore = defineStore({
                     .catch((error: any) => {
                         throw error;
                     }).then((response: any) => {
-                        authStore.refresh()
+                        authStore.refresh('business-setting')
                         return response
                     })
 

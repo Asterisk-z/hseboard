@@ -19,8 +19,8 @@ class ActionToken extends Model
     ];
 
     const status = [
-        'PEN' => 'Pending',
-        'COM' => 'Completed',
+        'PEN' => 'pending',
+        'COM' => 'completed',
     ];
 
 }

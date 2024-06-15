@@ -12,11 +12,16 @@ class PermitToWork extends Model
     protected $guarded = [];
     protected $with = ['issuer', 'holder', 'issuer_organization', 'holder_organization', 'request_type', 'team_members', 'jha'];
     // protected $with = ['all_inspectors', 'all_representatives', 'lead_inspector', 'lead_representative', 'schedule', 'findings', 'actions'];
-    protected $appends = ['is_declaration_stage', 'can_issue', 'is_issued',  'is_active', 'is_request_accepted', 'is_request_declined', 'is_request_pending', 'estimated_duration', 'is_jha_accepted', 'is_jha_declined', 'is_jha_pending', 'is_rf_accepted', 'is_rf_declined', 'is_rf_pending'];
+    protected $appends = ['is_declaration_stage', 'is_internal', 'can_issue', 'is_issued',  'is_active', 'is_request_accepted', 'is_request_declined', 'is_request_pending', 'estimated_duration', 'is_jha_accepted', 'is_jha_declined', 'is_jha_pending', 'is_rf_accepted', 'is_rf_declined', 'is_rf_pending'];
 
     public function getIsDeclarationStageAttribute()
     {
         return $this->send_for_declaration == 'yes' ? true : false;
+    }
+
+    public function getIsInternalAttribute()
+    {
+        return $this->holder_organization_id == $this->issuer_organization_id;
     }
 
     public function getIsIssuedAttribute()

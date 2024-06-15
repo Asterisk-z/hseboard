@@ -11,7 +11,7 @@ import { useInvestigationStore } from '@/stores/investigationStore';
 import moment from 'moment'
 import { router } from '@/router';
 
-const page = ref({ title: 'HSE Investigation Witness' });
+const page = ref({ title: 'HSE Investigation Questionnaires' });
 const breadcrumbs = ref([
     {
         text: 'Dashboard',
@@ -24,7 +24,7 @@ const breadcrumbs = ref([
         href: '/hse-investigation'
     },
     {
-        text: 'Witness',
+        text: 'Questionnaires ',
         disabled: true,
         href: '#'
     }

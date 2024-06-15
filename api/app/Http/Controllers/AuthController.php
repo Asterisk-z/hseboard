@@ -317,7 +317,7 @@ class AuthController extends Controller
         $user = User::where('id', auth()->user()->id)->first();
         $user->firstName = $request->firstName;
         $user->lastName = $request->lastName;
-        $user->email = $request->email;
+        // $user->email = $request->email;
         $user->ispon = $request->ispon ? $request->ispon : $user->ispon;
         $user->phone = $request->phone;
         $user->save();

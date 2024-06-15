@@ -14,7 +14,7 @@ class MainAudit extends Model
 
     protected $with = ['user', 'recipient_organization', 'organization', 'audit_template', 'audit_type', 'all_auditors', 'all_representatives', 'support_auditor', 'lead_auditor', 'representatives', 'lead_representative', 'findings', 'actions', 'documents', 'schedule'];
 
-    protected $appends = ['questions', 'is_ongoing', 'is_pending', 'is_accepted', 'is_completed'];
+    protected $appends = ['questions', 'is_ongoing', 'is_pending', 'is_accepted', 'is_completed', 'is_internal'];
 
     public function user()
     {
@@ -39,6 +39,10 @@ class MainAudit extends Model
     public function getIsCompletedAttribute()
     {
         return $this->status == 'completed';
+    }
+    public function getIsInternalAttribute()
+    {
+        return $this->organization_id == $this->recipient_organization_id;
     }
 
     public function organization()

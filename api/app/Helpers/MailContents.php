@@ -22,6 +22,18 @@ class MailContents
         <p>Kindly click on this <a href=$url>link</a> to validate account.</p>";
     }
 
+    public static function verifyMailSubject(): string
+    {
+        return "Email Verification";
+    }
+
+    public static function verifyMail($email, $signature): string
+    {
+        $url = config("app.url") . "/api/auth/validate/account?signature=" . $signature . "&email=" . $email . "&type=EV";
+        return "
+        <p>Kindly click on this <a href=$url>link</a> to verify account.</p>";
+    }
+
     public static function forgotPasswordSubject(): string
     {
         return "Password Reset OTP";

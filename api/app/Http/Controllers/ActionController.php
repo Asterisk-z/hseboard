@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseStatusCodes;
 use App\Models\Action;
+use App\Models\Feature;
 use App\Models\Organisation;
 use App\Models\User;
 use Carbon\Carbon;
@@ -19,6 +20,8 @@ class ActionController extends Controller
      */
     public function index()
     {
+
+        $this->middleware("featureAccess:" . Feature::HSE_AUDIT_INTERNAL);
 
         try {
             $actions = Action::where('is_del', 'no');

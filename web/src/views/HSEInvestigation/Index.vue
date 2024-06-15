@@ -167,8 +167,8 @@ const gotoRoute = (link: string) => {
                 <v-card :title="`HSE Investigation`" flat>
 
                     <template v-slot:append>
-                        <v-btn color="primary" class="mr-2" @click="gotoRoute('/hse-investigation-witness')">WItnessed
-                            Investigations</v-btn>
+                        <v-btn color="primary" class="mr-2"
+                            @click="gotoRoute('/hse-investigation-witness')">Questionnaires</v-btn>
                     </template>
 
 

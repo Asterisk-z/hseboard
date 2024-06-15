@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\MailContents;
 use App\Helpers\ResponseStatusCodes;
 use App\Models\AccountRole;
 use App\Models\AccountType;
@@ -9,8 +10,10 @@ use App\Models\ActionToken;
 use App\Models\Organisation;
 use App\Models\OrganisationUser;
 use App\Models\User;
+use App\Notifications\InfoNotification;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
@@ -41,6 +44,7 @@ class UsersController extends Controller
         }
 
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -159,6 +163,43 @@ class UsersController extends Controller
 
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function sendUserVerificationEmail(Request $request)
+    {
+
+        try {
+
+            $user = auth()->user();
+
+            if ($user->email_verified_at) {
+                return successResponse('Account Verified Successfully', []);
+            }
+
+            $signature = Str::random(50);
+
+            ActionToken::updateOrCreate(["email" => $user->email, 'type' => ActionToken::types['EV']], [
+                "email" => $user->email,
+                "signature" => $signature,
+                "status" => ActionToken::status['PEN'],
+                'type' => ActionToken::types['EV'],
+            ]);
+
+            $user->notify(new InfoNotification(MailContents::verifyMail($user->email, Crypt::encrypt($signature)), MailContents::verifyMailSubject()));
+
+            return successResponse('Verification Mail Sent Successfully', []);
+
+        } catch (Exception $e) {
+            logger($e);
+            return errorResponse(ResponseStatusCodes::BAD_REQUEST, "Something Went Wrong");
+
+        }
+
+    }
     /**
      * Store a newly created resource in storage.
      *

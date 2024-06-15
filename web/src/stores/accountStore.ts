@@ -72,15 +72,27 @@ export const useAccountStore = defineStore({
                 });
             this.userDetail = data;
         },
-        async updateDetail(values : any) {
+        async updateDetail(values: any) {
+            const user = useAuthStore();
             const data = await fetchWrapper
                 .post(`auth/update-details`, values)
+                .then((response: any) => {
+                    user.refresh('account-setting');
+                    return response
+                }).catch((error: any) => {
+                    console.log(error)
+                });
+            // this.userDetail = data;
+        },
+        async sendVerificationMail() {
+            const data = await fetchWrapper
+                .post(`auth/send-verification-mail`)
                 .then((response: any) => {
                     return response
                 }).catch((error: any) => {
                     console.log(error)
                 });
-            this.userDetail = data;
+            // this.userDetail = data;
         },
         async uploadLogo(values: any) {
             try {

@@ -21,7 +21,8 @@ class CheckEmailVerification
             return $next($request);
         }
 
-        abort(Response::HTTP_UNAUTHORIZED, 'Email not Verified');
+        abort(Response::HTTP_UPGRADE_REQUIRED, 'Email not Verified, Please goto Dashboard to verify email');
+        // abort(Response::HTTP_UNAUTHORIZED, 'Email not Verified');
 
     }
 }

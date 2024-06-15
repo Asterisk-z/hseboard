@@ -763,8 +763,7 @@ const date = ref(null);
                                 <UsersIcon stroke-width="1.5" width="20" class="v-icon--start" />
                                 <div>
                                     <div>Build Team</div>
-                                    <span
-                                        class="text-subtitle-2 text-lightText text-medium-emphasis font-weight-medium d-block">Members</span>
+                                    <span class="text-subtitle-2 text-lightText text-medium-emphasis font-weight-medium d-block">Members</span>
                                 </div>
                             </v-tab>
 

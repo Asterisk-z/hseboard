@@ -14,7 +14,11 @@ export const useCustomizerStore = defineStore({
     setBorderCard: config.setBorderCard
   }),
 
-  getters: {},
+  getters: {
+    textColor: (state) => {
+      return state.actTheme == 'AQUA_THEME' ? 'black' : 'white'
+    },
+  },
   actions: {
     CHANGE_THEME() {
       if (this.actTheme == "DARK_AQUA_THEME") {

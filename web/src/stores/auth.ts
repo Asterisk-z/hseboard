@@ -106,6 +106,7 @@ export const useAuthStore = defineStore({
                     this.user = btoa(JSON.stringify(data.user))
                     this.hse_tok_passer = data.access_token
                     // user.accessToken
+                    console.log(page)
                     setTimeout(() => {
 
                         window.location.href = `${import.meta.env.VITE_API_WEB}${page}`
